@@ -7,6 +7,7 @@
     "bug-reports": "[NEEDS_WEBHOOK]",
     "system-updates": "[NEEDS_WEBHOOK]",
     "testing": "[NEEDS_WEBHOOK]",
+    "deployments": "https://discord.com/api/webhooks/1400577499225657404/x3eRkhbp84bA_3f3AuyUIrBhDtozTGnVbxVrPg3ewLWIL3eO0s_GZoiW0lRQr6Kb5jQ3",
     "signals": "https://discord.com/api/webhooks/1400573697642860639/ytKTM9Ww4oMOHqLbX3rT-NtYPffFQUuOsy_pD5oQuI0V4hYZ9IhAdUSsR2GihQxWsRRG",
     "analytics": "[NEEDS_WEBHOOK]",
     "live-trades": "[NEEDS_WEBHOOK]",

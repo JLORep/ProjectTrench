@@ -104,8 +104,13 @@
 - Coin Data: https://discord.com/api/webhooks/1400573697642860639/ytKTM9Ww4oMOHqLbX3rT-NtYPffFQUuOsy_pD5oQuI0V4hYZ9IhAdUSsR2GihQxWsRRG
 - Dev Blog: 1400491407550058610/Q59NIxt5lSvFgpwckXOv_P9TF8uWjudOTJxEw5hZ3fL61D-gSwrpIb110UiG4Z1f7
 - Overview: 1400497302241677383/Im9oyVehkH6zhsc5w4mt4KHQvgSR2qfMPD-k6lTR-X0XQWT3eLV_IJM2-MqQNM6dPAzM
+- Deployments: https://discord.com/api/webhooks/1400577499225657404/x3eRkhbp84bA_3f3AuyUIrBhDtozTGnVbxVrPg3ewLWIL3eO0s_GZoiW0lRQr6Kb5jQ3
 
-**Auto-Deploy System:** `enhanced_auto_deploy.py` runs automatically on commits
+**Auto-Deploy System:** `enhanced_auto_deploy.py` - FULLY OPERATIONAL
+- Auto-detects commits requiring deployment
+- Uses `git add -u` to avoid untracked file issues  
+- Automatic GitHub sync and Discord notifications
+- Routes notifications to appropriate channels
 
 ## Documentation Available
 - 42 markdown files covering setup, deployment, integrations
