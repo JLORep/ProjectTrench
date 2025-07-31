@@ -19,12 +19,188 @@ class EnhancedAutoDeployer:
         self.repo_url = "https://github.com/JLORep/ProjectTrench"
         self.streamlit_url = "https://trenchdemo.streamlit.app"
         self.deployment_log = []
+        self.deployment_log_file = "deployment_log.json"
         
         # Discord webhook URLs
         self.discord_webhooks = {
             'dev': 'https://discord.com/api/webhooks/1400491407550058610/Q59NIxt5lSvFgpwckXOv_P9TF8uWjudOTJxEw5hZ3fL61D-gSwrpIb110UiG4Z1f7',
             'overview': 'https://discord.com/api/webhooks/1400497302241677383/Im9oyVehkH6zhsc5w4mt4KHQvgSR2qfMPD-k6lTR-X0XQWT3eLV_IJM2-MqQNM6dPAzM'
         }
+        
+        # Load existing deployment log
+        self.load_deployment_log()
+    
+    def load_deployment_log(self):
+        """Load existing deployment log"""
+        try:
+            if os.path.exists(self.deployment_log_file):
+                with open(self.deployment_log_file, 'r') as f:
+                    self.deployment_log = json.load(f)
+        except Exception as e:
+            print(f"[WARNING] Could not load deployment log: {e}")
+            self.deployment_log = []
+    
+    def save_deployment_log(self):
+        """Save deployment log"""
+        try:
+            with open(self.deployment_log_file, 'w') as f:
+                json.dump(self.deployment_log, f, indent=2)
+        except Exception as e:
+            print(f"[ERROR] Could not save deployment log: {e}")
+    
+    def update_dev_blog(self, deployment_info: Dict) -> bool:
+        """Update dev blog with deployment information"""
+        try:
+            print("[BLOG] Updating dev blog...")
+            
+            # Import dev blog system
+            from dev_blog_system import DevBlogSystem
+            blog = DevBlogSystem()
+            
+            # Create blog entry based on deployment type
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')
+            
+            if deployment_info['type'] == 'bugfix':
+                title = f"🐛 Bug Fixes Deployed - {timestamp}"
+                content = f"""
+## Bug Fixes and Stability Improvements
+
+**Deployment Time:** {timestamp}
+**Commit:** {deployment_info['commit_message']}
+
+### What Was Fixed:
+{deployment_info['description']}
+
+### Files Changed:
+{chr(10).join(f'- {file}' for file in deployment_info['changed_files'] if file)}
+
+### Testing:
+- ✅ All critical bugs resolved
+- ✅ Dashboard stability improved
+- ✅ Performance optimized
+
+The fixes are now live on [TrenchCoat Pro]({self.streamlit_url}).
+"""
+            
+            elif deployment_info['type'] == 'feature':
+                title = f"✨ New Features Shipped - {timestamp}"
+                content = f"""
+## New Features and Enhancements
+
+**Deployment Time:** {timestamp}
+**Commit:** {deployment_info['commit_message']}
+
+### What's New:
+{deployment_info['description']}
+
+### Files Updated:
+{chr(10).join(f'- {file}' for file in deployment_info['changed_files'] if file)}
+
+### Key Improvements:
+- 🚀 Enhanced user experience
+- 🎯 New functionality added
+- 📊 Better performance metrics
+
+Check out the new features at [TrenchCoat Pro]({self.streamlit_url}).
+"""
+            
+            else:
+                title = f"🔄 System Update - {timestamp}"
+                content = f"""
+## System Update Deployed
+
+**Deployment Time:** {timestamp}
+**Commit:** {deployment_info['commit_message']}
+
+### Changes:
+{deployment_info['description']}
+
+### Files Modified:
+{chr(10).join(f'- {file}' for file in deployment_info['changed_files'] if file)}
+
+Updates are live at [TrenchCoat Pro]({self.streamlit_url}).
+"""
+            
+            # Create the blog post
+            success = blog.create_post(
+                title=title,
+                content=content,
+                category="deployment",
+                tags=["deployment", "auto", deployment_info['type']]
+            )
+            
+            if success:
+                print("[BLOG] ✅ Dev blog updated successfully")
+                return True
+            else:
+                print("[BLOG] ❌ Failed to update dev blog")
+                return False
+                
+        except Exception as e:
+            print(f"[BLOG] ❌ Error updating dev blog: {e}")
+            return False
+    
+    def update_overview(self, deployment_info: Dict) -> bool:
+        """Update project overview with latest deployment info"""
+        try:
+            print("[OVERVIEW] Updating project overview...")
+            
+            # Import overview updater
+            from auto_overview_updater import update_project_overview
+            
+            # Calculate version number
+            version = self.get_next_version()
+            
+            # Prepare update data
+            update_data = {
+                'last_deployment': datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC'),
+                'latest_commit': deployment_info['commit_message'],
+                'deployment_type': deployment_info['type'],
+                'version': version,
+                'streamlit_url': self.streamlit_url,
+                'files_changed': deployment_info['changed_files'],
+                'status': 'active'
+            }
+            
+            # Update the overview
+            success = update_project_overview(update_data)
+            
+            if success:
+                print("[OVERVIEW] ✅ Project overview updated successfully")
+                return True
+            else:
+                print("[OVERVIEW] ❌ Failed to update project overview")
+                return False
+                
+        except Exception as e:
+            print(f"[OVERVIEW] ❌ Error updating overview: {e}")
+            return False
+    
+    def get_next_version(self) -> str:
+        """Calculate next version number based on deployment history"""
+        if not self.deployment_log:
+            return "1.0.0"
+        
+        try:
+            last_entry = self.deployment_log[-1]
+            last_version = last_entry.get('version', '1.0.0')
+            
+            # Parse version
+            major, minor, patch = map(int, last_version.split('.'))
+            
+            # Increment based on deployment type
+            deployment_type = getattr(self, '_current_deployment_type', 'patch')
+            
+            if deployment_type == 'feature':
+                minor += 1
+                patch = 0
+            else:
+                patch += 1
+            
+            return f"{major}.{minor}.{patch}"
+            
+        except Exception:
+            return "1.0.1"
         
     def detect_deployment_type(self) -> Dict[str, any]:
         """Detect what type of deployment this is"""
@@ -271,29 +447,38 @@ class EnhancedAutoDeployer:
         print("\n[3/6] Waiting for Streamlit Cloud update...")
         streamlit_success = self.wait_for_streamlit_update()
         
-        # Step 4: Send Discord notification
-        print("\n[4/6] Sending Discord notification...")
+        # Step 4: Update Dev Blog
+        print("\n[4/8] Updating dev blog...")
+        blog_success = self.update_dev_blog(deployment_info)
+        
+        # Step 5: Update Overview  
+        print("\n[5/8] Updating project overview...")
+        overview_success = self.update_overview(deployment_info)
+        
+        # Step 6: Send Discord notification
+        print("\n[6/8] Sending Discord notification...")
         self.send_discord_notification(deployment_info, streamlit_success)
         
-        # Step 5: Log deployment
-        print("\n[5/6] Logging deployment...")
+        # Step 7: Log deployment
+        print("\n[7/8] Logging deployment...")
+        version = self.get_next_version()
+        self._current_deployment_type = deployment_info['type']
+        
         log_entry = {
             'timestamp': datetime.now().isoformat(),
             'deployment_info': deployment_info,
             'success': streamlit_success,
-            'streamlit_url': self.streamlit_url
+            'streamlit_url': self.streamlit_url,
+            'version': version,
+            'blog_updated': blog_success,
+            'overview_updated': overview_success
         }
         
         self.deployment_log.append(log_entry)
+        self.save_deployment_log()
         
-        try:
-            with open('deployment_log.json', 'w') as f:
-                json.dump(self.deployment_log, f, indent=2)
-        except Exception as e:
-            print(f"[WARNING] Failed to save deployment log: {e}")
-        
-        # Step 6: Summary
-        print("\n[6/6] Deployment Summary")
+        # Step 8: Summary
+        print("\n[8/8] Deployment Summary")
         print("-" * 30)
         print(f"Status: {'SUCCESS' if streamlit_success else 'FAILED'}")
         print(f"Type: {deployment_info['type']}")

@@ -42,13 +42,18 @@ except Exception:
 # Page configuration (handled by streamlit_app.py)
 
 # Custom CSS for ultra-premium design
-st.markdown("""
+def apply_custom_css():
+    """Apply custom CSS for ultra-premium design"""
+    st.markdown("""
 <style>
+    /* Fix: Scope CSS to prevent conflicts */
+    #trenchcoat-app {
     /* Import premium fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    }
     
     /* Global styles */
-    * {
+    #trenchcoat-app * {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
@@ -58,7 +63,7 @@ st.markdown("""
     header {visibility: hidden;}
     
     /* Premium background */
-    .stApp {
+    #trenchcoat-app .stApp {
         background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
     }
     
@@ -161,15 +166,19 @@ st.markdown("""
         100% { background-color: transparent; }
     }
 </style>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 class UltraPremiumDashboard:
     """Ultra-premium dashboard with live updates"""
     
     def __init__(self):
         self.initialize_session_state()
+        apply_custom_css()  # Apply our custom CSS
         if branding:
-            branding.apply_custom_css()
+            try:
+                branding.apply_custom_css()
+            except Exception:
+                pass
         self.setup_page_layout()
     
     def initialize_session_state(self):
@@ -189,57 +198,44 @@ class UltraPremiumDashboard:
     
     def setup_page_layout(self):
         """Setup the main page layout"""
+        # Fix: Ensure CSS is properly isolated
+        st.markdown('<div id="trenchcoat-app">', unsafe_allow_html=True)
+        
         # Premium header
         self.render_header()
         
         # Main content area
         self.render_main_content()
+        
+        st.markdown('</div>', unsafe_allow_html=True)
     
     def render_header(self):
         """Render premium header with live status"""
-        try:
-            if branding:
-                st.markdown(branding.get_professional_header(
-                    "TrenchCoat Pro",
-                    "Ultra-Premium Cryptocurrency Trading Intelligence Platform",
-                    "primary"
-                ), unsafe_allow_html=True)
-            else:
-                # Fallback header if branding system fails
-                st.markdown("""
-                <div style='text-align: center; padding: 2rem; margin-bottom: 2rem;
-                            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                            border-radius: 15px; color: white;'>
-                    <h1 style='margin: 0; font-size: 2.5rem;'>🎯 TrenchCoat Pro</h1>
-                    <p style='margin: 0.5rem 0 0 0; opacity: 0.9;'>Ultra-Premium Trading Intelligence</p>
-                </div>
-                """, unsafe_allow_html=True)
-        except Exception as e:
-            # Fallback header if any error occurs
+        # Fix: Use Streamlit native components for header to avoid HTML issues
+        st.markdown("")
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
             st.markdown("# 🎯 TrenchCoat Pro")
-            st.markdown("*Ultra-Premium Trading Intelligence*")
+            st.markdown("**Ultra-Premium Cryptocurrency Trading Intelligence Platform**")
+        st.markdown("")
+        
+        # Add visual separator
+        st.markdown("---")
         
         # Status indicators and live mode toggle in header area
         header_cols = st.columns([3, 2, 2])
         
         with header_cols[0]:
-            # Live status indicators
-            st.markdown("""
-            <div style="display: flex; gap: 15px; align-items: center; margin-top: 1rem;">
-                <div style="display: flex; align-items: center; gap: 6px; background: rgba(34, 197, 94, 0.2); 
-                           color: #22c55e; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">
-                    <div style="width: 6px; height: 6px; background: #22c55e; border-radius: 50%; 
-                               animation: pulse 2s infinite;"></div>
-                    LIVE TRADING
-                </div>
-                <div style="color: #6b7280; font-size: 12px;">
-                    APIs: <span style="color: #10b981;">6/6 Connected</span>
-                </div>
-                <div style="color: #6b7280; font-size: 12px;">
-                    Latency: <span style="color: #10b981;">12ms</span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            # Live status indicators - Fix: Use Streamlit components instead of raw HTML
+            col1, col2, col3, col4 = st.columns([2, 2, 2, 3])
+            with col1:
+                st.markdown("🟢 **LIVE TRADING**")
+            with col2:
+                st.markdown("📡 **6/6 APIs**")
+            with col3:
+                st.markdown("⚡ **12ms**")
+            with col4:
+                st.markdown("💎 **Premium Mode**")
         
         with header_cols[1]:
             # Live mode toggle
@@ -253,16 +249,14 @@ class UltraPremiumDashboard:
                     st.info("Real coin data & notifications active")
                 else:
                     st.info("🔵 Demo mode - Sample data only")
+                # Fix: Delay rerun to prevent race condition
+                time.sleep(0.1)
                 st.rerun()
         
         with header_cols[2]:
-            # System time
+            # System time - Fix: Use Streamlit native components
             current_time = datetime.now().strftime("%H:%M:%S")
-            st.markdown(f"""
-            <div style="text-align: right; color: #9ca3af; font-size: 12px; margin-top: 1rem;">
-                System Time: {current_time} UTC
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f"**System Time:** {current_time} UTC", help="Current system time in UTC")
     
     def render_main_content(self):
         """Render main content area with tabbed interface"""
@@ -348,41 +342,31 @@ class UltraPremiumDashboard:
             
             with col3:
                 active_count = len(st.session_state.active_positions)
-                st.markdown(f"""
-                <div class="premium-card">
-                    <p style="color: #9ca3af; font-size: 12px; margin: 0;">Active Trades</p>
-                    <h2 style="color: #f9fafb; margin: 0;">{active_count}</h2>
-                    <p style="color: #6b7280; font-size: 12px; margin: 0;">
-                        {random.randint(5, 15)} pending
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
+                # Fix: Use native Streamlit metric
+                st.metric(
+                    label="Active Trades",
+                    value=active_count,
+                    delta=f"{random.randint(5, 15)} pending"
+                )
             
             with col4:
                 processed_today = len(st.session_state.processed_coins)
-                st.markdown(f"""
-                <div class="premium-card">
-                    <p style="color: #9ca3af; font-size: 12px; margin: 0;">Coins Analyzed</p>
-                    <h2 style="color: #f9fafb; margin: 0;">{processed_today}</h2>
-                    <p style="color: #6b7280; font-size: 12px; margin: 0;">
-                        {random.randint(50, 100)}/min
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
+                # Fix: Use native Streamlit metric
+                st.metric(
+                    label="Coins Analyzed",
+                    value=processed_today,
+                    delta=f"{random.randint(50, 100)}/min"
+                )
             
             with col5:
                 api_health = random.randint(98, 100)
-                st.markdown(f"""
-                <div class="premium-card">
-                    <p style="color: #9ca3af; font-size: 12px; margin: 0;">System Health</p>
-                    <h2 style="color: {'#10b981' if api_health > 95 else '#f59e0b'}; margin: 0;">
-                        {api_health}%
-                    </h2>
-                    <p style="color: #6b7280; font-size: 12px; margin: 0;">
-                        All systems go
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
+                # Fix: Use native Streamlit metric
+                health_emoji = "🟢" if api_health > 95 else "🟡"
+                st.metric(
+                    label="System Health",
+                    value=f"{api_health}%",
+                    delta=f"{health_emoji} All systems go"
+                )
     
     def render_live_coin_feed(self):
         """Render live coin processing feed"""
@@ -401,7 +385,19 @@ class UltraPremiumDashboard:
             try:
                 manager = LiveDataManager()
                 # Use enriched coin detection that includes Telegram signals
-                live_coins = asyncio.run(manager.get_enriched_trending_coins(limit=5))
+                # Fix: Handle async in sync context properly
+                try:
+                    import nest_asyncio
+                    nest_asyncio.apply()
+                    live_coins = asyncio.run(manager.get_enriched_trending_coins(limit=5))
+                except ImportError:
+                    # Fallback: use sync method if available
+                    if hasattr(manager, 'get_enriched_trending_coins_sync'):
+                        live_coins = manager.get_enriched_trending_coins_sync(limit=5)
+                    else:
+                        # Use demo data if async not working
+                        self.generate_demo_coins()
+                        return
                 
                 # Convert to display format
                 processed_coins = []
@@ -429,10 +425,31 @@ class UltraPremiumDashboard:
                 st.session_state.processed_coins = processed_coins
                 
                 # Trigger notifications for high-confidence coins
-                self.check_and_notify_high_confidence_coins(live_coins)
+                # Fix: Wrap in try-catch to prevent notification errors from crashing
+                try:
+                    self.check_and_notify_high_confidence_coins(live_coins)
+                except Exception as notify_error:
+                    # Silently log notification errors
+                    if 'error_log' not in st.session_state:
+                        st.session_state.error_log = []
+                    st.session_state.error_log.append({
+                        'time': datetime.now(),
+                        'error': str(notify_error),
+                        'component': 'notifications'
+                    })
                 
             except Exception as e:
-                st.error(f"Live data error: {e}")
+                # Fix: Better error handling with more context
+                error_msg = f"Live data error: {str(e)[:100]}"
+                st.warning(error_msg)
+                # Log the full error for debugging
+                if 'error_log' not in st.session_state:
+                    st.session_state.error_log = []
+                st.session_state.error_log.append({
+                    'time': datetime.now(),
+                    'error': str(e),
+                    'component': 'live_coin_feed'
+                })
                 # Fallback to demo mode
                 self.generate_demo_coins()
         else:
@@ -506,7 +523,6 @@ class UltraPremiumDashboard:
         with col2:
             # Show live data fields if available
             price_change = coin.get('change_24h', 0)
-            change_color = '#10b981' if price_change > 0 else '#ef4444'
             change_arrow = '↑' if price_change > 0 else '↓'
             
             # Enhanced display for enriched coins
@@ -520,43 +536,44 @@ class UltraPremiumDashboard:
             rug_risk = coin.get('rug_risk', 0)
             verified = coin.get('contract_verified', False)
             
-            st.markdown(f"""
-            <div class="coin-card {'success-flash' if coin['stage'] == 'Trading' else ''}" 
-                 style="opacity: {1 - (index * 0.15)};">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <span style="color: #f9fafb; font-weight: 600;">{coin['ticker']} {source_icon}</span>
-                        <span style="color: #6b7280; font-size: 12px; margin-left: 8px;">
-                            ${coin['price']:.6f}
-                        </span>
-                        {f'<span style="color: {change_color}; font-size: 11px; margin-left: 8px;">{change_arrow}{abs(price_change):.1f}%</span>' if price_change != 0 else ''}
-                        {f'<span style="color: #34d399; font-size: 10px; margin-left: 4px;">✅</span>' if verified else ''}
-                    </div>
-                    <span style="color: {stage_color}; font-size: 12px; font-weight: 500;">
-                        {coin['stage']}
-                    </span>
-                </div>
-                <div style="margin-top: 8px;">
-                    <div style="background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px;">
-                        <div style="background: {stage_color}; height: 100%; 
-                                    width: {coin['score'] * 100}%; border-radius: 2px;
-                                    transition: width 0.5s ease;"></div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-                        <span style="color: #6b7280; font-size: 11px;">
-                            {liquidity_text}
-                        </span>
-                        <span style="color: #10b981; font-size: 11px;">
-                            Score: {coin['score']:.2f}
-                        </span>
-                    </div>
-                    {'<div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 10px;">' +
-                     f'<span style="color: #a855f7;">Social: {social_score:.1f}</span>' +
-                     f'<span style="color: {("#ef4444" if rug_risk > 0.5 else "#10b981")};">Risk: {rug_risk:.1f}</span>' +
-                     '</div>' if is_enriched else ''}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            # Fix: Use Streamlit native components for better rendering
+            # Create a container with alpha transparency effect
+            with st.container():
+                # Coin header info
+                header_col1, header_col2, header_col3 = st.columns([3, 2, 1])
+                with header_col1:
+                    coin_display = f"{coin['ticker']} {source_icon}"
+                    if verified:
+                        coin_display += " ✅"
+                    st.markdown(f"**{coin_display}**")
+                    st.caption(f"${coin['price']:.6f}")
+                
+                with header_col2:
+                    if price_change != 0:
+                        delta_color = "🟢" if price_change > 0 else "🔴"
+                        st.markdown(f"{delta_color} {change_arrow}{abs(price_change):.1f}%")
+                
+                with header_col3:
+                    st.caption(coin['stage'])
+                
+                # Progress bar for score
+                st.progress(coin['score'], text=f"Score: {coin['score']:.2f}")
+                
+                # Metrics row
+                metric_cols = st.columns(2)
+                with metric_cols[0]:
+                    st.caption(liquidity_text)
+                with metric_cols[1]:
+                    if is_enriched:
+                        st.caption(f"🎯 Social: {social_score:.1f}")
+                
+                # Risk indicator if enriched
+                if is_enriched:
+                    risk_emoji = "⚠️" if rug_risk > 0.5 else "✅"
+                    st.caption(f"{risk_emoji} Risk: {rug_risk:.1f}")
+                
+                # Visual separator
+                st.markdown("")
     
     def render_performance_chart(self):
         """Render real-time performance chart"""
@@ -626,11 +643,8 @@ class UltraPremiumDashboard:
     
     def render_active_positions(self):
         """Render active trading positions"""
-        st.markdown("""
-        <div class="premium-card">
-            <h3 style="color: #f9fafb; margin-bottom: 16px;">Active Positions</h3>
-        </div>
-        """, unsafe_allow_html=True)
+        # Fix: Use native Streamlit components
+        st.subheader("Active Positions")
         
         # Simulate active positions
         if random.random() > 0.7:
@@ -649,32 +663,21 @@ class UltraPremiumDashboard:
             pnl = ((pos['current'] - pos['entry']) / pos['entry']) * 100
             pnl_color = '#10b981' if pnl > 0 else '#ef4444'
             
-            st.markdown(f"""
-            <div class="premium-card" style="padding: 12px; margin: 8px 0;">
-                <div style="display: flex; justify-content: space-between;">
-                    <span style="color: #f9fafb; font-weight: 500;">{pos['ticker']}</span>
-                    <span style="color: {pnl_color}; font-weight: 600;">
-                        {pnl:+.2f}%
-                    </span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-                    <span style="color: #6b7280; font-size: 12px;">
-                        Entry: ${pos['entry']:.6f}
-                    </span>
-                    <span style="color: #6b7280; font-size: 12px;">
-                        Size: {pos['size']:.2f} SOL
-                    </span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            # Fix: Use native Streamlit components
+            with st.container():
+                pos_col1, pos_col2 = st.columns([3, 1])
+                with pos_col1:
+                    st.markdown(f"**{pos['ticker']}**")
+                    st.caption(f"Entry: ${pos['entry']:.6f} | Size: {pos['size']:.2f} SOL")
+                with pos_col2:
+                    pnl_emoji = "🟢" if pnl > 0 else "🔴"
+                    st.markdown(f"{pnl_emoji} **{pnl:+.2f}%**")
+                st.markdown("---")
     
     def render_strategy_performance(self):
         """Render strategy performance breakdown"""
-        st.markdown("""
-        <div class="premium-card">
-            <h3 style="color: #f9fafb; margin-bottom: 16px;">Strategy Performance</h3>
-        </div>
-        """, unsafe_allow_html=True)
+        # Fix: Use native Streamlit components
+        st.subheader("Strategy Performance")
         
         strategies = [
             {'name': 'Whale Following', 'win_rate': 81.6, 'profit': random.uniform(500, 1500)},
@@ -684,27 +687,14 @@ class UltraPremiumDashboard:
         ]
         
         for strategy in strategies:
-            st.markdown(f"""
-            <div style="margin-bottom: 16px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                    <span style="color: #f9fafb; font-size: 14px;">{strategy['name']}</span>
-                    <span style="color: #10b981; font-size: 14px; font-weight: 600;">
-                        ${strategy['profit']:.0f}
-                    </span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="background: rgba(255,255,255,0.1); height: 6px; 
-                                border-radius: 3px; flex: 1;">
-                        <div style="background: linear-gradient(90deg, #10b981 0%, #059669 100%); 
-                                    height: 100%; width: {strategy['win_rate']}%; 
-                                    border-radius: 3px;"></div>
-                    </div>
-                    <span style="color: #6b7280; font-size: 12px; width: 45px; text-align: right;">
-                        {strategy['win_rate']:.1f}%
-                    </span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            # Fix: Use native Streamlit components
+            st.markdown(f"**{strategy['name']}** - ${strategy['profit']:.0f}")
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                st.progress(strategy['win_rate'] / 100)
+            with col2:
+                st.caption(f"{strategy['win_rate']:.1f}%")
+            st.markdown("")
     
     def render_recent_wins(self):
         """Render recent winning trades"""
@@ -780,7 +770,7 @@ class UltraPremiumDashboard:
             }
         ]
         
-        for suggestion in suggestions:
+        for i, suggestion in enumerate(suggestions):
             st.markdown(f"""
             <div class="premium-card" style="padding: 16px; margin: 8px 0;">
                 <div style="display: flex; gap: 12px;">
@@ -1004,8 +994,17 @@ class UltraPremiumDashboard:
     def render_model_builder_section(self):
         """Render model builder interface"""
         try:
-            from model_builder import ModelBuilder
-            from historic_data_manager import HistoricDataManager
+            # Fix: Lazy import to prevent circular dependencies
+            import sys
+            if 'model_builder' not in sys.modules:
+                from model_builder import ModelBuilder
+            else:
+                ModelBuilder = sys.modules['model_builder'].ModelBuilder
+            
+            if 'historic_data_manager' not in sys.modules:
+                from historic_data_manager import HistoricDataManager
+            else:
+                HistoricDataManager = sys.modules['historic_data_manager'].HistoricDataManager
             
             # Create sub-tabs for model builder features
             subtab1, subtab2 = st.tabs(["🤖 Model Builder", "📊 Historic Data"])
@@ -1025,7 +1024,12 @@ class UltraPremiumDashboard:
     def render_dev_blog_section(self):
         """Render dev blog interface"""
         try:
-            from dev_blog_system import DevBlogSystem
+            # Fix: Lazy import to prevent circular dependencies
+            import sys
+            if 'dev_blog_system' not in sys.modules:
+                from dev_blog_system import DevBlogSystem
+            else:
+                DevBlogSystem = sys.modules['dev_blog_system'].DevBlogSystem
             
             blog_system = DevBlogSystem()
             blog_system.render_dev_blog_interface()
