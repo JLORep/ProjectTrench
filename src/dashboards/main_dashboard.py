@@ -545,30 +545,79 @@ class CryptoDashboard:
         return fig
     
     def _get_recent_signals(self) -> List[Dict]:
-        """Get recent trading signals"""
-        # Mock data for demonstration
+        """Get recent trading signals from live database"""
+        try:
+            from src.data.database import CoinDatabase
+            db = CoinDatabase()
+            signals = db.get_telegram_signals(limit=10, min_confidence=0.6)
+            
+            # Convert database signals to dashboard format
+            formatted_signals = []
+            for signal in signals:
+                formatted_signal = {
+                    'symbol': signal.get('coin_symbol', 'UNKNOWN'),
+                    'signal_type': signal.get('signal_type', 'UNKNOWN').upper(),
+                    'confidence': signal.get('confidence', 0),
+                    'entry_price': signal.get('entry_price', 0),
+                    'timestamp': signal.get('timestamp', 'Unknown'),
+                    'source': f"Telegram: {signal.get('channel_name', 'Unknown')}"
+                }
+                formatted_signals.append(formatted_signal)
+            
+            if formatted_signals:
+                return formatted_signals
+            
+        except Exception as e:
+            # Log error but don't crash - fall back to demo data
+            print(f"Warning: Could not load live signals: {e}")
+        
+        # Fallback to demo data if no live signals available
         return [
             {
                 'symbol': 'SOL',
                 'signal_type': 'BUY',
                 'confidence': 0.75,
                 'entry_price': 119.50,
-                'timestamp': '2024-01-31 10:30:00',
-                'source': 'Momentum Strategy'
+                'timestamp': '2025-01-31 10:30:00',
+                'source': 'Demo: Momentum Strategy'
             },
             {
                 'symbol': 'AVAX',
                 'signal_type': 'SELL',
                 'confidence': 0.82,
                 'entry_price': 35.20,
-                'timestamp': '2024-01-31 09:45:00',
-                'source': 'RSI Overbought'
+                'timestamp': '2025-01-31 09:45:00',
+                'source': 'Demo: RSI Overbought'
             }
         ]
     
     def _get_signal_stats(self) -> Dict:
-        """Get signal statistics"""
-        # Mock data for demonstration
+        """Get signal statistics from live database"""
+        try:
+            from src.data.database import CoinDatabase
+            db = CoinDatabase()
+            signals = db.get_telegram_signals(limit=100)  # Get more signals for stats
+            
+            if signals:
+                total = len(signals)
+                buy_signals = len([s for s in signals if s.get('signal_type', '').upper() == 'BUY'])
+                sell_signals = len([s for s in signals if s.get('signal_type', '').upper() == 'SELL'])
+                avg_confidence = sum(s.get('confidence', 0) for s in signals) / total if total > 0 else 0
+                
+                return {
+                    'total': total,
+                    'buy': buy_signals,
+                    'sell': sell_signals,
+                    'buy_pct': (buy_signals / total * 100) if total > 0 else 0,
+                    'sell_pct': (sell_signals / total * 100) if total > 0 else 0,
+                    'avg_confidence': avg_confidence
+                }
+                
+        except Exception as e:
+            # Log error but don't crash - fall back to demo data
+            print(f"Warning: Could not load signal stats: {e}")
+        
+        # Fallback to demo data
         return {
             'total': 45,
             'buy': 28,
