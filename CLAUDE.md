@@ -38,11 +38,17 @@
 ## Existing Data Pipeline Components (IMPORTANT - USE THESE)
 ### Database & Enrichment Infrastructure
 - `src/data/database.py` - Full SQLite database with coins, price_data, telegram_signals, indicators tables
+  - **NEW**: Added `get_telegram_signals()` method for retrieving live signal data
+  - Database Structure: message_id, channel_name, timestamp, coin_symbol, signal_type, confidence, etc.
 - `src/data/master_enricher.py` - Complete enrichment orchestrator with progress tracking, rate limiting
 - `src/data/comprehensive_enricher.py` - Multi-API data enrichment system
 - `telegram_enrichment_pipeline.py` - Full Telegram parsing with regex patterns, confidence scoring
 - `live_coin_data.py` - **NEW** Live database connector with 1733 coins from trench.db (FULLY OPERATIONAL)
 - `data/trench.db` - **PRODUCTION DATABASE** (1733 coins with ticker, ca, discovery_price, axiom_price, etc.)
+- **Database Analysis**: Multiple databases with telegram_signals tables:
+  - `data/coins.db` - Has telegram_signals table (0 records)
+  - `trenchcoat_historic.db` - Has telegram_signals table (0 records)
+  - Production signal data needs population from live monitoring
 - **Database Validation**: coins.db confirmed as early prototype artifact - removed from connector
 - **Optimized**: LiveCoinDataConnector now focuses solely on production trench.db data
 
@@ -52,6 +58,24 @@
 - `webhook_config.json` - Discord webhooks configured for multiple channels
 - Email config: support@trenchcoat.pro / TrenchF00t
 - Telegram bot: 8479347588:AAH27CeFD3iiyQM7l6YKk9bMlQznlCLAhxo
+
+### Telegram Signal Infrastructure (COMPREHENSIVE)
+- `src/telegram/signal_monitor.py` - Core telegram signal monitoring with pattern matching
+- `src/telegram/telegram_monitor.py` - Advanced SignalPattern class with sophisticated regex patterns
+  - BUY_PATTERNS: Detects buy signals, entry points, gem alerts, moonshot mentions
+  - SELL_PATTERNS: Detects sell signals, take profit, exit positions
+  - CONTRACT_PATTERNS: Extracts contract addresses from messages
+- `live_data_integration.py` - LiveDataManager with telegram signal processing
+  - `process_telegram_signals()` method for enrichment pipeline integration
+  - `simulate_telegram_signals()` for testing purposes
+  - Session state management for telegram_signals
+- **Signal Data Structure**: CoinSignal dataclass with ticker, contract_address, signal_type, confidence, reasoning, channel metadata
+- **Existing Dashboard Integration**:
+  - `src/dashboards/main_dashboard.py` - Has working signal display with CSS styling
+  - Signal card layout with color coding for BUY/SELL/HOLD
+  - `_get_recent_signals()` method (currently mock data - needs live connection)
+  - `ultra_premium_dashboard.py` - Shows telegram source icons (📡) but NO dedicated signal display
+- **Implementation Status**: Infrastructure exists but needs connection between database and dashboard display
 
 ### API Integration
 - `src/data/free_api_providers.py` - Free API providers (DexScreener, CoinGecko, Jupiter, etc.)
