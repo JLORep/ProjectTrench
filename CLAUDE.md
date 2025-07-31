@@ -70,14 +70,15 @@
 - Email config: support@trenchcoat.pro / TrenchF00t
 - Telegram bot: 8479347588:AAH27CeFD3iiyQM7l6YKk9bMlQznlCLAhxo
 
-### Dev Blog & Update System (ACTIVE)
+### Dev Blog & Update System (ACTIVE - FULLY AUTOMATED)
 - `dev_blog_system.py` - Complete development blog with Discord integration
   - DevBlogSystem class with SQLite storage (trenchcoat_devblog.db)
   - Dual messaging: technical and non-technical summaries
   - Auto Discord notifications via webhooks
   - Integration with AutoOverviewUpdater for feature tracking
-- `send_dev_update.py` - Quick script to send dev updates
-  - Fetches recent git commits
+- `send_dev_update.py` - **AUTO-TRIGGERED** on significant commits
+  - Dynamic analysis of recent changes
+  - Categorizes features vs fixes from commit messages
   - Sends formatted updates to Discord dev-blog channel
   - Updates project overview automatically
   - Updates CLAUDE.md timestamp
@@ -86,7 +87,11 @@
   - Sends updates to Discord overview channel
   - Version management (major/minor/patch)
   - Feature state persistence in feature_state.json
-- **Usage**: Run `python send_dev_update.py` after significant commits
+- **Automation**: Dev updates automatically sent via `complete_async_deploy.py`
+  - Triggers on commits with keywords: major, feature, fix, integrate, add, implement, etc.
+  - Skips on: wip, temp, minor, typo, comment
+  - Runs after successful deployment (Step 4 in pipeline)
+- **Manual Usage**: Run `python send_dev_update.py` for immediate updates
 
 ### Telegram Signal Infrastructure (COMPREHENSIVE)
 - `src/telegram/signal_monitor.py` - Core telegram signal monitoring with pattern matching
@@ -328,4 +333,4 @@ This will:
 - Maintain context via this file for future sessions
 
 ---
-*Last updated: 2025-07-31 23:15 - Solana wallet integration complete, dev blog system activated, Discord updates sent*
+*Last updated: 2025-08-01 00:24 - Solana wallet integration complete, dev blog triggered*
