@@ -640,24 +640,34 @@ class StreamlitSafeDashboard:
                 coins = streamlit_db.get_all_coins()
                 df = pd.DataFrame(coins)
                 
-                # Sort by selected metric
-                if metric_choice == "Smart Wallets":
+                # Sort by selected metric - ensure columns exist
+                if metric_choice == "Smart Wallets" and 'smart_wallets' in df.columns:
                     df = df.nlargest(10, 'smart_wallets')
                     display_col = 'smart_wallets'
                     format_str = '{:.0f} wallets'
-                elif metric_choice == "Liquidity":
+                elif metric_choice == "Liquidity" and 'liquidity' in df.columns:
                     df = df.nlargest(10, 'liquidity')
                     display_col = 'liquidity'
                     format_str = '${:,.0f}'
-                elif metric_choice == "Volume":
+                elif metric_choice == "Volume" and 'axiom_volume' in df.columns:
                     df = df.nlargest(10, 'axiom_volume')
                     display_col = 'axiom_volume'
                     format_str = '${:,.0f}'
                 else:  # Price Change
-                    df['price_change'] = ((df['axiom_price'] - df['discovery_price']) / df['discovery_price'] * 100).fillna(0)
-                    df = df.nlargest(10, 'price_change')
-                    display_col = 'price_change'
-                    format_str = '{:.1f}%'
+                    if 'axiom_price' in df.columns and 'discovery_price' in df.columns:
+                        df['price_change'] = ((df['axiom_price'] - df['discovery_price']) / df['discovery_price'] * 100).fillna(0)
+                        df = df.nlargest(10, 'price_change')
+                        display_col = 'price_change'
+                        format_str = '{:.1f}%'
+                    else:
+                        # Fallback to smart wallets if available
+                        if 'smart_wallets' in df.columns:
+                            df = df.nlargest(10, 'smart_wallets')
+                            display_col = 'smart_wallets'
+                            format_str = '{:.0f} wallets'
+                        else:
+                            st.error("No suitable data columns found")
+                            return
                 
                 # Display top coins
                 for idx, row in df.iterrows():
@@ -711,46 +721,64 @@ class StreamlitSafeDashboard:
                 coins = streamlit_db.get_all_coins()
                 df = pd.DataFrame(coins)
                 
+                if df.empty:
+                    st.warning("No coin data available")
+                    return
+                
+                # Debug: show available columns
+                # st.write(f"Available columns: {list(df.columns)}")
+                
                 # Smart wallet distribution
-                fig1 = go.Figure()
-                fig1.add_trace(go.Histogram(
-                    x=df['smart_wallets'],
-                    nbinsx=30,
-                    marker_color='rgba(16, 185, 129, 0.7)',
-                    name='Smart Wallets'
-                ))
-                fig1.update_layout(
-                    title="Smart Wallet Distribution",
-                    xaxis_title="Number of Smart Wallets",
-                    yaxis_title="Number of Coins",
-                    template="plotly_dark",
-                    height=250,
-                    margin=dict(t=40, b=40, l=40, r=40),
-                    showlegend=False
-                )
-                st.plotly_chart(fig1, use_container_width=True)
+                if 'smart_wallets' in df.columns:
+                    fig1 = go.Figure()
+                    smart_wallet_data = pd.to_numeric(df['smart_wallets'], errors='coerce').fillna(0)
+                    fig1.add_trace(go.Histogram(
+                        x=smart_wallet_data,
+                        nbinsx=30,
+                        marker_color='rgba(16, 185, 129, 0.7)',
+                        name='Smart Wallets'
+                    ))
+                    fig1.update_layout(
+                        title="Smart Wallet Distribution",
+                        xaxis_title="Number of Smart Wallets",
+                        yaxis_title="Number of Coins",
+                        template="plotly_dark",
+                        height=250,
+                        margin=dict(t=40, b=40, l=40, r=40),
+                        showlegend=False
+                    )
+                    st.plotly_chart(fig1, use_container_width=True)
                 
                 # Liquidity distribution (log scale)
-                fig2 = go.Figure()
-                fig2.add_trace(go.Histogram(
-                    x=np.log10(df['liquidity'].replace(0, 1)),
-                    nbinsx=30,
-                    marker_color='rgba(59, 130, 246, 0.7)',
-                    name='Liquidity'
-                ))
-                fig2.update_layout(
-                    title="Liquidity Distribution (Log Scale)",
-                    xaxis_title="Log10(Liquidity USD)",
-                    yaxis_title="Number of Coins",
-                    template="plotly_dark",
-                    height=250,
-                    margin=dict(t=40, b=40, l=40, r=40),
-                    showlegend=False
-                )
-                st.plotly_chart(fig2, use_container_width=True)
+                if 'liquidity' in df.columns:
+                    fig2 = go.Figure()
+                    liquidity_data = pd.to_numeric(df['liquidity'], errors='coerce').fillna(1)
+                    # Replace 0 with 1 for log scale, filter out negative values
+                    liquidity_data = liquidity_data.replace(0, 1)
+                    liquidity_data = liquidity_data[liquidity_data > 0]
+                    
+                    fig2.add_trace(go.Histogram(
+                        x=np.log10(liquidity_data),
+                        nbinsx=30,
+                        marker_color='rgba(59, 130, 246, 0.7)',
+                        name='Liquidity'
+                    ))
+                    fig2.update_layout(
+                        title="Liquidity Distribution (Log Scale)",
+                        xaxis_title="Log10(Liquidity USD)",
+                        yaxis_title="Number of Coins",
+                        template="plotly_dark",
+                        height=250,
+                        margin=dict(t=40, b=40, l=40, r=40),
+                        showlegend=False
+                    )
+                    st.plotly_chart(fig2, use_container_width=True)
                 
             except Exception as e:
                 st.error(f"Error creating distributions: {e}")
+                # Show detailed error for debugging
+                import traceback
+                st.code(traceback.format_exc())
         else:
             # Demo charts
             fig = go.Figure()
@@ -788,23 +816,42 @@ class StreamlitSafeDashboard:
                 coins = streamlit_db.get_all_coins()
                 df = pd.DataFrame(coins)
                 
+                # Convert numeric columns to ensure proper filtering
+                if 'smart_wallets' in df.columns:
+                    df['smart_wallets'] = pd.to_numeric(df['smart_wallets'], errors='coerce').fillna(0)
+                if 'liquidity' in df.columns:
+                    df['liquidity'] = pd.to_numeric(df['liquidity'], errors='coerce').fillna(0)
+                if 'axiom_volume' in df.columns:
+                    df['axiom_volume'] = pd.to_numeric(df['axiom_volume'], errors='coerce').fillna(0)
+                if 'axiom_price' in df.columns:
+                    df['axiom_price'] = pd.to_numeric(df['axiom_price'], errors='coerce').fillna(0)
+                if 'discovery_price' in df.columns:
+                    df['discovery_price'] = pd.to_numeric(df['discovery_price'], errors='coerce').fillna(0)
+                
                 # Apply filters
                 if search_term:
-                    mask = (df['ticker'].str.contains(search_term, case=False, na=False) | 
-                           df['ca'].str.contains(search_term, case=False, na=False))
-                    df = df[mask]
+                    if 'ticker' in df.columns and 'ca' in df.columns:
+                        mask = (df['ticker'].astype(str).str.contains(search_term, case=False, na=False) | 
+                               df['ca'].astype(str).str.contains(search_term, case=False, na=False))
+                        df = df[mask]
                 
-                df = df[df['smart_wallets'] >= min_wallets]
-                df = df[df['liquidity'] >= min_liquidity]
+                if 'smart_wallets' in df.columns:
+                    df = df[df['smart_wallets'] >= min_wallets]
+                if 'liquidity' in df.columns:
+                    df = df[df['liquidity'] >= min_liquidity]
                 
                 # Calculate additional metrics
-                df['price_change_%'] = ((df['axiom_price'] - df['discovery_price']) / df['discovery_price'] * 100).fillna(0)
+                if 'axiom_price' in df.columns and 'discovery_price' in df.columns:
+                    df['price_change_%'] = ((df['axiom_price'] - df['discovery_price']) / df['discovery_price'] * 100).fillna(0)
                 
-                # Select and rename columns for display
-                display_df = df[[
-                    'ticker', 'ca', 'smart_wallets', 'liquidity', 
-                    'axiom_volume', 'discovery_price', 'axiom_price', 'price_change_%'
-                ]].rename(columns={
+                # Select available columns for display
+                available_cols = ['ticker', 'ca', 'smart_wallets', 'liquidity', 'axiom_volume', 'discovery_price', 'axiom_price']
+                display_cols = [col for col in available_cols if col in df.columns]
+                
+                if 'price_change_%' in df.columns:
+                    display_cols.append('price_change_%')
+                
+                display_df = df[display_cols].rename(columns={
                     'ticker': 'Ticker',
                     'ca': 'Contract Address',
                     'smart_wallets': 'Smart Wallets',
