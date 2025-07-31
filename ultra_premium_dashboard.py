@@ -167,6 +167,28 @@ def apply_custom_css():
         0% { background-color: rgba(16, 185, 129, 0.3); }
         100% { background-color: transparent; }
     }
+    
+    /* Telegram Signal Cards */
+    .signal-card {
+        background: rgba(45, 45, 45, 0.8);
+        padding: 20px;
+        border-radius: 15px;
+        margin: 15px 0;
+        border-left: 4px solid #4CAF50;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .signal-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .signal-buy { border-left-color: #4CAF50; }
+    .signal-sell { border-left-color: #f44336; }
+    .signal-hold { border-left-color: #ff9800; }
 </style>
     """, unsafe_allow_html=True)
 
@@ -273,7 +295,7 @@ class UltraPremiumDashboard:
         self.render_key_metrics()
         
         # Create tabs for different views
-        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📝 Dev Blog", "🗄️ Datasets"])
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📡 Telegram Signals", "📝 Dev Blog", "🗄️ Datasets"])
         
         with tab1:
             # Main content columns
@@ -304,10 +326,14 @@ class UltraPremiumDashboard:
             self.render_trading_engine_config()
         
         with tab5:
+            # Telegram Signals System
+            self.render_telegram_signals_section()
+        
+        with tab6:
             # Dev Blog System
             self.render_dev_blog_section()
         
-        with tab6:
+        with tab7:
             # Datasets System
             self.render_datasets_section()
     
@@ -1104,6 +1130,122 @@ class UltraPremiumDashboard:
             
         except ImportError:
             st.error("Master enricher not available")
+    
+    def render_telegram_signals_section(self):
+        """Render live telegram signals monitoring"""
+        st.markdown("""
+        <div style='text-align: center; padding: 2rem; margin-bottom: 2rem;
+                    background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(46, 125, 50, 0.1) 100%);
+                    border-radius: 15px; border: 1px solid rgba(76, 175, 80, 0.3);'>
+            <h1 style='color: #4caf50; margin: 0; font-size: 2.5rem; font-weight: 700;'>
+                📡 Telegram Signals
+            </h1>
+            <p style='color: #a3a3a3; margin-top: 0.5rem; font-size: 1.2rem;'>
+                Live Trading Signals from Telegram Channels
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Get live telegram signals from database
+        try:
+            from src.data.database import CoinDatabase
+            db = CoinDatabase()
+            signals = db.get_telegram_signals(limit=20, min_confidence=0.5)
+            
+            if signals:
+                # Main layout with signals and stats
+                col1, col2 = st.columns([2, 1])
+                
+                with col1:
+                    st.subheader("📋 Recent Signals")
+                    
+                    for signal in signals:
+                        signal_type = signal.get('signal_type', 'UNKNOWN').upper()
+                        signal_color = {
+                            'BUY': '#4CAF50',
+                            'SELL': '#f44336', 
+                            'HOLD': '#ff9800',
+                            'ALERT': '#2196f3'
+                        }.get(signal_type, '#9e9e9e')
+                        
+                        confidence = signal.get('confidence', 0)
+                        entry_price = signal.get('entry_price', 0)
+                        timestamp = signal.get('timestamp', 'Unknown')
+                        channel_name = signal.get('channel_name', 'Unknown')
+                        coin_symbol = signal.get('coin_symbol', 'UNKNOWN')
+                        
+                        st.markdown(f"""
+                        <div class="signal-card" style="border-left-color: {signal_color}">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <h4>📡 {coin_symbol} - {signal_type}</h4>
+                                    <p><strong>Confidence:</strong> {confidence:.1%}</p>
+                                    <p><strong>Entry:</strong> ${entry_price:.6f}</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <p><strong>Time:</strong> {timestamp}</p>
+                                    <p><strong>Channel:</strong> {channel_name}</p>
+                                </div>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                with col2:
+                    st.subheader("📊 Signal Statistics")
+                    
+                    # Calculate statistics
+                    total_signals = len(signals)
+                    buy_signals = len([s for s in signals if s.get('signal_type', '').upper() == 'BUY'])
+                    sell_signals = len([s for s in signals if s.get('signal_type', '').upper() == 'SELL'])
+                    avg_confidence = sum(s.get('confidence', 0) for s in signals) / total_signals if total_signals > 0 else 0
+                    
+                    st.metric("Total Signals", total_signals)
+                    st.metric("Buy Signals", buy_signals, f"{(buy_signals/total_signals*100):.1f}%" if total_signals > 0 else "0%")
+                    st.metric("Sell Signals", sell_signals, f"{(sell_signals/total_signals*100):.1f}%" if total_signals > 0 else "0%")
+                    st.metric("Avg Confidence", f"{avg_confidence:.1%}")
+                    
+                    # Channel breakdown
+                    st.subheader("📻 Channel Activity")
+                    channels = {}
+                    for signal in signals:
+                        channel = signal.get('channel_name', 'Unknown')
+                        channels[channel] = channels.get(channel, 0) + 1
+                    
+                    for channel, count in channels.items():
+                        st.write(f"**{channel}:** {count} signals")
+            
+            else:
+                st.warning("📡 No telegram signals found in database. Check signal monitoring status.")
+                st.info("""
+                **To start receiving signals:**
+                1. Ensure telegram monitoring is active
+                2. Check database connections
+                3. Verify channel access permissions
+                """)
+        
+        except Exception as e:
+            st.error(f"❌ Error loading telegram signals: {e}")
+            st.info("Using telegram signal simulation for development...")
+            
+            # Fallback to simulated signals for development
+            demo_signals = [
+                {'coin_symbol': 'SOL', 'signal_type': 'BUY', 'confidence': 0.85, 'entry_price': 119.50, 'timestamp': '2025-01-31 10:30:00', 'channel_name': 'CryptoGems'},
+                {'coin_symbol': 'AVAX', 'signal_type': 'SELL', 'confidence': 0.75, 'entry_price': 35.20, 'timestamp': '2025-01-31 09:45:00', 'channel_name': 'MoonShots'},
+                {'coin_symbol': 'NEAR', 'signal_type': 'BUY', 'confidence': 0.92, 'entry_price': 8.45, 'timestamp': '2025-01-31 08:15:00', 'channel_name': 'ATM.Day'}
+            ]
+            
+            for signal in demo_signals:
+                signal_type = signal['signal_type']
+                signal_color = {'BUY': '#4CAF50', 'SELL': '#f44336'}.get(signal_type, '#9e9e9e')
+                
+                st.markdown(f"""
+                <div class="signal-card" style="border-left-color: {signal_color}">
+                    <h4>📡 {signal['coin_symbol']} - {signal_type} (DEMO)</h4>
+                    <p><strong>Confidence:</strong> {signal['confidence']:.1%}</p>
+                    <p><strong>Entry:</strong> ${signal['entry_price']:.6f}</p>
+                    <p><strong>Channel:</strong> {signal['channel_name']}</p>
+                </div>
+                """, unsafe_allow_html=True)
     
     def render_database_status(self):
         """Render current database status"""
