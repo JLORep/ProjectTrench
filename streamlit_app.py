@@ -418,6 +418,32 @@ st.markdown("""
     ::-webkit-scrollbar-thumb:hover {
         background: linear-gradient(135deg, #059669 0%, #047857 100%);
     }
+    
+    /* Fix dataframe flickering and resize bars */
+    .stDataFrame {
+        width: 100% !important;
+        max-width: 1200px !important;
+    }
+    
+    .stDataFrame > div {
+        overflow: hidden !important;
+    }
+    
+    .stDataFrame table {
+        width: 100% !important;
+        table-layout: fixed !important;
+    }
+    
+    /* Hide resize handles */
+    .resize-triggers, .contract-trigger, .expand-trigger {
+        display: none !important;
+    }
+    
+    /* Prevent column resizing */
+    thead th {
+        resize: none !important;
+        user-select: none !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -486,7 +512,8 @@ with tab1:
     </div>
     """, unsafe_allow_html=True)
     
-    st.dataframe(df_signals, use_container_width=True)
+    # Fixed width dataframe to prevent flickering
+    st.dataframe(df_signals, width=1200, height=250)
     
     # Premium Performance Chart
     st.markdown("""
