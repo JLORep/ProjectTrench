@@ -114,8 +114,11 @@
 
 ## Current Development Status
 - **Production Ready**: All core features implemented
+- **Datasets Tab**: LIVE with full pipeline (Fresh DB → Telegram → Enrichment → Discord)
+- **Dev Blog System**: Enhanced with AutoOverviewUpdater integration
 - **Demo Mode**: Safe testing environment active
 - **Multi-Platform Deployment**: Streamlit Cloud + Azure ready
+- **Recent Deployments**: 4928ea7 (context updates), 701b0a5 (dev blog improvements), 4ed25cc (datasets feature)
 
 ## Next Steps
 - Monitor system stability (CPU voltage issues)

@@ -282,8 +282,8 @@ Updates are live at [TrenchCoat Pro]({self.streamlit_url}).
             if result.stdout.strip():
                 print("[SYNC] Found uncommitted changes, staging them...")
                 
-                # Add all changes
-                subprocess.run(["git", "add", "."], check=True)
+                # Add only tracked files to avoid untracked file issues
+                subprocess.run(["git", "add", "-u"], check=True)
                 
                 # Commit with auto-generated message
                 commit_msg = f"Auto-sync deployment changes - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
