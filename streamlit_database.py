@@ -14,6 +14,48 @@ class StreamlitDatabase:
     def __init__(self):
         self.trench_db_path = "data/trench.db"
         
+    def get_all_coins(self) -> List[Dict[str, Any]]:
+        """Get ALL coins from trench.db for analytics"""
+        try:
+            if not os.path.exists(self.trench_db_path):
+                return []
+            
+            conn = sqlite3.connect(self.trench_db_path)
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            
+            cursor.execute("""
+                SELECT ticker, ca, discovery_price, axiom_price, axiom_mc, axiom_volume, 
+                       liquidity, peak_volume, smart_wallets, discovery_time
+                FROM coins
+            """)
+            
+            rows = cursor.fetchall()
+            conn.close()
+            
+            # Convert to dict format
+            coins = []
+            for row in rows:
+                coin = {
+                    'ticker': row['ticker'] if row['ticker'] else 'UNKNOWN',
+                    'ca': row['ca'] if row['ca'] else '',
+                    'discovery_price': row['discovery_price'] if row['discovery_price'] else 0,
+                    'axiom_price': row['axiom_price'] if row['axiom_price'] else 0,
+                    'axiom_mc': row['axiom_mc'] if row['axiom_mc'] else 0,
+                    'axiom_volume': row['axiom_volume'] if row['axiom_volume'] else 0,
+                    'liquidity': row['liquidity'] if row['liquidity'] else 0,
+                    'peak_volume': row['peak_volume'] if row['peak_volume'] else 0,
+                    'smart_wallets': row['smart_wallets'] if row['smart_wallets'] else 0,
+                    'discovery_time': row['discovery_time'] if row['discovery_time'] else ''
+                }
+                coins.append(coin)
+            
+            return coins
+            
+        except Exception as e:
+            print(f"Error getting all coins: {e}")
+            return []
+    
     def get_live_coins(self, limit: int = 20) -> List[Dict[str, Any]]:
         """Get live coins from trench.db (1733 real coins)"""
         try:
