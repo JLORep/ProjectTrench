@@ -73,6 +73,39 @@
 - `streamlit run app.py` - Alternative entry point
 - `python app.py` - Test basic functionality
 
+## CRITICAL DEPLOYMENT WORKFLOW (ALWAYS FOLLOW)
+**MANDATORY: For ANY new feature or bug fix, ALWAYS follow this exact sequence:**
+
+1. **Local Commit & Test**
+   ```bash
+   git add [files]
+   git commit -m "Feature/Fix: [description]"
+   # Test locally first
+   ```
+
+2. **GitHub Push (UAT Streamlit)**
+   ```bash
+   git push origin main
+   # This deploys to UAT Streamlit environment for testing
+   ```
+
+3. **Discord Notification**
+   - Send webhook notification to appropriate Discord channel
+   - Use existing webhook URLs from `webhook_config.json`
+   - Include feature/fix details and deployment status
+
+4. **Update CLAUDE.md**
+   - Document new features/components added
+   - Update context for future Claude sessions
+   - Add any new file paths or important changes
+
+**Available Discord Webhooks:**
+- Coin Data: https://discord.com/api/webhooks/1400573697642860639/ytKTM9Ww4oMOHqLbX3rT-NtYPffFQUuOsy_pD5oQuI0V4hYZ9IhAdUSsR2GihQxWsRRG
+- Dev Blog: 1400491407550058610/Q59NIxt5lSvFgpwckXOv_P9TF8uWjudOTJxEw5hZ3fL61D-gSwrpIb110UiG4Z1f7
+- Overview: 1400497302241677383/Im9oyVehkH6zhsc5w4mt4KHQvgSR2qfMPD-k6lTR-X0XQWT3eLV_IJM2-MqQNM6dPAzM
+
+**Auto-Deploy System:** `enhanced_auto_deploy.py` runs automatically on commits
+
 ## Documentation Available
 - 42 markdown files covering setup, deployment, integrations
 - QUICK_SETUP_GUIDE.md, MISSION_STATEMENT.md, PROGRESS_LOG.md
