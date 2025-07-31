@@ -1,0 +1,2 @@
+Test file for auto-deployment hook
+This should trigger deployment via the improved hook
