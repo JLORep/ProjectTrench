@@ -96,12 +96,12 @@ def main():
     """Main hook execution"""
     try:
         # Get commit info
-        result = subprocess.run(
+        git_result = subprocess.run(
             ['git', 'log', '-1', '--pretty=format:%h|%s'],
             capture_output=True, text=True, check=True, timeout=5
         )
         
-        commit_hash, commit_msg = result.stdout.split('|', 1)
+        commit_hash, commit_msg = git_result.stdout.split('|', 1)
         
         # Check if should deploy
         if should_deploy(commit_msg):
