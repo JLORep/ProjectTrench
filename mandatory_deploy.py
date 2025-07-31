@@ -8,6 +8,7 @@ import sys
 import os
 from datetime import datetime
 from enhanced_auto_deploy import EnhancedAutoDeployer
+from unicode_handler import safe_print, safe_format
 
 class MandatoryDeploymentEnforcer:
     """Enforces mandatory deployment for every change"""
@@ -32,7 +33,7 @@ class MandatoryDeploymentEnforcer:
                 print("[MANDATORY] Changed files:")
                 for line in result.stdout.strip().split('\n'):
                     if line.strip():
-                        print(f"   {line}")
+                        safe_print(f"   {line}")
                 
                 return True
             else:
@@ -66,7 +67,7 @@ class MandatoryDeploymentEnforcer:
                 print("[MANDATORY] Unpushed commits:")
                 for line in result.stdout.strip().split('\n'):
                     if line.strip():
-                        print(f"   {line}")
+                        safe_print(f"   {line}")
                 
                 return True
             else:
@@ -110,10 +111,10 @@ class MandatoryDeploymentEnforcer:
     
     def enforce_mandatory_deployment(self) -> bool:
         """Main enforcement method - ALWAYS deploy if needed"""
-        print("=" * 70)
-        print("MANDATORY DEPLOYMENT ENFORCER")
-        print("EVERY CHANGE MUST BE DEPLOYED - NO EXCEPTIONS")
-        print("=" * 70)
+        safe_print("=" * 70)
+        safe_print("🚨 MANDATORY DEPLOYMENT ENFORCER 🚨")
+        safe_print("EVERY CHANGE MUST BE DEPLOYED - NO EXCEPTIONS")
+        safe_print("=" * 70)
         
         needs_deployment = False
         
