@@ -1,17 +1,15 @@
+[global]
+developmentMode = false
+
 [server]
+runOnSave = true
 port = 8501
-address = "0.0.0.0"
-headless = true
-enableCORS = false
-enableXsrfProtection = true
 
 [browser]
 gatherUsageStats = false
-serverAddress = "0.0.0.0"
 
 [theme]
-base = "dark"
 primaryColor = "#10b981"
-backgroundColor = "#111827"
-secondaryBackgroundColor = "#1f2937"
-textColor = "#f9fafb"
+backgroundColor = "#0f0f0f"
+secondaryBackgroundColor = "#1a1a1a"
+textColor = "#ffffff"

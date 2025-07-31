@@ -171,7 +171,7 @@ class StreamlitSafeDashboard:
         self.render_key_metrics()
         
         # Create tabs for different views
-        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📡 Telegram Signals", "📝 Dev Blog", "🗄️ Datasets"])
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📡 Telegram Signals", "📝 Dev Blog", "💎 Solana Wallet"])
         
         with tab1:
             # Main content columns
@@ -207,8 +207,13 @@ class StreamlitSafeDashboard:
             st.info("Development blog features coming soon!")
         
         with tab7:
-            st.markdown("### 🗄️ Datasets")
-            st.info("Dataset management features coming soon!")
+            # Solana Wallet Integration
+            try:
+                from solana_wallet_integration import render_solana_wallet_section
+                render_solana_wallet_section()
+            except ImportError:
+                st.markdown("### 💎 Solana Wallet")
+                st.info("Solana wallet integration module not available")
     
     def render_key_metrics(self):
         """Render key performance metrics using live data"""
