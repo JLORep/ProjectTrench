@@ -626,91 +626,135 @@ class StreamlitSafeDashboard:
                 st.metric("📈 Total Volume", "$127.9M", "24h volume")
     
     def render_top_coins_analysis(self):
-        """Render top coins by various metrics"""
+        """Render top coins focusing on percentage gains and actual DB columns"""
         st.subheader("🏆 Top Performing Coins")
         
         metric_choice = st.selectbox(
             "Sort by:",
-            ["Smart Wallets", "Liquidity", "Volume", "Price Change"],
+            ["💰 Price Gain %", "🧠 Smart Wallets", "💧 Liquidity", "📊 Peak Volume", "📈 Market Cap"],
             key="coin_metric_sort"
         )
         
         if database_available and streamlit_db:
             try:
                 coins = streamlit_db.get_all_coins()
+                if not coins:
+                    st.warning("No coin data available")
+                    return
+                    
                 df = pd.DataFrame(coins)
                 
-                # Sort by selected metric - ensure columns exist
-                if metric_choice == "Smart Wallets" and 'smart_wallets' in df.columns:
+                # Convert numeric columns
+                numeric_cols = ['discovery_price', 'axiom_price', 'discovery_mc', 'axiom_mc', 
+                               'liquidity', 'peak_volume', 'smart_wallets', 'axiom_volume']
+                for col in numeric_cols:
+                    if col in df.columns:
+                        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+                
+                # Calculate percentage gains
+                df['price_gain_%'] = 0
+                df['mc_gain_%'] = 0
+                
+                # Price gain calculation
+                if 'axiom_price' in df.columns and 'discovery_price' in df.columns:
+                    mask = (df['discovery_price'] > 0) & (df['axiom_price'] > 0)
+                    df.loc[mask, 'price_gain_%'] = ((df.loc[mask, 'axiom_price'] - df.loc[mask, 'discovery_price']) / df.loc[mask, 'discovery_price'] * 100)
+                
+                # Market cap gain calculation
+                if 'axiom_mc' in df.columns and 'discovery_mc' in df.columns:
+                    mask = (df['discovery_mc'] > 0) & (df['axiom_mc'] > 0)
+                    df.loc[mask, 'mc_gain_%'] = ((df.loc[mask, 'axiom_mc'] - df.loc[mask, 'discovery_mc']) / df.loc[mask, 'discovery_mc'] * 100)
+                
+                # Sort by selected metric
+                if metric_choice == "💰 Price Gain %":
+                    df = df.nlargest(10, 'price_gain_%')
+                    display_col = 'price_gain_%'
+                    format_str = '{:.1f}%'
+                    show_arrow = True
+                elif metric_choice == "🧠 Smart Wallets":
                     df = df.nlargest(10, 'smart_wallets')
                     display_col = 'smart_wallets'
                     format_str = '{:.0f} wallets'
-                elif metric_choice == "Liquidity" and 'liquidity' in df.columns:
+                    show_arrow = False
+                elif metric_choice == "💧 Liquidity":
                     df = df.nlargest(10, 'liquidity')
                     display_col = 'liquidity'
                     format_str = '${:,.0f}'
-                elif metric_choice == "Volume" and 'axiom_volume' in df.columns:
-                    df = df.nlargest(10, 'axiom_volume')
-                    display_col = 'axiom_volume'
+                    show_arrow = False
+                elif metric_choice == "📊 Peak Volume":
+                    df = df.nlargest(10, 'peak_volume')
+                    display_col = 'peak_volume'
                     format_str = '${:,.0f}'
-                else:  # Price Change
-                    if 'axiom_price' in df.columns and 'discovery_price' in df.columns:
-                        df['price_change'] = ((df['axiom_price'] - df['discovery_price']) / df['discovery_price'] * 100).fillna(0)
-                        df = df.nlargest(10, 'price_change')
-                        display_col = 'price_change'
-                        format_str = '{:.1f}%'
-                    else:
-                        # Fallback to smart wallets if available
-                        if 'smart_wallets' in df.columns:
-                            df = df.nlargest(10, 'smart_wallets')
-                            display_col = 'smart_wallets'
-                            format_str = '{:.0f} wallets'
-                        else:
-                            st.error("No suitable data columns found")
-                            return
+                    show_arrow = False
+                else:  # Market Cap
+                    df = df.nlargest(10, 'axiom_mc')
+                    display_col = 'axiom_mc'
+                    format_str = '${:,.0f}'
+                    show_arrow = False
                 
                 # Display top coins
                 for idx, row in df.iterrows():
-                    col1, col2, col3 = st.columns([3, 2, 1])
-                    
-                    with col1:
-                        st.markdown(f"**{row['ticker']}**")
-                        st.caption(f"CA: {row['ca'][:8]}...{row['ca'][-6:]}")
-                    
-                    with col2:
-                        value = row[display_col]
-                        st.markdown(f"<p style='text-align: right; color: #10b981; font-weight: bold;'>{format_str.format(value)}</p>", unsafe_allow_html=True)
-                    
-                    with col3:
-                        if display_col == 'price_change':
-                            color = '#10b981' if value > 0 else '#ef4444'
-                            arrow = '↑' if value > 0 else '↓'
-                            st.markdown(f"<p style='text-align: center; color: {color}; font-size: 1.5rem;'>{arrow}</p>", unsafe_allow_html=True)
-                    
-                    st.markdown("<hr style='margin: 0.5rem 0; opacity: 0.2;'>", unsafe_allow_html=True)
+                    with st.container():
+                        col1, col2, col3, col4 = st.columns([2, 2, 1, 1])
+                        
+                        with col1:
+                            st.markdown(f"**${row['ticker']}**")
+                            st.caption(f"CA: {str(row['ca'])[:8]}...{str(row['ca'])[-6:]}")
+                        
+                        with col2:
+                            value = row[display_col]
+                            if value and value != 0:
+                                st.markdown(f"<p style='text-align: right; color: #10b981; font-weight: bold;'>{format_str.format(value)}</p>", unsafe_allow_html=True)
+                            else:
+                                st.markdown("<p style='text-align: right; color: #666;'>N/A</p>", unsafe_allow_html=True)
+                        
+                        with col3:
+                            # Show price gain if available
+                            price_gain = row.get('price_gain_%', 0)
+                            if price_gain and price_gain != 0:
+                                color = '#10b981' if price_gain > 0 else '#ef4444'
+                                st.markdown(f"<p style='text-align: center; color: {color}; font-size: 0.9rem;'>{price_gain:.1f}%</p>", unsafe_allow_html=True)
+                            else:
+                                st.markdown("<p style='text-align: center; color: #666; font-size: 0.9rem;'>-</p>", unsafe_allow_html=True)
+                        
+                        with col4:
+                            if show_arrow and value and value != 0:
+                                color = '#10b981' if value > 0 else '#ef4444'
+                                arrow = '🚀' if value > 100 else ('↑' if value > 0 else '↓')
+                                st.markdown(f"<p style='text-align: center; color: {color}; font-size: 1.2rem;'>{arrow}</p>", unsafe_allow_html=True)
+                            elif row.get('smart_wallets', 0) > 100:
+                                st.markdown("<p style='text-align: center; font-size: 1.2rem;'>🔥</p>", unsafe_allow_html=True)
+                            else:
+                                st.markdown("<p style='text-align: center; color: #666;'>-</p>", unsafe_allow_html=True)
+                        
+                        st.markdown("<hr style='margin: 0.3rem 0; opacity: 0.1;'>", unsafe_allow_html=True)
                     
             except Exception as e:
                 st.error(f"Error loading coin data: {e}")
+                import traceback
+                with st.expander("Debug Info"):
+                    st.code(traceback.format_exc())
         else:
-            # Demo data
+            # Demo data showing the new format
             demo_coins = [
-                {"ticker": "TRUMP", "value": "2,847", "change": "↑"},
-                {"ticker": "BODEN", "value": "1,923", "change": "↑"},
-                {"ticker": "PEPE", "value": "1,756", "change": "↓"},
-                {"ticker": "WIF", "value": "1,542", "change": "↑"},
-                {"ticker": "BONK", "value": "1,389", "change": "↑"},
+                {"ticker": "TRUMP", "gain": "+2,847%", "wallets": "1,234", "emoji": "🚀"},
+                {"ticker": "BODEN", "gain": "+1,923%", "wallets": "987", "emoji": "🚀"},
+                {"ticker": "PEPE", "gain": "+756%", "wallets": "2,156", "emoji": "↑"},
+                {"ticker": "WIF", "gain": "+542%", "wallets": "543", "emoji": "↑"},
+                {"ticker": "BONK", "gain": "+389%", "wallets": "1,876", "emoji": "↑"},
             ]
             
-            for coin in demo_coins[:5]:
-                col1, col2, col3 = st.columns([3, 2, 1])
+            for coin in demo_coins:
+                col1, col2, col3, col4 = st.columns([2, 2, 1, 1])
                 with col1:
-                    st.markdown(f"**{coin['ticker']}**")
+                    st.markdown(f"**${coin['ticker']}**")
                 with col2:
-                    st.markdown(f"<p style='text-align: right; color: #10b981; font-weight: bold;'>{coin['value']} wallets</p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='text-align: right; color: #10b981; font-weight: bold;'>{coin['gain']}</p>", unsafe_allow_html=True)
                 with col3:
-                    color = '#10b981' if coin['change'] == '↑' else '#ef4444'
-                    st.markdown(f"<p style='text-align: center; color: {color}; font-size: 1.5rem;'>{coin['change']}</p>", unsafe_allow_html=True)
-                st.markdown("<hr style='margin: 0.5rem 0; opacity: 0.2;'>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='text-align: center; color: #888; font-size: 0.9rem;'>{coin['wallets']}</p>", unsafe_allow_html=True)
+                with col4:
+                    st.markdown(f"<p style='text-align: center; font-size: 1.2rem;'>{coin['emoji']}</p>", unsafe_allow_html=True)
+                st.markdown("<hr style='margin: 0.3rem 0; opacity: 0.1;'>", unsafe_allow_html=True)
     
     def render_coin_distributions(self):
         """Render distribution charts for coin metrics"""
@@ -840,66 +884,91 @@ class StreamlitSafeDashboard:
                 if 'liquidity' in df.columns:
                     df = df[df['liquidity'] >= min_liquidity]
                 
-                # Calculate additional metrics
+                # Calculate price gains (percentage change from discovery to current price)
                 if 'axiom_price' in df.columns and 'discovery_price' in df.columns:
-                    df['price_change_%'] = ((df['axiom_price'] - df['discovery_price']) / df['discovery_price'] * 100).fillna(0)
+                    mask = (df['discovery_price'] > 0) & (df['axiom_price'] > 0)
+                    df['price_gain_%'] = 0  # Initialize with 0
+                    df.loc[mask, 'price_gain_%'] = ((df.loc[mask, 'axiom_price'] - df.loc[mask, 'discovery_price']) / df.loc[mask, 'discovery_price'] * 100)
+                else:
+                    df['price_gain_%'] = 0
                 
-                # Select available columns for display
-                available_cols = ['ticker', 'ca', 'smart_wallets', 'liquidity', 'axiom_volume', 'discovery_price', 'axiom_price']
+                # Select available columns for display based on actual DB schema
+                available_cols = ['ticker', 'ca', 'smart_wallets', 'liquidity', 'peak_volume', 
+                                 'discovery_price', 'axiom_price', 'axiom_mc', 'price_gain_%']
                 display_cols = [col for col in available_cols if col in df.columns]
                 
-                if 'price_change_%' in df.columns:
-                    display_cols.append('price_change_%')
+                display_df = df[display_cols].copy()
                 
-                display_df = df[display_cols].rename(columns={
+                # Rename columns for better display
+                column_renames = {
                     'ticker': 'Ticker',
                     'ca': 'Contract Address',
                     'smart_wallets': 'Smart Wallets',
                     'liquidity': 'Liquidity ($)',
-                    'axiom_volume': 'Volume ($)',
+                    'peak_volume': 'Peak Volume ($)',
                     'discovery_price': 'Discovery Price',
                     'axiom_price': 'Current Price',
-                    'price_change_%': 'Change %'
-                })
+                    'axiom_mc': 'Market Cap ($)',
+                    'price_gain_%': 'Price Gain %'
+                }
+                
+                # Only rename columns that exist
+                rename_dict = {k: v for k, v in column_renames.items() if k in display_df.columns}
+                display_df = display_df.rename(columns=rename_dict)
                 
                 # Format the dataframe
                 st.markdown(f"**Found {len(display_df)} coins matching your criteria**")
                 
                 # Display with custom formatting
+                column_config = {}
+                
+                # Only configure columns that exist
+                if "Contract Address" in display_df.columns:
+                    column_config["Contract Address"] = st.column_config.TextColumn(
+                        width="small",
+                        help="Solana contract address"
+                    )
+                if "Smart Wallets" in display_df.columns:
+                    column_config["Smart Wallets"] = st.column_config.NumberColumn(
+                        format="%d",
+                        help="Number of smart wallets holding this coin"
+                    )
+                if "Liquidity ($)" in display_df.columns:
+                    column_config["Liquidity ($)"] = st.column_config.NumberColumn(
+                        format="$%,.0f",
+                        help="Total liquidity in USD"
+                    )
+                if "Peak Volume ($)" in display_df.columns:
+                    column_config["Peak Volume ($)"] = st.column_config.NumberColumn(
+                        format="$%,.0f",
+                        help="Peak trading volume reached"
+                    )
+                if "Market Cap ($)" in display_df.columns:
+                    column_config["Market Cap ($)"] = st.column_config.NumberColumn(
+                        format="$%,.0f",
+                        help="Current market capitalization"
+                    )
+                if "Discovery Price" in display_df.columns:
+                    column_config["Discovery Price"] = st.column_config.NumberColumn(
+                        format="%.8f",
+                        help="Price when first discovered"
+                    )
+                if "Current Price" in display_df.columns:
+                    column_config["Current Price"] = st.column_config.NumberColumn(
+                        format="%.8f",
+                        help="Latest recorded price"
+                    )
+                if "Price Gain %" in display_df.columns:
+                    column_config["Price Gain %"] = st.column_config.NumberColumn(
+                        format="%.1f%%",
+                        help="Percentage gain from discovery price to current price"
+                    )
+                
                 st.dataframe(
                     display_df,
                     use_container_width=True,
                     height=400,
-                    column_config={
-                        "Contract Address": st.column_config.TextColumn(
-                            width="small",
-                            help="Solana contract address"
-                        ),
-                        "Smart Wallets": st.column_config.NumberColumn(
-                            format="%d",
-                            help="Number of smart wallets holding this coin"
-                        ),
-                        "Liquidity ($)": st.column_config.NumberColumn(
-                            format="$%,.0f",
-                            help="Total liquidity in USD"
-                        ),
-                        "Volume ($)": st.column_config.NumberColumn(
-                            format="$%,.0f",
-                            help="24h trading volume"
-                        ),
-                        "Discovery Price": st.column_config.NumberColumn(
-                            format="%.8f",
-                            help="Price when first discovered"
-                        ),
-                        "Current Price": st.column_config.NumberColumn(
-                            format="%.8f",
-                            help="Latest recorded price"
-                        ),
-                        "Change %": st.column_config.NumberColumn(
-                            format="%.1f%%",
-                            help="Price change since discovery"
-                        )
-                    },
+                    column_config=column_config,
                     hide_index=True
                 )
                 
