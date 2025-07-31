@@ -26,6 +26,12 @@ try:
 except ImportError:
     AdvancedAnalytics = None
 
+# Import live data integration
+try:
+    from live_data_integration import LiveDataManager, get_live_coin_data, get_live_portfolio
+except ImportError:
+    LiveDataManager = None
+
 # Page configuration (handled by streamlit_app.py)
 
 # Custom CSS for ultra-premium design
@@ -215,9 +221,23 @@ class UltraPremiumDashboard:
             """, unsafe_allow_html=True)
         
         with header_col3:
+            # Live mode toggle
+            st.markdown("**Data Mode:**")
+            live_mode = st.toggle("📡 Live Monitoring", value=st.session_state.get('live_mode', False))
+            
+            if live_mode != st.session_state.get('live_mode', False):
+                st.session_state.live_mode = live_mode
+                if live_mode:
+                    st.success("🟢 Live monitoring enabled!")
+                    st.info("Real coin data & notifications active")
+                else:
+                    st.info("🔵 Demo mode - Sample data only")
+                st.rerun()
+            
+            # System time
             current_time = datetime.now().strftime("%H:%M:%S")
             st.markdown(f"""
-            <div style="text-align: right; color: #9ca3af; font-size: 14px;">
+            <div style="text-align: right; color: #9ca3af; font-size: 12px; margin-top: 10px;">
                 {current_time} UTC
             </div>
             """, unsafe_allow_html=True)
@@ -336,21 +356,72 @@ class UltraPremiumDashboard:
     
     def render_live_coin_feed(self):
         """Render live coin processing feed"""
-        st.markdown("""
+        mode_indicator = "🟢 LIVE" if st.session_state.get('live_mode', False) else "🔵 DEMO"
+        st.markdown(f"""
         <div class="premium-card">
-            <h3 style="color: #f9fafb; margin-bottom: 16px;">Live Coin Processing</h3>
+            <h3 style="color: #f9fafb; margin-bottom: 16px;">
+                Live Coin Processing {mode_indicator}
+            </h3>
         </div>
         """, unsafe_allow_html=True)
         
+        # Use live or demo data based on mode
+        if st.session_state.get('live_mode', False) and LiveDataManager:
+            # LIVE MODE: Get real trending coins
+            try:
+                manager = LiveDataManager()
+                live_coins = manager.detect_trending_coins(limit=5)
+                
+                # Convert to display format
+                processed_coins = []
+                for coin in live_coins:
+                    processed_coin = {
+                        'ticker': f"${coin['symbol']}",
+                        'stage': self.get_processing_stage(coin['confidence']),
+                        'price': coin['price'],
+                        'volume': coin['volume_24h'],
+                        'score': coin['confidence'] / 100,
+                        'timestamp': coin['detected_at'],
+                        'change_24h': coin['price_change_24h'],
+                        'liquidity': coin['liquidity']
+                    }
+                    processed_coins.append(processed_coin)
+                
+                st.session_state.processed_coins = processed_coins
+                
+                # Trigger notifications for high-confidence coins
+                self.check_and_notify_high_confidence_coins(live_coins)
+                
+            except Exception as e:
+                st.error(f"Live data error: {e}")
+                # Fallback to demo mode
+                self.generate_demo_coins()
+        else:
+            # DEMO MODE: Generate sample coins
+            self.generate_demo_coins()
+        
+        # Display coins with animations
+        for i, coin in enumerate(st.session_state.processed_coins[:5]):
+            self.render_coin_card(coin, i)
+    
+    def get_processing_stage(self, confidence):
+        """Determine processing stage based on confidence"""
+        if confidence > 90:
+            return 'Trading'
+        elif confidence > 80:
+            return 'Analyzing' 
+        elif confidence > 70:
+            return 'Enriching'
+        else:
+            return 'Discovering'
+    
+    def generate_demo_coins(self):
+        """Generate demo coins for sample mode"""
         # Simulate new coin being processed
         if random.random() > 0.3:
             new_coin = self.generate_fake_coin()
             st.session_state.processed_coins.insert(0, new_coin)
             st.session_state.processed_coins = st.session_state.processed_coins[:10]
-        
-        # Display coins with animations
-        for i, coin in enumerate(st.session_state.processed_coins[:5]):
-            self.render_coin_card(coin, i)
     
     def generate_fake_coin(self):
         """Generate fake coin data for demo"""
@@ -394,6 +465,13 @@ class UltraPremiumDashboard:
             st.markdown(icon_html, unsafe_allow_html=True)
         
         with col2:
+            # Show live data fields if available
+            price_change = coin.get('change_24h', 0)
+            change_color = '#10b981' if price_change > 0 else '#ef4444'
+            change_arrow = '↑' if price_change > 0 else '↓'
+            
+            liquidity_text = f"${coin.get('liquidity', 0):,.0f}" if 'liquidity' in coin else f"Vol: ${coin.get('volume', 0):,.0f}"
+            
             st.markdown(f"""
             <div class="coin-card {'success-flash' if coin['stage'] == 'Trading' else ''}" 
                  style="opacity: {1 - (index * 0.15)};">
@@ -403,6 +481,7 @@ class UltraPremiumDashboard:
                         <span style="color: #6b7280; font-size: 12px; margin-left: 8px;">
                             ${coin['price']:.6f}
                         </span>
+                        {f'<span style="color: {change_color}; font-size: 11px; margin-left: 8px;">{change_arrow}{abs(price_change):.1f}%</span>' if price_change != 0 else ''}
                     </div>
                     <span style="color: {stage_color}; font-size: 12px; font-weight: 500;">
                         {coin['stage']}
@@ -416,7 +495,7 @@ class UltraPremiumDashboard:
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-top: 4px;">
                         <span style="color: #6b7280; font-size: 11px;">
-                            Vol: ${coin['volume']:,}
+                            {liquidity_text}
                         </span>
                         <span style="color: #10b981; font-size: 11px;">
                             Score: {coin['score']:.2f}
@@ -792,6 +871,82 @@ class UltraPremiumDashboard:
                     st.balloons()
                 else:
                     st.info("📋 Strategy updated in demo mode")
+    
+    def check_and_notify_high_confidence_coins(self, live_coins):
+        """Check for high-confidence coins and trigger notifications"""
+        if not st.session_state.get('live_mode', False):
+            return
+            
+        # Initialize notification tracking
+        if 'notified_coins' not in st.session_state:
+            st.session_state.notified_coins = set()
+            
+        try:
+            for coin in live_coins:
+                coin_key = f"{coin['symbol']}_{coin['address'][:8]}"
+                
+                # Only notify for high-confidence coins we haven't notified about recently
+                if (coin['confidence'] > 85 and 
+                    coin_key not in st.session_state.notified_coins and
+                    LiveDataManager):
+                    
+                    # Add to notified list
+                    st.session_state.notified_coins.add(coin_key)
+                    
+                    # Trigger notification in background
+                    self.trigger_background_notification(coin)
+                    
+                    # Show notification indicator in UI
+                    st.success(f"🚨 RUNNER ALERT: {coin['symbol']} - {coin['confidence']:.1f}% confidence!")
+                    
+                    # Clean up old notifications (keep last 10)
+                    if len(st.session_state.notified_coins) > 10:
+                        # Remove oldest entries
+                        old_coins = list(st.session_state.notified_coins)
+                        st.session_state.notified_coins = set(old_coins[-10:])
+                        
+        except Exception as e:
+            st.error(f"Notification check error: {e}")
+    
+    def trigger_background_notification(self, coin):
+        """Trigger notification in the background"""
+        try:
+            # Create notification message
+            message = f"""
+🎯 RUNNER DETECTED!
+
+💎 {coin['symbol']} ({coin.get('name', 'Unknown')})
+💰 Price: ${coin['price']:.6f}
+📈 24h Change: {coin.get('price_change_24h', 0):.1f}%
+💧 Liquidity: ${coin.get('liquidity', 0):,.0f}
+🎪 Confidence: {coin['confidence']:.1f}%
+
+🔗 Address: {coin['address'][:8]}...
+⏰ Detected: {datetime.now().strftime('%H:%M:%S')}
+
+🚀 TrenchCoat Pro Live Monitor
+"""
+            
+            # Add to session state for display
+            if 'live_notifications' not in st.session_state:
+                st.session_state.live_notifications = []
+                
+            st.session_state.live_notifications.insert(0, {
+                'timestamp': datetime.now(),
+                'coin': coin['symbol'],
+                'confidence': coin['confidence'],
+                'message': message,
+                'type': 'runner_detected'
+            })
+            
+            # Keep only recent notifications
+            st.session_state.live_notifications = st.session_state.live_notifications[:20]
+            
+            # Note: Real notification sending would happen here via unified_notifications.py
+            # For demo, we just show the UI notification
+            
+        except Exception as e:
+            st.error(f"Background notification error: {e}")
 
 def main():
     """Run the ultra-premium dashboard"""
