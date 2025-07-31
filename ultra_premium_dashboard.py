@@ -377,12 +377,33 @@ class UltraPremiumDashboard:
         </div>
         """, unsafe_allow_html=True)
         
-        # Use live or demo data based on mode  
-        if st.session_state.get('live_mode', False) and LiveDataManager:
-            # LIVE MODE: Get enriched trending coins
-            try:
-                manager = LiveDataManager()
-                # Use enriched coin detection that includes Telegram signals
+        # Use live database data - always available
+        try:
+            from live_coin_data import LiveCoinDataConnector
+            
+            connector = LiveCoinDataConnector()
+            live_coins = connector.get_live_coins(10)
+            
+            if live_coins:
+                safe_print(f"Dashboard: Retrieved {len(live_coins)} live coins from database")
+                
+                # Convert to display format and store in session
+                st.session_state.processed_coins = live_coins
+                
+                # Display success message
+                st.success(f"✅ Connected to live database with {len(live_coins)} coins")
+                st.info(f"🔗 Data source: {connector.main_db.name if connector.main_db else 'Multiple databases'}")
+                
+            else:
+                st.warning("📊 No live coin data available in database")
+                st.session_state.processed_coins = []
+                
+        except ImportError as e:
+            st.error(f"❌ Live coin data connector not available: {e}")
+            st.session_state.processed_coins = []
+        except Exception as e:
+            st.error(f"❌ Error connecting to live coin data: {e}")
+            st.session_state.processed_coins = []
                 # Fix: Handle async in sync context properly
                 try:
                     import nest_asyncio
