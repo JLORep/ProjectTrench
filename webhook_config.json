@@ -1,0 +1,35 @@
+{
+  "webhooks": {
+    "overview": "https://discord.com/api/webhooks/1400497302241677383/Im9oyVehkH6zhsc5w4mt4KHQvgSR2qfMPD-k6lTR-X0XQWT3eLV_IJM2-MqQNM6dPAzM",
+    "dev-blog": "https://discord.com/api/webhooks/1400491407550058610/Q59NIxt5lSvFgpwckXOv_P9TF8uWjudOTJxEw5hZ3fL61Dg2-WgSwrpIb110UiG4Z1f7",
+    "announcements": "[NEEDS_WEBHOOK]",
+    "documentation": "[NEEDS_WEBHOOK]",
+    "bug-reports": "[NEEDS_WEBHOOK]",
+    "system-updates": "[NEEDS_WEBHOOK]",
+    "testing": "[NEEDS_WEBHOOK]",
+    "signals": "https://discord.com/api/webhooks/1400573697642860639/ytKTM9Ww4oMOHqLbX3rT-NtYPffFQUuOsy_pD5oQuI0V4hYZ9IhAdUSsR2GihQxWsRRG",
+    "analytics": "[NEEDS_WEBHOOK]",
+    "live-trades": "[NEEDS_WEBHOOK]",
+    "performance": "[NEEDS_WEBHOOK]"
+  },
+  "channel_purposes": {
+    "overview": "Project mission, feature status, and high-level updates",
+    "dev-blog": "Development progress, feature development, and technical updates",
+    "announcements": "Major releases, important updates, and official communications",
+    "documentation": "Links to guides, API docs, tutorials, and help resources",
+    "bug-reports": "Bug tracking, issue reports, and resolution updates",
+    "system-updates": "Library updates, system maintenance, and infrastructure changes",
+    "testing": "Testing results, performance metrics, and quality assurance",
+    "signals": "Live trading signals, high-confidence opportunities",
+    "analytics": "Market analysis, performance reports, and trading insights",
+    "live-trades": "Real-time trade execution, P&L updates, position tracking",
+    "performance": "Trading performance metrics, success rates, and statistics"
+  },
+  "setup_instructions": {
+    "step_1": "Create Discord channels as specified in DISCORD_SERVER_STRUCTURE.md",
+    "step_2": "For each channel, go to Settings > Integrations > Webhooks",
+    "step_3": "Create new webhook with name 'TrenchCoat Pro - [Channel Name]'",
+    "step_4": "Copy webhook URL and update this config file",
+    "step_5": "Run test_webhooks() to verify all webhooks work"
+  }
+}
