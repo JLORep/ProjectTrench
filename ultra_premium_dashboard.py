@@ -10,6 +10,7 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+from pathlib import Path
 import time
 import random
 import asyncio
@@ -573,43 +574,97 @@ class UltraPremiumDashboard:
         st.markdown("---")
     
     def render_performance_chart(self):
-        """Render real-time performance chart - LIVE DATA ONLY"""
+        """Render real-time performance chart - LIVE DATA"""
         st.markdown("""
         <div class="premium-card">
             <h3 style="color: #f9fafb; margin-bottom: 16px;">Live Performance</h3>
         </div>
         """, unsafe_allow_html=True)
         
-        # TODO: Connect to real performance data
-        st.info("📊 No live performance data connected")
-        st.markdown("**Required connections:**")
-        st.markdown("- Trading history database")
-        st.markdown("- Portfolio tracking API")
-        st.markdown("- P&L calculation system")
-        
-        # Placeholder chart showing no data
-        fig = go.Figure()
-        
-        # Show empty chart with message
-        fig.add_annotation(
-            x=0.5, y=0.5,
-            xref="paper", yref="paper",
-            text="No live performance data<br>Connect to trading system",
-            showarrow=False,
-            font=dict(size=16, color="#6b7280")
-        )
-        
-        fig.update_layout(
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            margin=dict(l=0, r=0, t=0, b=0),
-            height=300,
-            showlegend=False,
-            xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-            yaxis=dict(showgrid=False, showticklabels=False, zeroline=False)
-        )
-        
-        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+        try:
+            from live_price_charts import LivePriceChartsProvider
+            
+            # Get live performance data
+            provider = LivePriceChartsProvider()
+            chart_data = provider.get_performance_chart_data(7)  # 7 days
+            
+            if chart_data['total_coins'] > 0:
+                # Create interactive performance chart
+                fig = go.Figure()
+                
+                # Add line for each coin
+                for coin in chart_data['coins']:
+                    fig.add_trace(go.Scatter(
+                        x=chart_data['timestamps'],
+                        y=coin['prices'],
+                        mode='lines',
+                        name=coin['name'],
+                        line=dict(color=coin['color'], width=2),
+                        hovertemplate=f"<b>{coin['name']}</b><br>" +
+                                    "Price: $%{y:.6f}<br>" +
+                                    "Time: %{x}<br>" +
+                                    f"Market Cap: ${coin['market_cap']:,.0f}<br>" +
+                                    f"Volume: ${coin['volume']:,.0f}<extra></extra>"
+                    ))
+                
+                fig.update_layout(
+                    plot_bgcolor='rgba(15, 23, 42, 0.8)',
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='#f8fafc'),
+                    margin=dict(l=0, r=0, t=20, b=0),
+                    height=300,
+                    showlegend=True,
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="right",
+                        x=1,
+                        font=dict(size=10)
+                    ),
+                    xaxis=dict(
+                        showgrid=True, 
+                        gridcolor='rgba(71, 85, 105, 0.3)',
+                        color='#94a3b8'
+                    ),
+                    yaxis=dict(
+                        showgrid=True,
+                        gridcolor='rgba(71, 85, 105, 0.3)',
+                        color='#94a3b8',
+                        tickformat='.6f'
+                    ),
+                    hovermode='x unified'
+                )
+                
+                st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+                
+                # Show data source info
+                st.caption(f"📊 Live data from {chart_data['total_coins']} coins | Source: {Path(chart_data['database_source']).name}")
+                
+            else:
+                st.warning("⚠️ No live performance data available")
+                
+        except Exception as e:
+            st.error(f"❌ Error loading live performance data: {e}")
+            # Fallback to empty chart
+            fig = go.Figure()
+            fig.add_annotation(
+                x=0.5, y=0.5,
+                xref="paper", yref="paper",
+                text="Error loading live data<br>Check database connection",
+                showarrow=False,
+                font=dict(size=16, color="#ef4444")
+            )
+            fig.update_layout(
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                margin=dict(l=0, r=0, t=0, b=0),
+                height=300,
+                showlegend=False,
+                xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
+                yaxis=dict(showgrid=False, showticklabels=False, zeroline=False)
+            )
+            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
     
     def render_active_positions(self):
         """Render active trading positions - LIVE DATA ONLY"""

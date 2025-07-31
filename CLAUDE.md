@@ -62,7 +62,9 @@
 - `dev_blog_system.py` - Enhanced Discord notifications with AutoOverviewUpdater integration
 - Live data feeds, progress tracking, real-time updates already implemented
 - **Live Coin Feed**: Dashboard now displays real 1733+ coins from trench.db instead of demo data
-- **Integration Status**: LiveCoinDataConnector successfully integrated in render_live_coin_feed()
+- **Live Price Charts**: Interactive performance charts with 7-day price history from live data
+- `live_price_charts.py` - **NEW** Live price chart provider with market analytics and OHLCV data
+- **Integration Status**: LiveCoinDataConnector and LivePriceChartsProvider fully integrated
 
 ## Configuration Files
 - `config/config.py` - Main app configuration (Pydantic)
