@@ -12,9 +12,10 @@ os.environ['DEMO_MODE'] = 'true'
 
 # Configure page
 st.set_page_config(
-    page_title="TrenchCoat Pro - Live Demo",
+    page_title="TrenchCoat Pro | Live Trading Intelligence",
     page_icon="🎯",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 # Import and run ultra-premium dashboard

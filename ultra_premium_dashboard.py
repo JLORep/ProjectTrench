@@ -26,13 +26,7 @@ try:
 except ImportError:
     AdvancedAnalytics = None
 
-# Page configuration
-st.set_page_config(
-    page_title="TrenchCoat Pro | Live Trading Intelligence",
-    page_icon="🎯",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+# Page configuration (handled by streamlit_app.py)
 
 # Custom CSS for ultra-premium design
 st.markdown("""
