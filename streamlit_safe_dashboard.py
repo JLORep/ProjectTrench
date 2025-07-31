@@ -171,7 +171,7 @@ class StreamlitSafeDashboard:
         self.render_key_metrics()
         
         # Create tabs for different views
-        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📡 Telegram Signals", "📝 Dev Blog", "💎 Solana Wallet"])
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📡 Telegram Signals", "📝 Dev Blog", "💎 Solana Wallet", "🗄️ Coin Data"])
         
         with tab1:
             # Main content columns
@@ -214,6 +214,10 @@ class StreamlitSafeDashboard:
             except ImportError:
                 st.markdown("### 💎 Solana Wallet")
                 st.info("Solana wallet integration module not available")
+        
+        with tab8:
+            # Coin Data Tab
+            self.render_coin_data_tab()
     
     def render_key_metrics(self):
         """Render key performance metrics using live data"""
@@ -523,6 +527,348 @@ class StreamlitSafeDashboard:
             return None
         except Exception:
             return None
+    
+    def render_coin_data_tab(self):
+        """Render beautiful coin data analytics from trench.db"""
+        # Title with gradient background
+        st.markdown("""
+        <div style='text-align: center; padding: 2rem; margin-bottom: 2rem;
+                    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+                    border-radius: 15px; border: 1px solid rgba(16, 185, 129, 0.3);'>
+            <h1 style='color: #10b981; margin: 0; font-size: 2.5rem; font-weight: 700;'>
+                🗄️ TrenchCoat Coin Database
+            </h1>
+            <p style='color: #a3a3a3; margin-top: 0.5rem; font-size: 1.2rem;'>
+                Live Analytics from 1,733+ Verified Coins
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Database stats row
+        self.render_database_stats()
+        
+        st.markdown("---")
+        
+        # Main content in columns
+        col1, col2 = st.columns([3, 2])
+        
+        with col1:
+            # Top coins by different metrics
+            self.render_top_coins_analysis()
+        
+        with col2:
+            # Distribution charts
+            self.render_coin_distributions()
+        
+        st.markdown("---")
+        
+        # Full coin table with search
+        self.render_searchable_coin_table()
+    
+    def render_database_stats(self):
+        """Render database statistics"""
+        if database_available and streamlit_db:
+            try:
+                coins = streamlit_db.get_all_coins()
+                
+                # Calculate stats
+                total_coins = len(coins)
+                total_liquidity = sum(c.get('liquidity', 0) for c in coins)
+                avg_smart_wallets = sum(c.get('smart_wallets', 0) for c in coins) / total_coins if total_coins > 0 else 0
+                total_volume = sum(c.get('axiom_volume', 0) for c in coins)
+                
+                # Display metrics
+                col1, col2, col3, col4 = st.columns(4)
+                
+                with col1:
+                    st.metric(
+                        "📊 Total Coins",
+                        f"{total_coins:,}",
+                        "Live Database",
+                        help="Total number of coins in trench.db"
+                    )
+                
+                with col2:
+                    st.metric(
+                        "💰 Total Liquidity",
+                        f"${total_liquidity/1e6:.1f}M",
+                        f"${total_liquidity/total_coins:,.0f} avg" if total_coins > 0 else "$0 avg",
+                        help="Combined liquidity across all coins"
+                    )
+                
+                with col3:
+                    st.metric(
+                        "🧠 Avg Smart Wallets",
+                        f"{avg_smart_wallets:.1f}",
+                        "Per coin",
+                        help="Average number of smart wallets holding each coin"
+                    )
+                
+                with col4:
+                    st.metric(
+                        "📈 Total Volume",
+                        f"${total_volume/1e6:.1f}M",
+                        "24h volume",
+                        help="Combined 24h trading volume"
+                    )
+            except Exception as e:
+                st.error(f"Error loading database stats: {e}")
+        else:
+            # Demo stats
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("📊 Total Coins", "1,733", "Demo Data")
+            with col2:
+                st.metric("💰 Total Liquidity", "$42.7M", "$24.6K avg")
+            with col3:
+                st.metric("🧠 Avg Smart Wallets", "156.3", "Per coin")
+            with col4:
+                st.metric("📈 Total Volume", "$127.9M", "24h volume")
+    
+    def render_top_coins_analysis(self):
+        """Render top coins by various metrics"""
+        st.subheader("🏆 Top Performing Coins")
+        
+        metric_choice = st.selectbox(
+            "Sort by:",
+            ["Smart Wallets", "Liquidity", "Volume", "Price Change"],
+            key="coin_metric_sort"
+        )
+        
+        if database_available and streamlit_db:
+            try:
+                coins = streamlit_db.get_all_coins()
+                df = pd.DataFrame(coins)
+                
+                # Sort by selected metric
+                if metric_choice == "Smart Wallets":
+                    df = df.nlargest(10, 'smart_wallets')
+                    display_col = 'smart_wallets'
+                    format_str = '{:.0f} wallets'
+                elif metric_choice == "Liquidity":
+                    df = df.nlargest(10, 'liquidity')
+                    display_col = 'liquidity'
+                    format_str = '${:,.0f}'
+                elif metric_choice == "Volume":
+                    df = df.nlargest(10, 'axiom_volume')
+                    display_col = 'axiom_volume'
+                    format_str = '${:,.0f}'
+                else:  # Price Change
+                    df['price_change'] = ((df['axiom_price'] - df['discovery_price']) / df['discovery_price'] * 100).fillna(0)
+                    df = df.nlargest(10, 'price_change')
+                    display_col = 'price_change'
+                    format_str = '{:.1f}%'
+                
+                # Display top coins
+                for idx, row in df.iterrows():
+                    col1, col2, col3 = st.columns([3, 2, 1])
+                    
+                    with col1:
+                        st.markdown(f"**{row['ticker']}**")
+                        st.caption(f"CA: {row['ca'][:8]}...{row['ca'][-6:]}")
+                    
+                    with col2:
+                        value = row[display_col]
+                        st.markdown(f"<p style='text-align: right; color: #10b981; font-weight: bold;'>{format_str.format(value)}</p>", unsafe_allow_html=True)
+                    
+                    with col3:
+                        if display_col == 'price_change':
+                            color = '#10b981' if value > 0 else '#ef4444'
+                            arrow = '↑' if value > 0 else '↓'
+                            st.markdown(f"<p style='text-align: center; color: {color}; font-size: 1.5rem;'>{arrow}</p>", unsafe_allow_html=True)
+                    
+                    st.markdown("<hr style='margin: 0.5rem 0; opacity: 0.2;'>", unsafe_allow_html=True)
+                    
+            except Exception as e:
+                st.error(f"Error loading coin data: {e}")
+        else:
+            # Demo data
+            demo_coins = [
+                {"ticker": "TRUMP", "value": "2,847", "change": "↑"},
+                {"ticker": "BODEN", "value": "1,923", "change": "↑"},
+                {"ticker": "PEPE", "value": "1,756", "change": "↓"},
+                {"ticker": "WIF", "value": "1,542", "change": "↑"},
+                {"ticker": "BONK", "value": "1,389", "change": "↑"},
+            ]
+            
+            for coin in demo_coins[:5]:
+                col1, col2, col3 = st.columns([3, 2, 1])
+                with col1:
+                    st.markdown(f"**{coin['ticker']}**")
+                with col2:
+                    st.markdown(f"<p style='text-align: right; color: #10b981; font-weight: bold;'>{coin['value']} wallets</p>", unsafe_allow_html=True)
+                with col3:
+                    color = '#10b981' if coin['change'] == '↑' else '#ef4444'
+                    st.markdown(f"<p style='text-align: center; color: {color}; font-size: 1.5rem;'>{coin['change']}</p>", unsafe_allow_html=True)
+                st.markdown("<hr style='margin: 0.5rem 0; opacity: 0.2;'>", unsafe_allow_html=True)
+    
+    def render_coin_distributions(self):
+        """Render distribution charts for coin metrics"""
+        st.subheader("📊 Coin Distributions")
+        
+        if database_available and streamlit_db:
+            try:
+                coins = streamlit_db.get_all_coins()
+                df = pd.DataFrame(coins)
+                
+                # Smart wallet distribution
+                fig1 = go.Figure()
+                fig1.add_trace(go.Histogram(
+                    x=df['smart_wallets'],
+                    nbinsx=30,
+                    marker_color='rgba(16, 185, 129, 0.7)',
+                    name='Smart Wallets'
+                ))
+                fig1.update_layout(
+                    title="Smart Wallet Distribution",
+                    xaxis_title="Number of Smart Wallets",
+                    yaxis_title="Number of Coins",
+                    template="plotly_dark",
+                    height=250,
+                    margin=dict(t=40, b=40, l=40, r=40),
+                    showlegend=False
+                )
+                st.plotly_chart(fig1, use_container_width=True)
+                
+                # Liquidity distribution (log scale)
+                fig2 = go.Figure()
+                fig2.add_trace(go.Histogram(
+                    x=np.log10(df['liquidity'].replace(0, 1)),
+                    nbinsx=30,
+                    marker_color='rgba(59, 130, 246, 0.7)',
+                    name='Liquidity'
+                ))
+                fig2.update_layout(
+                    title="Liquidity Distribution (Log Scale)",
+                    xaxis_title="Log10(Liquidity USD)",
+                    yaxis_title="Number of Coins",
+                    template="plotly_dark",
+                    height=250,
+                    margin=dict(t=40, b=40, l=40, r=40),
+                    showlegend=False
+                )
+                st.plotly_chart(fig2, use_container_width=True)
+                
+            except Exception as e:
+                st.error(f"Error creating distributions: {e}")
+        else:
+            # Demo charts
+            fig = go.Figure()
+            fig.add_trace(go.Histogram(
+                x=np.random.lognormal(5, 1.5, 1000),
+                nbinsx=30,
+                marker_color='rgba(16, 185, 129, 0.7)'
+            ))
+            fig.update_layout(
+                title="Smart Wallet Distribution",
+                template="plotly_dark",
+                height=250,
+                margin=dict(t=40, b=40, l=40, r=40)
+            )
+            st.plotly_chart(fig, use_container_width=True)
+    
+    def render_searchable_coin_table(self):
+        """Render searchable table of all coins"""
+        st.subheader("🔍 Coin Database Explorer")
+        
+        # Search and filter controls
+        col1, col2, col3 = st.columns([2, 1, 1])
+        
+        with col1:
+            search_term = st.text_input("🔍 Search coins:", placeholder="Enter ticker, contract address...")
+        
+        with col2:
+            min_wallets = st.number_input("Min Smart Wallets:", min_value=0, value=0, step=10)
+        
+        with col3:
+            min_liquidity = st.number_input("Min Liquidity ($):", min_value=0, value=0, step=1000)
+        
+        if database_available and streamlit_db:
+            try:
+                coins = streamlit_db.get_all_coins()
+                df = pd.DataFrame(coins)
+                
+                # Apply filters
+                if search_term:
+                    mask = (df['ticker'].str.contains(search_term, case=False, na=False) | 
+                           df['ca'].str.contains(search_term, case=False, na=False))
+                    df = df[mask]
+                
+                df = df[df['smart_wallets'] >= min_wallets]
+                df = df[df['liquidity'] >= min_liquidity]
+                
+                # Calculate additional metrics
+                df['price_change_%'] = ((df['axiom_price'] - df['discovery_price']) / df['discovery_price'] * 100).fillna(0)
+                
+                # Select and rename columns for display
+                display_df = df[[
+                    'ticker', 'ca', 'smart_wallets', 'liquidity', 
+                    'axiom_volume', 'discovery_price', 'axiom_price', 'price_change_%'
+                ]].rename(columns={
+                    'ticker': 'Ticker',
+                    'ca': 'Contract Address',
+                    'smart_wallets': 'Smart Wallets',
+                    'liquidity': 'Liquidity ($)',
+                    'axiom_volume': 'Volume ($)',
+                    'discovery_price': 'Discovery Price',
+                    'axiom_price': 'Current Price',
+                    'price_change_%': 'Change %'
+                })
+                
+                # Format the dataframe
+                st.markdown(f"**Found {len(display_df)} coins matching your criteria**")
+                
+                # Display with custom formatting
+                st.dataframe(
+                    display_df,
+                    use_container_width=True,
+                    height=400,
+                    column_config={
+                        "Contract Address": st.column_config.TextColumn(
+                            width="small",
+                            help="Solana contract address"
+                        ),
+                        "Smart Wallets": st.column_config.NumberColumn(
+                            format="%d",
+                            help="Number of smart wallets holding this coin"
+                        ),
+                        "Liquidity ($)": st.column_config.NumberColumn(
+                            format="$%,.0f",
+                            help="Total liquidity in USD"
+                        ),
+                        "Volume ($)": st.column_config.NumberColumn(
+                            format="$%,.0f",
+                            help="24h trading volume"
+                        ),
+                        "Discovery Price": st.column_config.NumberColumn(
+                            format="%.8f",
+                            help="Price when first discovered"
+                        ),
+                        "Current Price": st.column_config.NumberColumn(
+                            format="%.8f",
+                            help="Latest recorded price"
+                        ),
+                        "Change %": st.column_config.NumberColumn(
+                            format="%.1f%%",
+                            help="Price change since discovery"
+                        )
+                    },
+                    hide_index=True
+                )
+                
+            except Exception as e:
+                st.error(f"Error loading coin table: {e}")
+        else:
+            # Demo table
+            st.info("📊 Live database connection not available. Showing demo data.")
+            demo_df = pd.DataFrame({
+                'Ticker': ['TRUMP', 'BODEN', 'PEPE', 'WIF', 'BONK'],
+                'Smart Wallets': [2847, 1923, 1756, 1542, 1389],
+                'Liquidity ($)': [5234000, 3892000, 2156000, 1893000, 1654000],
+                'Volume ($)': [8923000, 6234000, 4892000, 3421000, 2987000],
+                'Change %': [234.5, 156.3, -23.4, 89.7, 123.4]
+            })
+            st.dataframe(demo_df, use_container_width=True)
 
 # Create the dashboard instance
 def create_dashboard():
