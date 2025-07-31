@@ -68,6 +68,55 @@ class CompleteAsyncDeployer:
         except Exception as e:
             self.log_message(f"DEV UPDATE ERROR: {e}")
     
+    def check_and_reboot_streamlit(self):
+        """Check Streamlit app health and reboot if needed"""
+        try:
+            # Run streamlit reboot utility
+            result = subprocess.run([
+                sys.executable, "streamlit_reboot.py"
+            ], timeout=180, capture_output=True, text=True, cwd=self.project_dir,
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
+            
+            if result.returncode == 0:
+                self.log_message("STREAMLIT: App health check passed or successfully rebooted")
+                
+                # Send success notification
+                self.send_discord_notification(
+                    "🔄 Streamlit App Health Check",
+                    "App is healthy and responding properly",
+                    0x3b82f6  # Blue
+                )
+            else:
+                self.log_message(f"STREAMLIT: Health check/reboot failed with exit code {result.returncode}")
+                self.log_message(f"STREAMLIT OUTPUT: {result.stdout}")
+                
+                # Send warning notification
+                self.send_discord_notification(
+                    "⚠️ Streamlit App Issues",
+                    f"App health check failed or reboot unsuccessful\n\n**Action:** Manual check may be required",
+                    0xf59e0b  # Orange
+                )
+                
+        except subprocess.TimeoutExpired:
+            self.log_message("STREAMLIT: Health check/reboot timed out after 3 minutes")
+            
+            # Send timeout notification
+            self.send_discord_notification(
+                "⏰ Streamlit Health Check Timeout",
+                "App health check timed out - may need manual intervention",
+                0xf59e0b  # Orange
+            )
+            
+        except Exception as e:
+            self.log_message(f"STREAMLIT ERROR: {e}")
+            
+            # Send error notification
+            self.send_discord_notification(
+                "💥 Streamlit Health Check Error",
+                f"Unexpected error during app health check\n\n**Error:** {str(e)[:200]}",
+                0xef4444  # Red
+            )
+    
     def send_discord_notification(self, title: str, description: str, color: int = 0x10b981):
         """Send Discord notification"""
         try:
@@ -150,6 +199,10 @@ class CompleteAsyncDeployer:
                     self.log_message("DEV UPDATE: Triggering dev blog update")
                     self.run_dev_update()
                 
+                # Step 5: Check if Streamlit app needs reboot
+                self.log_message("STREAMLIT: Checking app health and rebooting if needed")
+                self.check_and_reboot_streamlit()
+                
                 return True
                 
             else:
@@ -163,6 +216,10 @@ class CompleteAsyncDeployer:
                     f"Deployment failed with exit code {result.returncode}\n\n**Error:** Check complete_async_deploy.log\n**Action:** Manual deployment may be required",
                     0xef4444  # Red
                 )
+                
+                # Try Streamlit reboot on deployment failure (might help with stuck deployments)
+                self.log_message("STREAMLIT: Attempting reboot after deployment failure")
+                self.check_and_reboot_streamlit()
                 
                 return False
         
