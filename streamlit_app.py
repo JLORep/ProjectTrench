@@ -53,11 +53,18 @@ try:
     # Import dashboard
     from ultra_premium_dashboard import UltraPremiumDashboard
     
-    # Initialize dashboard
-    dashboard = UltraPremiumDashboard()
-    
-    # Clear loading message once everything is ready
-    loading_placeholder.empty()
+    # Initialize dashboard with error handling
+    try:
+        dashboard = UltraPremiumDashboard()
+        # Clear loading message once everything is ready
+        loading_placeholder.empty()
+    except Exception as dashboard_error:
+        loading_placeholder.empty()
+        st.error(f"❌ Dashboard initialization error: {dashboard_error}")
+        st.error(f"Error type: {type(dashboard_error).__name__}")
+        import traceback
+        st.code(traceback.format_exc())
+        raise dashboard_error
     
 except ImportError as e:
     st.error(f"❌ Import error: {e}")

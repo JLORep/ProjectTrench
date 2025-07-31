@@ -36,7 +36,7 @@ except ImportError:
 try:
     from branding_system import BrandingSystem
     branding = BrandingSystem()
-except ImportError:
+except Exception:
     branding = None
 
 # Page configuration (handled by streamlit_app.py)
@@ -197,48 +197,51 @@ class UltraPremiumDashboard:
     
     def render_header(self):
         """Render premium header with live status"""
-        if branding:
-            st.markdown(branding.get_professional_header(
-                "TrenchCoat Pro",
-                "Ultra-Premium Cryptocurrency Trading Intelligence Platform",
-                "primary"
-            ), unsafe_allow_html=True)
-            return
+        try:
+            if branding:
+                st.markdown(branding.get_professional_header(
+                    "TrenchCoat Pro",
+                    "Ultra-Premium Cryptocurrency Trading Intelligence Platform",
+                    "primary"
+                ), unsafe_allow_html=True)
+            else:
+                # Fallback header if branding system fails
+                st.markdown("""
+                <div style='text-align: center; padding: 2rem; margin-bottom: 2rem;
+                            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                            border-radius: 15px; color: white;'>
+                    <h1 style='margin: 0; font-size: 2.5rem;'>🎯 TrenchCoat Pro</h1>
+                    <p style='margin: 0.5rem 0 0 0; opacity: 0.9;'>Ultra-Premium Trading Intelligence</p>
+                </div>
+                """, unsafe_allow_html=True)
+        except Exception as e:
+            # Fallback header if any error occurs
+            st.markdown("# 🎯 TrenchCoat Pro")
+            st.markdown("*Ultra-Premium Trading Intelligence*")
         
-        # Fallback header if branding not available
-        header_col1, header_col2, header_col3 = st.columns([2, 3, 1])
+        # Status indicators and live mode toggle in header area
+        header_cols = st.columns([3, 2, 2])
         
-        with header_col1:
-            st.markdown("""
-            <h1 style="margin: 0; font-size: 32px; font-weight: 700; 
-                       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                       -webkit-background-clip: text;
-                       -webkit-text-fill-color: transparent;">
-                TrenchCoat Pro
-            </h1>
-            <p style="margin: 0; color: #9ca3af; font-size: 14px;">
-                Live Trading Intelligence Platform
-            </p>
-            """, unsafe_allow_html=True)
-        
-        with header_col2:
+        with header_cols[0]:
             # Live status indicators
             st.markdown("""
-            <div style="display: flex; gap: 20px; justify-content: center; align-items: center; height: 100%;">
-                <div class="live-indicator">
-                    <div class="live-dot"></div>
-                    <span>LIVE TRADING</span>
+            <div style="display: flex; gap: 15px; align-items: center; margin-top: 1rem;">
+                <div style="display: flex; align-items: center; gap: 6px; background: rgba(34, 197, 94, 0.2); 
+                           color: #22c55e; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                    <div style="width: 6px; height: 6px; background: #22c55e; border-radius: 50%; 
+                               animation: pulse 2s infinite;"></div>
+                    LIVE TRADING
                 </div>
-                <div style="color: #6b7280; font-size: 14px;">
+                <div style="color: #6b7280; font-size: 12px;">
                     APIs: <span style="color: #10b981;">6/6 Connected</span>
                 </div>
-                <div style="color: #6b7280; font-size: 14px;">
+                <div style="color: #6b7280; font-size: 12px;">
                     Latency: <span style="color: #10b981;">12ms</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
         
-        with header_col3:
+        with header_cols[1]:
             # Live mode toggle
             st.markdown("**Data Mode:**")
             live_mode = st.toggle("📡 Live Monitoring", value=st.session_state.get('live_mode', False))
@@ -251,12 +254,13 @@ class UltraPremiumDashboard:
                 else:
                     st.info("🔵 Demo mode - Sample data only")
                 st.rerun()
-            
+        
+        with header_cols[2]:
             # System time
             current_time = datetime.now().strftime("%H:%M:%S")
             st.markdown(f"""
-            <div style="text-align: right; color: #9ca3af; font-size: 12px; margin-top: 10px;">
-                {current_time} UTC
+            <div style="text-align: right; color: #9ca3af; font-size: 12px; margin-top: 1rem;">
+                System Time: {current_time} UTC
             </div>
             """, unsafe_allow_html=True)
     
