@@ -179,10 +179,6 @@ class UltraPremiumDashboard:
         
         # Main content area
         self.render_main_content()
-        
-        # Auto-refresh
-        time.sleep(1)
-        st.rerun()
     
     def render_header(self):
         """Render premium header with live status"""
