@@ -124,6 +124,8 @@ This will:
 - Uses `git add -u` to avoid untracked file issues  
 - Automatic GitHub sync and Discord notifications
 - Routes notifications to appropriate channels
+- **Git Hook:** Temporarily disabled (post-commit.disabled) to prevent timeout loops
+- **Manual Deployment:** Use `python mandatory_deploy.py` for controlled deployments
 
 ## Documentation Available
 - 42 markdown files covering setup, deployment, integrations
