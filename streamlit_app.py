@@ -421,44 +421,20 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Premium Header with stunning visuals - Fix HTML rendering issue
-try:
-    st.markdown("""
-    <div class="premium-header">
-        <div class="premium-title floating">🎯 TrenchCoat Pro</div>
-        <div class="premium-subtitle">Ultra-Premium Cryptocurrency Trading Intelligence Platform</div>
-        
-        <div class="status-container">
-            <div class="status-badge status-live status-pulse">
-                🟢 LIVE TRADING
-            </div>
-            <div class="status-badge">
-                📡 6/6 APIs Connected
-            </div>
-            <div class="status-badge">
-                ⚡ 12ms Ultra-Low Latency
-            </div>
-            <div class="status-badge">
-                💎 Premium Mode
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-except Exception as e:
-    # Fallback if HTML rendering fails
-    st.markdown("# 🎯 TrenchCoat Pro")
-    st.markdown("**Ultra-Premium Cryptocurrency Trading Intelligence Platform**")
-    
-    # Status indicators using native Streamlit components
-    status_col1, status_col2, status_col3, status_col4 = st.columns(4)
-    with status_col1:
-        st.success("🟢 LIVE TRADING")
-    with status_col2:
-        st.info("📡 6/6 APIs Connected")
-    with status_col3:
-        st.info("⚡ 12ms Ultra-Low Latency")
-    with status_col4:
-        st.info("💎 Premium Mode")
+# Premium Header - FORCE NATIVE COMPONENTS (Fix HTML rendering)
+st.markdown("# 🎯 TrenchCoat Pro")
+st.markdown("**Ultra-Premium Cryptocurrency Trading Intelligence Platform**")
+
+# Status indicators using native Streamlit components (always)
+status_col1, status_col2, status_col3, status_col4 = st.columns(4)
+with status_col1:
+    st.success("🟢 LIVE TRADING")
+with status_col2:
+    st.info("📡 6/6 APIs Connected")  
+with status_col3:
+    st.info("⚡ 12ms Ultra-Low Latency")
+with status_col4:
+    st.info("💎 Premium Mode")
 
 # Enhanced Key Metrics Row with Premium Icons
 col1, col2, col3, col4 = st.columns(4)
