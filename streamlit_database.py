@@ -39,22 +39,22 @@ class StreamlitDatabase:
             coins = []
             for row in rows:
                 # Use axiom_price if available, fallback to discovery_price
-                price = row.get('axiom_price') or row.get('discovery_price') or 0.000001
+                price = row['axiom_price'] if row['axiom_price'] else (row['discovery_price'] if row['discovery_price'] else 0.000001)
                 
                 coin = {
-                    'ticker': f"${row.get('ticker', 'UNKNOWN')}",
+                    'ticker': f"${row['ticker'] if row['ticker'] else 'UNKNOWN'}",
                     'stage': self._get_processing_stage_by_price(price),
                     'price': price,
-                    'volume': row.get('axiom_volume') or row.get('peak_volume') or 0,
+                    'volume': row['axiom_volume'] if row['axiom_volume'] else (row['peak_volume'] if row['peak_volume'] else 0),
                     'score': self._calculate_confidence_score(row),
-                    'timestamp': row.get('discovery_time', datetime.now().isoformat()),
+                    'timestamp': row['discovery_time'] if row['discovery_time'] else datetime.now().isoformat(),
                     'change_24h': 0,  # Not available in trench.db
-                    'liquidity': row.get('liquidity') or 0,
+                    'liquidity': row['liquidity'] if row['liquidity'] else 0,
                     'source': 'trench_db',
                     'enriched': True,
-                    'market_cap': row.get('axiom_mc') or 0,
-                    'smart_wallets': row.get('smart_wallets') or 0,
-                    'contract_address': row.get('ca', '')
+                    'market_cap': row['axiom_mc'] if row['axiom_mc'] else 0,
+                    'smart_wallets': row['smart_wallets'] if row['smart_wallets'] else 0,
+                    'contract_address': row['ca'] if row['ca'] else ''
                 }
                 coins.append(coin)
             
@@ -121,7 +121,7 @@ class StreamlitDatabase:
             score = 0.5  # Base score
             
             # Smart wallets factor
-            smart_wallets = coin_row.get('smart_wallets') or 0
+            smart_wallets = coin_row['smart_wallets'] if coin_row['smart_wallets'] else 0
             if smart_wallets > 100:
                 score += 0.3
             elif smart_wallets > 50:
@@ -130,7 +130,7 @@ class StreamlitDatabase:
                 score += 0.1
             
             # Liquidity factor
-            liquidity = coin_row.get('liquidity') or 0
+            liquidity = coin_row['liquidity'] if coin_row['liquidity'] else 0
             if liquidity > 500000:
                 score += 0.15
             elif liquidity > 100000:
@@ -139,7 +139,7 @@ class StreamlitDatabase:
                 score += 0.05
             
             # Volume factor
-            volume = coin_row.get('axiom_volume') or coin_row.get('peak_volume') or 0
+            volume = coin_row['axiom_volume'] if coin_row['axiom_volume'] else (coin_row['peak_volume'] if coin_row['peak_volume'] else 0)
             if volume > 1000000:
                 score += 0.1
             elif volume > 500000:
