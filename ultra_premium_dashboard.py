@@ -32,6 +32,13 @@ try:
 except ImportError:
     LiveDataManager = None
 
+# Import professional branding
+try:
+    from branding_system import BrandingSystem
+    branding = BrandingSystem()
+except ImportError:
+    branding = None
+
 # Page configuration (handled by streamlit_app.py)
 
 # Custom CSS for ultra-premium design
@@ -161,6 +168,8 @@ class UltraPremiumDashboard:
     
     def __init__(self):
         self.initialize_session_state()
+        if branding:
+            branding.apply_custom_css()
         self.setup_page_layout()
     
     def initialize_session_state(self):
@@ -188,6 +197,15 @@ class UltraPremiumDashboard:
     
     def render_header(self):
         """Render premium header with live status"""
+        if branding:
+            st.markdown(branding.get_professional_header(
+                "TrenchCoat Pro",
+                "Ultra-Premium Cryptocurrency Trading Intelligence Platform",
+                "primary"
+            ), unsafe_allow_html=True)
+            return
+        
+        # Fallback header if branding not available
         header_col1, header_col2, header_col3 = st.columns([2, 3, 1])
         
         with header_col1:
@@ -248,7 +266,7 @@ class UltraPremiumDashboard:
         self.render_key_metrics()
         
         # Create tabs for different views
-        tab1, tab2, tab3 = st.tabs(["📊 Live Dashboard", "🧠 Advanced Analytics", "⚙️ Trading Engine"])
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📝 Dev Blog"])
         
         with tab1:
             # Main content columns
@@ -271,8 +289,16 @@ class UltraPremiumDashboard:
             self.render_advanced_analytics()
         
         with tab3:
+            # Model Builder Section
+            self.render_model_builder_section()
+        
+        with tab4:
             # Trading Engine Configuration
             self.render_trading_engine_config()
+        
+        with tab5:
+            # Dev Blog System
+            self.render_dev_blog_section()
     
     def render_key_metrics(self):
         """Render key performance metrics"""
@@ -970,6 +996,39 @@ class UltraPremiumDashboard:
             
         except Exception as e:
             st.error(f"Background notification error: {e}")
+    
+    def render_model_builder_section(self):
+        """Render model builder interface"""
+        try:
+            from model_builder import ModelBuilder
+            from historic_data_manager import HistoricDataManager
+            
+            # Create sub-tabs for model builder features
+            subtab1, subtab2 = st.tabs(["🤖 Model Builder", "📊 Historic Data"])
+            
+            with subtab1:
+                builder = ModelBuilder()
+                builder.render_model_builder()
+            
+            with subtab2:
+                manager = HistoricDataManager()
+                manager.render_historic_data_tab()
+                
+        except ImportError as e:
+            st.error(f"Model Builder components not available: {e}")
+            st.info("Please ensure all ML dependencies are installed.")
+    
+    def render_dev_blog_section(self):
+        """Render dev blog interface"""
+        try:
+            from dev_blog_system import DevBlogSystem
+            
+            blog_system = DevBlogSystem()
+            blog_system.render_dev_blog_interface()
+                
+        except ImportError as e:
+            st.error(f"Dev Blog system not available: {e}")
+            st.info("Please ensure all dependencies are installed.")
 
 def main():
     """Run the ultra-premium dashboard"""
