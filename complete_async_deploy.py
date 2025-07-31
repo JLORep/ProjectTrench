@@ -32,6 +32,42 @@ class CompleteAsyncDeployer:
         except Exception as e:
             safe_print(f"Logging error: {e}")
     
+    def should_send_dev_update(self) -> bool:
+        """Check if commit warrants a dev blog update"""
+        msg_lower = self.commit_msg.lower()
+        
+        # Significant keywords that warrant dev updates
+        significant_keywords = [
+            'major:', 'feature:', 'fix:', 'integrate', 'add', 'implement',
+            'complete', 'activate', 'deploy', 'release', 'enhancement'
+        ]
+        
+        # Skip keywords
+        skip_keywords = ['wip', 'temp', 'minor:', 'typo', 'comment']
+        
+        # Check for significance
+        is_significant = any(keyword in msg_lower for keyword in significant_keywords)
+        should_skip = any(keyword in msg_lower for keyword in skip_keywords)
+        
+        return is_significant and not should_skip
+    
+    def run_dev_update(self):
+        """Run the dev update script"""
+        try:
+            # Run dev update with hidden window
+            result = subprocess.run([
+                sys.executable, "send_dev_update.py"
+            ], timeout=30, capture_output=True, text=True, cwd=self.project_dir,
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
+            
+            if result.returncode == 0:
+                self.log_message("DEV UPDATE: Successfully sent dev blog update")
+            else:
+                self.log_message(f"DEV UPDATE: Failed with exit code {result.returncode}")
+                
+        except Exception as e:
+            self.log_message(f"DEV UPDATE ERROR: {e}")
+    
     def send_discord_notification(self, title: str, description: str, color: int = 0x10b981):
         """Send Discord notification"""
         try:
@@ -108,6 +144,11 @@ class CompleteAsyncDeployer:
                     f"Deployment completed successfully!\n\n**Status:** Live on Streamlit\n**Response Time:** Fast\n**Validation:** Passed",
                     0x22c55e  # Green
                 )
+                
+                # Step 4: Send dev blog update if significant commit
+                if self.should_send_dev_update():
+                    self.log_message("DEV UPDATE: Triggering dev blog update")
+                    self.run_dev_update()
                 
                 return True
                 

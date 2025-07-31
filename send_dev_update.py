@@ -15,69 +15,84 @@ def get_recent_commits():
     result = subprocess.run(['git', 'log', '--oneline', '-5'], capture_output=True, text=True)
     return result.stdout.strip().split('\n')
 
+def analyze_recent_changes():
+    """Analyze recent commits to determine what changed"""
+    # Get last 5 commits
+    result = subprocess.run(['git', 'diff', '--name-only', 'HEAD~5..HEAD'], capture_output=True, text=True)
+    changed_files = result.stdout.strip().split('\n') if result.stdout else []
+    
+    # Categorize changes
+    features = []
+    fixes = []
+    
+    # Check most recent commit message
+    result = subprocess.run(['git', 'log', '-1', '--pretty=format:%s'], capture_output=True, text=True)
+    commit_msg = result.stdout.strip()
+    
+    # Analyze commit message
+    if 'add' in commit_msg.lower() or 'feature' in commit_msg.lower():
+        features.append(f"✅ **{commit_msg}**")
+    elif 'fix' in commit_msg.lower():
+        fixes.append(f"🔧 **{commit_msg}**")
+    
+    # Analyze changed files
+    for file in changed_files:
+        if file.endswith('.py') and 'new' in file.lower():
+            features.append(f"✅ New module: `{file}`")
+        elif 'requirements.txt' in file:
+            fixes.append(f"🔧 Updated dependencies")
+        elif '.md' in file:
+            fixes.append(f"📝 Documentation updates: `{file}`")
+    
+    return features, fixes, changed_files
+
 def send_dev_update():
     """Send development update to Discord"""
     
     # Get recent commits
     commits = get_recent_commits()
     
-    # Latest features and fixes
-    latest_features = [
-        "✅ **Solana Wallet Integration** - Real-time portfolio tracking",
-        "✅ **Live Price Feeds** - Jupiter & CoinGecko API integration", 
-        "✅ **USD Portfolio Values** - Accurate SOL/USD conversion",
-        "✅ **Multi-RPC Support** - Fallback endpoints for reliability",
-        "✅ **SPL Token Detection** - Complete token balance tracking"
-    ]
+    # Analyze recent changes
+    features, fixes, changed_files = analyze_recent_changes()
     
-    latest_fixes = [
-        "🔧 Added base58 dependency for wallet validation",
-        "🔧 Fixed Streamlit 303 redirect (auth required)",
-        "🔧 Updated CLAUDE.md with comprehensive infrastructure docs",
-        "🔧 Documented existing wallet/portfolio systems to avoid duplication"
-    ]
+    # If no specific features/fixes detected, use generic message
+    if not features and not fixes:
+        features = ["✅ **Code improvements and optimizations**"]
+        fixes = ["🔧 **General maintenance and updates**"]
     
     # Technical message
     tech_message = f"""🚀 **TrenchCoat Pro Dev Update - {datetime.now().strftime('%Y-%m-%d')}**
 
-**🎯 Major Achievement: Solana Wallet Integration Complete!**
-
 **New Features:**
-{chr(10).join(latest_features)}
+{chr(10).join(features) if features else '• No new features in this update'}
 
 **Bug Fixes & Improvements:**
-{chr(10).join(latest_fixes)}
+{chr(10).join(fixes) if fixes else '• No fixes in this update'}
 
 **Recent Commits:**
 ```
 {chr(10).join(commits[:3])}
 ```
 
-**Technical Details:**
-- Integrated `SolanaWalletTracker` class with multi-RPC endpoints
-- Real-time balance fetching via Solana JSON-RPC
-- Jupiter Price API for live SOL/USD rates (CoinGecko fallback)
-- Complete SPL token enumeration with metadata enrichment
-- Dashboard integration via `render_solana_wallet_section()`
+**Files Changed:** {len(changed_files)} files modified
 
-**Infrastructure Note:** All wallet/portfolio logic builds on existing production systems - no wheels reinvented! 🎯
+**Deployment Status:** ✅ Successfully deployed to Streamlit Cloud
 """
 
     # Non-technical message
-    non_tech_message = f"""💎 **TrenchCoat Pro Update - Wallet Tracking Now Live!**
+    latest_commit = commits[0] if commits else "Updates"
+    feature_count = len(features)
+    
+    non_tech_message = f"""💎 **TrenchCoat Pro Update**
 
 **What's New:**
-🔗 **Connect Your Solana Wallet** - Track your real portfolio in the dashboard!
-💰 **Live USD Values** - See your SOL worth in real-time
-🪙 **All Tokens Visible** - Every SPL token in your wallet displayed
-📊 **Portfolio Metrics** - Total value, token counts, and more
+{f"🚀 {feature_count} new features added!" if feature_count > 0 else "🔧 System improvements and optimizations"}
 
-**Why This Matters:**
-Users can now connect their actual Solana wallets to TrenchCoat Pro and see their real portfolio alongside our trading signals and analytics. No more demo data - this is YOUR real crypto!
+**Latest Update:** {latest_commit.split(': ', 1)[-1] if ': ' in latest_commit else latest_commit}
 
-**Try It Now:** Head to the dashboard and look for the "💎 Solana Wallet" section!
+**Platform Status:** ✅ Live and running smoothly
 
-*Making crypto trading smarter, one feature at a time.* 🚀
+*Making crypto trading smarter, one update at a time.* 🚀
 """
 
     # Discord webhook - fixed URL from webhook_config.json
