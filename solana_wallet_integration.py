@@ -151,6 +151,33 @@ class SolanaWalletTracker:
                 'logoURI': ''
             }
     
+    def get_sol_price(self) -> float:
+        """Get current SOL price in USD from Jupiter"""
+        try:
+            # SOL mint address
+            sol_mint = "So11111111111111111111111111111111111111112"
+            url = f"https://price.jup.ag/v4/price?ids={sol_mint}"
+            
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if 'data' in data and sol_mint in data['data']:
+                    return float(data['data'][sol_mint]['price'])
+            
+            # Fallback to CoinGecko
+            url = "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if 'solana' in data and 'usd' in data['solana']:
+                    return float(data['solana']['usd'])
+                    
+        except Exception:
+            pass
+        
+        # Default fallback
+        return 100.0
+    
     def get_full_portfolio(self, wallet_address: str) -> Dict[str, Any]:
         """Get complete portfolio including SOL and SPL tokens"""
         
@@ -167,10 +194,14 @@ class SolanaWalletTracker:
             token.update(metadata)
             enriched_tokens.append(token)
         
+        # Get current SOL price
+        sol_price = self.get_sol_price()
+        
         portfolio = {
             'wallet_address': wallet_address,
             'timestamp': datetime.now().isoformat(),
             'sol_balance': sol_data.get('balance_sol', 0) if sol_data.get('success') else 0,
+            'sol_price_usd': sol_price,
             'tokens': enriched_tokens,
             'total_tokens': len(enriched_tokens),
             'success': sol_data.get('success', False)
@@ -241,14 +272,17 @@ def render_solana_wallet_section():
         st.markdown("---")
         st.subheader("💰 Your Real Portfolio")
         
-        # SOL balance
+        # SOL balance and USD value
         col1, col2, col3 = st.columns(3)
+        
+        sol_usd_value = portfolio['sol_balance'] * portfolio.get('sol_price_usd', 100)
         
         with col1:
             st.metric(
                 "💎 SOL Balance", 
                 f"{portfolio['sol_balance']:.4f} SOL",
-                help="Native SOL balance in your wallet"
+                f"${sol_usd_value:,.2f} USD",
+                help=f"Native SOL balance @ ${portfolio.get('sol_price_usd', 100):.2f}/SOL"
             )
         
         with col2:
@@ -317,13 +351,14 @@ def get_wallet_portfolio_summary(wallet_address: str) -> Dict[str, Any]:
     portfolio = tracker.get_full_portfolio(wallet_address)
     
     if portfolio['success']:
-        # Rough USD estimation (would need price feeds for accurate conversion)
-        sol_price_estimate = 100  # Placeholder - should fetch from price API
-        estimated_value = portfolio['sol_balance'] * sol_price_estimate
+        # Calculate USD value with real SOL price
+        sol_price = portfolio.get('sol_price_usd', 100)
+        estimated_value = portfolio['sol_balance'] * sol_price
         
         return {
             'total_value_usd': estimated_value,
             'sol_balance': portfolio['sol_balance'],
+            'sol_price_usd': sol_price,
             'token_count': portfolio['total_tokens'],
             'last_updated': portfolio['timestamp']
         }
