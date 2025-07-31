@@ -527,65 +527,50 @@ class UltraPremiumDashboard:
         </div>
         """
         
-        col1, col2 = st.columns([1, 4])
+        # Display coin icon first
+        st.markdown(icon_html, unsafe_allow_html=True)
         
-        with col1:
-            st.markdown(icon_html, unsafe_allow_html=True)
+        # Show live data fields if available
+        price_change = coin.get('change_24h', 0)
+        change_arrow = '↑' if price_change > 0 else '↓'
         
-        with col2:
-            # Show live data fields if available
-            price_change = coin.get('change_24h', 0)
-            change_arrow = '↑' if price_change > 0 else '↓'
-            
-            # Enhanced display for enriched coins
-            is_enriched = coin.get('source') in ['telegram', 'enriched'] or coin.get('enriched', False)
-            source_icon = "📡" if coin.get('source') == 'telegram' else "🔍" if is_enriched else "📊"
-            
-            liquidity_text = f"${coin.get('liquidity', 0):,.0f}" if 'liquidity' in coin else f"Vol: ${coin.get('volume', 0):,.0f}"
-            
-            # Show additional enriched data if available
-            social_score = coin.get('social_score', 0)
-            rug_risk = coin.get('rug_risk', 0)
-            verified = coin.get('contract_verified', False)
-            
-            # Fix: Use Streamlit native components for better rendering
-            # Create a container with alpha transparency effect
-            with st.container():
-                # Coin header info
-                header_col1, header_col2, header_col3 = st.columns([3, 2, 1])
-                with header_col1:
-                    coin_display = f"{coin['ticker']} {source_icon}"
-                    if verified:
-                        coin_display += " ✅"
-                    st.markdown(f"**{coin_display}**")
-                    st.caption(f"${coin['price']:.6f}")
-                
-                with header_col2:
-                    if price_change != 0:
-                        delta_color = "🟢" if price_change > 0 else "🔴"
-                        st.markdown(f"{delta_color} {change_arrow}{abs(price_change):.1f}%")
-                
-                with header_col3:
-                    st.caption(coin['stage'])
-                
-                # Progress bar for score
-                st.progress(coin['score'], text=f"Score: {coin['score']:.2f}")
-                
-                # Metrics row
-                metric_cols = st.columns(2)
-                with metric_cols[0]:
-                    st.caption(liquidity_text)
-                with metric_cols[1]:
-                    if is_enriched:
-                        st.caption(f"🎯 Social: {social_score:.1f}")
-                
-                # Risk indicator if enriched
-                if is_enriched:
-                    risk_emoji = "⚠️" if rug_risk > 0.5 else "✅"
-                    st.caption(f"{risk_emoji} Risk: {rug_risk:.1f}")
-                
-                # Visual separator
-                st.markdown("")
+        # Enhanced display for enriched coins
+        is_enriched = coin.get('source') in ['telegram', 'enriched'] or coin.get('enriched', False)
+        source_icon = "📡" if coin.get('source') == 'telegram' else "🔍" if is_enriched else "📊"
+        
+        liquidity_text = f"${coin.get('liquidity', 0):,.0f}" if 'liquidity' in coin else f"Vol: ${coin.get('volume', 0):,.0f}"
+        
+        # Show additional enriched data if available
+        social_score = coin.get('social_score', 0)
+        rug_risk = coin.get('rug_risk', 0)
+        verified = coin.get('contract_verified', False)
+        
+        # Fix: Simplified rendering to avoid nested column issues
+        coin_display = f"{coin['ticker']} {source_icon}"
+        if verified:
+            coin_display += " ✅"
+        
+        # Main coin info
+        st.markdown(f"**{coin_display}** - {coin['stage']}")
+        st.caption(f"${coin['price']:.6f}")
+        
+        # Price change if available
+        if price_change != 0:
+            delta_color = "🟢" if price_change > 0 else "🔴"
+            st.markdown(f"{delta_color} {change_arrow}{abs(price_change):.1f}%")
+        
+        # Progress bar for score
+        st.progress(coin['score'], text=f"Score: {coin['score']:.2f}")
+        
+        # Additional info
+        st.caption(liquidity_text)
+        if is_enriched:
+            st.caption(f"🎯 Social: {social_score:.1f}")
+            risk_emoji = "⚠️" if rug_risk > 0.5 else "✅"
+            st.caption(f"{risk_emoji} Risk: {rug_risk:.1f}")
+        
+        # Visual separator
+        st.markdown("---")
     
     def render_performance_chart(self):
         """Render real-time performance chart"""
