@@ -30,6 +30,12 @@ class EnhancedAutoDeployer:
         # Load existing deployment log
         self.load_deployment_log()
     
+    def run_hidden_subprocess(self, cmd, **kwargs):
+        """Run subprocess with hidden window on Windows"""
+        if os.name == 'nt':
+            kwargs['creationflags'] = subprocess.CREATE_NO_WINDOW
+        return subprocess.run(cmd, **kwargs)
+    
     def load_deployment_log(self):
         """Load existing deployment log"""
         try:
@@ -206,14 +212,14 @@ Updates are live at [TrenchCoat Pro]({self.streamlit_url}).
         """Detect what type of deployment this is"""
         try:
             # Get the last commit info
-            result = subprocess.run(
+            result = self.run_hidden_subprocess(
                 ["git", "log", "--oneline", "-1"], 
                 capture_output=True, text=True, check=True
             )
             commit_message = result.stdout.strip()
             
             # Get files changed
-            result = subprocess.run(
+            result = self.run_hidden_subprocess(
                 ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
                 capture_output=True, text=True, check=True
             )
@@ -274,7 +280,7 @@ Updates are live at [TrenchCoat Pro]({self.streamlit_url}).
             print("[SYNC] Syncing files to GitHub...")
             
             # Check git status
-            result = subprocess.run(
+            result = self.run_hidden_subprocess(
                 ["git", "status", "--porcelain"],
                 capture_output=True, text=True, check=True
             )
@@ -283,10 +289,10 @@ Updates are live at [TrenchCoat Pro]({self.streamlit_url}).
                 print("[SYNC] Found uncommitted changes, staging them...")
                 
                 # Add only tracked files to avoid untracked file issues
-                subprocess.run(["git", "add", "-u"], check=True)
+                self.run_hidden_subprocess(["git", "add", "-u"], check=True)
                 
                 # Check if there are actually staged changes before committing
-                staged_result = subprocess.run(
+                staged_result = self.run_hidden_subprocess(
                     ["git", "diff", "--cached", "--name-only"],
                     capture_output=True, text=True, check=True
                 )
@@ -294,12 +300,12 @@ Updates are live at [TrenchCoat Pro]({self.streamlit_url}).
                 if staged_result.stdout.strip():
                     # Commit with auto-generated message only if there are staged changes
                     commit_msg = f"Auto-sync deployment changes - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-                    subprocess.run(["git", "commit", "-m", commit_msg], check=True)
+                    self.run_hidden_subprocess(["git", "commit", "-m", commit_msg], check=True)
                 else:
                     print("[SYNC] No tracked files to commit, skipping commit step")
                 
                 # Push to GitHub
-                subprocess.run(["git", "push", "origin", "main"], check=True)
+                self.run_hidden_subprocess(["git", "push", "origin", "main"], check=True)
                 print("[SYNC] All files synced to GitHub successfully")
             else:
                 print("[SYNC] Repository already up to date")

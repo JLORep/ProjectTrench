@@ -91,9 +91,11 @@ class CompleteAsyncDeployer:
             # Step 2: Run the enhanced auto deployer
             self.log_message("DEPLOY: Starting enhanced_auto_deploy.py")
             
+            # Run enhanced auto deploy with hidden window
             result = subprocess.run([
                 sys.executable, "enhanced_auto_deploy.py"
-            ], timeout=300, capture_output=True, text=True, cwd=self.project_dir)
+            ], timeout=300, capture_output=True, text=True, cwd=self.project_dir,
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
             
             # Step 3: Process results and send completion notification
             if result.returncode == 0:

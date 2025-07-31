@@ -43,12 +43,15 @@ def main():
         if should_deploy(commit_msg):
             safe_print(f"ASYNC HOOK: Triggering complete deployment for {commit_hash}")
             
-            # Start the complete async deployment system immediately
+            # Start the complete async deployment system immediately (hidden window)
             if os.name == 'nt':  # Windows
                 subprocess.Popen([
-                    'cmd', '/c', 'start', '/b', 
                     sys.executable, 'complete_async_deploy.py', commit_hash, commit_msg
-                ], creationflags=subprocess.DETACHED_PROCESS)
+                ], 
+                stdout=subprocess.DEVNULL, 
+                stderr=subprocess.DEVNULL,
+                creationflags=subprocess.CREATE_NO_WINDOW | subprocess.DETACHED_PROCESS
+                )
             else:  # Unix
                 subprocess.Popen([
                     'nohup', sys.executable, 'complete_async_deploy.py', commit_hash, commit_msg
