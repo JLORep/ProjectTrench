@@ -61,7 +61,7 @@ chart_data = pd.DataFrame({
 st.line_chart(chart_data.set_index('Date'))
 
 # Footer
-st.info("🚀 This is a demo version. Full TrenchCoat Pro features available at trenchcoat.pro")
+st.info("🚀 Live Demo: https://trenchdemo.streamlit.app | Full TrenchCoat Pro at trenchcoat.pro")
 
 st.markdown("---")
 st.markdown("© 2025 TrenchCoat Pro | Professional Trading Intelligence")
