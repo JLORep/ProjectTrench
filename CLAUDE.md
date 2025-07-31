@@ -55,6 +55,7 @@
 
 ### Dashboard Integration
 - `ultra_premium_dashboard.py` - Main dashboard with new Datasets tab added
+- `dev_blog_system.py` - Enhanced Discord notifications with AutoOverviewUpdater integration
 - Live data feeds, progress tracking, real-time updates already implemented
 
 ## Configuration Files
