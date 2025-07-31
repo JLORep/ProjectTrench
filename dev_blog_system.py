@@ -12,6 +12,7 @@ import sqlite3
 from dataclasses import dataclass, asdict
 import asyncio
 import re
+from auto_overview_updater import AutoOverviewUpdater
 
 @dataclass
 class BlogPost:
@@ -38,6 +39,7 @@ class DevBlogSystem:
     def __init__(self):
         self.db_path = "trenchcoat_devblog.db"
         self.discord_webhook_url = "https://discord.com/api/webhooks/1400491407550058610/Q59NIxt5lSvFgpwckXOv_P9TF8uWjudOTJxEw5hZ3fL61Dg2-WgSwrpIb110UiG4Z1f7"
+        self.overview_updater = AutoOverviewUpdater()
         self.init_database()
         
         # Feature tracking
@@ -507,7 +509,7 @@ Ready to experience the most advanced crypto trading platform? Let's go! 💎
         
         # Discord messages
         tech_discord = f"""
-🔧 **TrenchCoat Pro v{version} - Technical Update**
+**TrenchCoat Pro v{version} - Technical Update**
 
 **New Features:**
 {chr(10).join([f'• {feature}' for feature in features[:3]])}
@@ -524,15 +526,15 @@ Full technical details in our dev blog: trenchcoat.pro/blog
         """.strip()
         
         non_tech_discord = f"""
-🚀 **TrenchCoat Pro v{version} Update!**
+**TrenchCoat Pro v{version} Update!**
 
 **What's New:**
-{chr(10).join([f'🎯 {feature}' for feature in features[:3]])}
+{chr(10).join([f'• {feature}' for feature in features[:3]])}
 
 This update makes your crypto trading even more profitable with faster signals, better accuracy, and smarter AI analysis! 
 
-💎 Ready to catch the next 100x gem? 
-🔗 Try it now: https://trenchdemo.streamlit.app
+Ready to catch the next 100x gem? 
+Try it now: https://trenchdemo.streamlit.app
 
 #Update #CryptoTrading #TrenchCoatPro
         """.strip()
