@@ -28,8 +28,8 @@ class MandatoryDeploymentEnforcer:
             has_changes = bool(result.stdout.strip())
             
             if has_changes:
-                print("[MANDATORY] 🚨 Uncommitted changes detected!")
-                print("[MANDATORY] 📋 Changed files:")
+                print("[MANDATORY] WARNING: Uncommitted changes detected!")
+                print("[MANDATORY] Changed files:")
                 for line in result.stdout.strip().split('\n'):
                     if line.strip():
                         print(f"   {line}")
@@ -55,7 +55,7 @@ class MandatoryDeploymentEnforcer:
             unpushed_count = int(result.stdout.strip())
             
             if unpushed_count > 0:
-                print(f"[MANDATORY] 🚨 {unpushed_count} unpushed commits detected!")
+                print(f"[MANDATORY] WARNING: {unpushed_count} unpushed commits detected!")
                 
                 # Show unpushed commits
                 result = subprocess.run(
@@ -63,7 +63,7 @@ class MandatoryDeploymentEnforcer:
                     capture_output=True, text=True, check=True
                 )
                 
-                print("[MANDATORY] 📋 Unpushed commits:")
+                print("[MANDATORY] Unpushed commits:")
                 for line in result.stdout.strip().split('\n'):
                     if line.strip():
                         print(f"   {line}")
@@ -111,7 +111,7 @@ class MandatoryDeploymentEnforcer:
     def enforce_mandatory_deployment(self) -> bool:
         """Main enforcement method - ALWAYS deploy if needed"""
         print("=" * 70)
-        print("🚨 MANDATORY DEPLOYMENT ENFORCER 🚨")
+        print("MANDATORY DEPLOYMENT ENFORCER")
         print("EVERY CHANGE MUST BE DEPLOYED - NO EXCEPTIONS")
         print("=" * 70)
         
@@ -120,7 +120,7 @@ class MandatoryDeploymentEnforcer:
         # Check for uncommitted changes
         if self.check_for_changes():
             needs_deployment = True
-            print("[MANDATORY] 🔄 Auto-committing changes...")
+            print("[MANDATORY] Auto-committing changes...")
             if not self.auto_commit_changes():
                 print("[ERROR] Failed to auto-commit changes")
                 return False
