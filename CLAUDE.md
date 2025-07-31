@@ -63,8 +63,30 @@
 - `unified_notifications.py` - All-platform notification system (Email, Telegram, Discord)
 - `discord_integration.py` - Professional Discord webhook integration with rich embeds
 - `webhook_config.json` - Discord webhooks configured for multiple channels
+  - Dev Blog: https://discord.com/api/webhooks/1400491407550058610/Q59NIxt5lSvFgpwckXOv_P9TF8uWjudOTJxEw5hZ3fL61Dg2-WgSwrpIb110UiG4Z1f7
+  - Overview: https://discord.com/api/webhooks/1400497302241677383/Im9oyVehkH6zhsc5w4mt4KHQvgSR2qfMPD-k6lTR-X0XQWT3eLV_IJM2-MqQNM6dPAzM
+  - Deployments: https://discord.com/api/webhooks/1400577499225657404/x3eRkhbp84bA_3f3AuyUIrBhDtozTGnVbxVrPg3ewLWIL3eO0s_GZoiW0lRQr6Kb5jQ3
+  - Signals: https://discord.com/api/webhooks/1400573697642860639/ytKTM9Ww4oMOHqLbX3rT-NtYPffFQUuOsy_pD5oQuI0V4hYZ9IhAdUSsR2GihQxWsRRG
 - Email config: support@trenchcoat.pro / TrenchF00t
 - Telegram bot: 8479347588:AAH27CeFD3iiyQM7l6YKk9bMlQznlCLAhxo
+
+### Dev Blog & Update System (ACTIVE)
+- `dev_blog_system.py` - Complete development blog with Discord integration
+  - DevBlogSystem class with SQLite storage (trenchcoat_devblog.db)
+  - Dual messaging: technical and non-technical summaries
+  - Auto Discord notifications via webhooks
+  - Integration with AutoOverviewUpdater for feature tracking
+- `send_dev_update.py` - Quick script to send dev updates
+  - Fetches recent git commits
+  - Sends formatted updates to Discord dev-blog channel
+  - Updates project overview automatically
+  - Updates CLAUDE.md timestamp
+- `auto_overview_updater.py` - Automated feature status tracking
+  - Tracks feature additions and status changes
+  - Sends updates to Discord overview channel
+  - Version management (major/minor/patch)
+  - Feature state persistence in feature_state.json
+- **Usage**: Run `python send_dev_update.py` after significant commits
 
 ### Telegram Signal Infrastructure (COMPREHENSIVE)
 - `src/telegram/signal_monitor.py` - Core telegram signal monitoring with pattern matching
@@ -289,6 +311,13 @@ This will:
   - Full portfolio aggregation with metadata enrichment
   - Added base58 to requirements.txt for wallet validation
   - Integrated into streamlit_safe_dashboard.py with error handling
+- **Dev Blog System Activated** (Latest achievement):
+  - Sent development update to Discord dev-blog channel
+  - Technical and non-technical summaries posted
+  - Overview channel updated with new Solana wallet feature
+  - Created `send_dev_update.py` for quick updates after commits
+  - Fixed webhook URLs from webhook_config.json
+  - Added UTF-8 encoding support for emoji handling
 - **Documentation**: Complete session summary with all lessons learned
 
 ## Next Steps
@@ -299,4 +328,4 @@ This will:
 - Maintain context via this file for future sessions
 
 ---
-*Last updated: 2025-07-31 - Comprehensive project scan completed*
+*Last updated: 2025-07-31 23:15 - Solana wallet integration complete, dev blog system activated, Discord updates sent*
