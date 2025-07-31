@@ -285,9 +285,18 @@ Updates are live at [TrenchCoat Pro]({self.streamlit_url}).
                 # Add only tracked files to avoid untracked file issues
                 subprocess.run(["git", "add", "-u"], check=True)
                 
-                # Commit with auto-generated message
-                commit_msg = f"Auto-sync deployment changes - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-                subprocess.run(["git", "commit", "-m", commit_msg], check=True)
+                # Check if there are actually staged changes before committing
+                staged_result = subprocess.run(
+                    ["git", "diff", "--cached", "--name-only"],
+                    capture_output=True, text=True, check=True
+                )
+                
+                if staged_result.stdout.strip():
+                    # Commit with auto-generated message only if there are staged changes
+                    commit_msg = f"Auto-sync deployment changes - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+                    subprocess.run(["git", "commit", "-m", commit_msg], check=True)
+                else:
+                    print("[SYNC] No tracked files to commit, skipping commit step")
                 
                 # Push to GitHub
                 subprocess.run(["git", "push", "origin", "main"], check=True)
