@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# DEPLOYMENT_TIMESTAMP: 2025-07-31 23:25:43 - Force deployment
+# DEPLOYMENT_TIMESTAMP: 2025-07-31 23:44:00 - Force deployment
 """
 TrenchCoat Pro - Premium Trading Intelligence Platform
 Ultra-professional design with stunning visuals
@@ -480,24 +480,16 @@ with col4:
 
 st.markdown("---")
 
-# Check if ultra premium dashboard is available
+# FORCE USE OF STREAMLIT SAFE DASHBOARD (bypassing problematic imports)
+st.success("🎯 Loading TrenchCoat Pro with Telegram Signals...")
 try:
-    from ultra_premium_dashboard import UltraPremiumDashboard
-    # Use ultra premium dashboard with datasets tab
-    dashboard = UltraPremiumDashboard()
-    st.stop()  # Stop here since ultra premium dashboard handles everything
+    from streamlit_safe_dashboard import StreamlitSafeDashboard
+    dashboard = StreamlitSafeDashboard()
+    st.stop()  # Stop here since streamlit safe dashboard handles everything
 except ImportError as e:
-    # Try streamlit-safe version
-    try:
-        from streamlit_safe_dashboard import StreamlitSafeDashboard
-        st.success("🎯 Loading TrenchCoat Pro with Telegram Signals...")
-        dashboard = StreamlitSafeDashboard()
-        st.stop()  # Stop here since streamlit safe dashboard handles everything
-    except ImportError:
-        # Final fallback to basic tabs
-        st.warning(f"⚠️ Ultra Premium Dashboard import failed: {e}")
-        st.info("🔧 Using basic fallback version")
-        pass
+    st.error(f"❌ Critical Error: Could not load dashboard: {e}")
+    st.info("🔧 Contact support - dashboard module missing")
+    st.stop()
 
 # Premium Content Tabs with Icons (fallback)
 tab1, tab2, tab3, tab4 = st.tabs(["📊 Live Dashboard", "🧠 AI Analytics", "🤖 Trading Bot", "📈 Performance"])
