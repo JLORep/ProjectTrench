@@ -80,17 +80,25 @@ except Exception as e:
     temp_script.write_text(deploy_script)
     
     # Start completely independent process
-    if os.name == 'nt':  # Windows
-        # Use start command to detach process
-        subprocess.Popen([
-            'cmd', '/c', 'start', '/b', 
-            sys.executable, str(temp_script)
-        ], creationflags=subprocess.DETACHED_PROCESS)
-    else:  # Unix
-        # Use nohup to detach process
-        subprocess.Popen([
-            'nohup', sys.executable, str(temp_script)
-        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        if os.name == 'nt':  # Windows
+            # Use start command to detach process
+            subprocess.Popen([
+                'cmd', '/c', 'start', '/b', 
+                sys.executable, str(temp_script)
+            ], creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_CONSOLE)
+        else:  # Unix
+            # Use nohup to detach process
+            subprocess.Popen([
+                'nohup', sys.executable, str(temp_script)
+            ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        # Log that we started the process
+        with open(log_file, 'a') as f:
+            f.write(f"[{datetime.now().isoformat()}] ASYNC LAUNCHED: Independent process started for {commit_hash}\n")
+    except Exception as e:
+        with open(log_file, 'a') as f:
+            f.write(f"[{datetime.now().isoformat()}] ASYNC ERROR: Failed to start process: {e}\n")
 
 def main():
     """Main hook execution"""
