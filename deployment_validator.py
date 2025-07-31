@@ -19,7 +19,7 @@ class DeploymentValidator:
         self.timeout = 10
         self.max_retries = 3
         self.check_interval = 30  # seconds
-        self.max_wait_time = 600  # 10 minutes
+        self.max_wait_time = 240  # 4 minutes (leaves 1 minute buffer for async deploy)
         
         # Discord webhook for failures
         self.failure_webhook = "https://discord.com/api/webhooks/1400577499225657404/x3eRkhbp84bA_3f3AuyUIrBhDtozTGnVbxVrPg3ewLWIL3eO0s_GZoiW0lRQr6Kb5jQ3"

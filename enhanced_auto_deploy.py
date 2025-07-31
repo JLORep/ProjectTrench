@@ -31,9 +31,12 @@ class EnhancedAutoDeployer:
         self.load_deployment_log()
     
     def run_hidden_subprocess(self, cmd, **kwargs):
-        """Run subprocess with hidden window on Windows"""
+        """Run subprocess with hidden window on Windows and timeout"""
         if os.name == 'nt':
             kwargs['creationflags'] = subprocess.CREATE_NO_WINDOW
+        # Add default timeout for git operations to prevent hanging
+        if not 'timeout' in kwargs and any('git' in str(c) for c in cmd):
+            kwargs['timeout'] = 60  # 60 second timeout for git operations
         return subprocess.run(cmd, **kwargs)
     
     def load_deployment_log(self):
@@ -312,6 +315,9 @@ Updates are live at [TrenchCoat Pro]({self.streamlit_url}).
             
             return True
             
+        except subprocess.TimeoutExpired as e:
+            print(f"[ERROR] GitHub sync timed out: {e}")
+            return False
         except subprocess.CalledProcessError as e:
             print(f"[ERROR] GitHub sync failed: {e}")
             return False
