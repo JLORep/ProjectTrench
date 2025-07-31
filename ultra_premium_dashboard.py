@@ -520,10 +520,10 @@ class UltraPremiumDashboard:
                             Score: {coin['score']:.2f}
                         </span>
                     </div>
-                    {f'''<div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 10px;">
-                        <span style="color: #a855f7;">Social: {social_score:.1f}</span>
-                        <span style="color: {('#ef4444' if rug_risk > 0.5 else '#10b981')};">Risk: {rug_risk:.1f}</span>
-                    </div>''' if is_enriched else ''}
+                    {'<div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 10px;">' +
+                     f'<span style="color: #a855f7;">Social: {social_score:.1f}</span>' +
+                     f'<span style="color: {("#ef4444" if rug_risk > 0.5 else "#10b981")};">Risk: {rug_risk:.1f}</span>' +
+                     '</div>' if is_enriched else ''}
                 </div>
             </div>
             """, unsafe_allow_html=True)
