@@ -88,18 +88,18 @@ class CompleteAsyncDeployer:
                 0x3b82f6  # Blue
             )
             
-            # Step 2: Run the enhanced auto deployer
-            self.log_message("DEPLOY: Starting enhanced_auto_deploy.py")
+            # Step 2: Run the fast deployer
+            self.log_message("DEPLOY: Starting fast_deployment.py")
             
-            # Run enhanced auto deploy with hidden window
+            # Run fast deployment with hidden window
             result = subprocess.run([
-                sys.executable, "enhanced_auto_deploy.py"
-            ], timeout=300, capture_output=True, text=True, cwd=self.project_dir,
+                sys.executable, "fast_deployment.py"
+            ], timeout=120, capture_output=True, text=True, cwd=self.project_dir,
             creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
             
             # Step 3: Process results and send completion notification
             if result.returncode == 0:
-                self.log_message(f"DEPLOY SUCCESS: Enhanced auto deploy completed successfully")
+                self.log_message(f"DEPLOY SUCCESS: Fast deployment completed successfully")
                 self.log_message(f"STDOUT: {result.stdout[-1000:] if result.stdout else 'No output'}")
                 
                 # Send success notification
