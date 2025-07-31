@@ -19,7 +19,9 @@ class TrenchCoatDiscordWebhooks:
             # Trading Category Webhooks
             'analytics': 'https://discord.com/api/webhooks/1400549103305490595/ld4vTMpNY3KhVnA4aPgbciPdlwfg1XjsWeaeozk7AxWHiGreHtNZAtaoKlpIfklEqViI',
             'performance': 'https://discord.com/api/webhooks/1400546335047946363/tj9JJJCYAg4d9-VV4vnX3BgAfrtrxZKi2aqGEW2N3S_IsVaRGra9PsreJDQUNhe2i_Qe',
-            'live_trades': 'https://discord.com/api/webhooks/1400564409520099498/cBmLi9RekqYXhhiPY2NYzjDoNMk5CwH6s2Qnpn3brvA2enc-mvlioeB8SNzJAjNKKky5'
+            'live_trades': 'https://discord.com/api/webhooks/1400564409520099498/cBmLi9RekqYXhhiPY2NYzjDoNMk5CwH6s2Qnpn3brvA2enc-mvlioeB8SNzJAjNKKky5',
+            # Development Category Webhooks
+            'bug_fixes': 'https://discord.com/api/webhooks/1400567015089115177/dtKTrDobQMgXRMTdXfvDMai33SWYFTmqqIDSxlLnJDJwQPHt80zLkV_mqltD_wqq37wc'
         }
         
         # Channel color schemes (matching Discord structure)
@@ -27,6 +29,7 @@ class TrenchCoatDiscordWebhooks:
             'analytics': 0xF59E0B,  # Gold theme for trading
             'performance': 0x10B981,  # Green for performance 
             'live_trades': 0xEF4444,  # Red for urgent trades
+            'bug_fixes': 0x8B5CF6,  # Purple for development
             'success': 0x10B981,  # Green
             'warning': 0xF59E0B,  # Yellow
             'error': 0xEF4444,  # Red
@@ -142,6 +145,63 @@ class TrenchCoatDiscordWebhooks:
         }
         
         return self._send_webhook('live_trades', content=f"@here **LIVE TRADE**: {symbol} {action}", embed=embed)
+
+    def send_bug_fix_notification(self, fix_data: Dict[str, Any]) -> bool:
+        """Send bug fix notification to #bug-fixes channel"""
+        bug_type = fix_data.get('type', 'General').upper()
+        severity = fix_data.get('severity', 'Medium').upper()
+        
+        # Determine color and emoji based on severity
+        if severity == 'CRITICAL':
+            color = self.colors['error']
+            emoji = "🚨"
+        elif severity == 'HIGH':
+            color = self.colors['warning']
+            emoji = "🔥"
+        elif severity == 'MEDIUM':
+            color = self.colors['info']
+            emoji = "🔧"
+        else:  # LOW
+            color = self.colors['success']
+            emoji = "✨"
+            
+        embed = {
+            "title": f"{emoji} BUG FIX DEPLOYED - {bug_type}",
+            "description": f"**{severity} Priority Fix** • {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            "color": color,
+            "fields": [
+                {
+                    "name": "🐛 Issue Description",
+                    "value": f"**Problem**: {fix_data.get('problem', 'N/A')}\n**Component**: {fix_data.get('component', 'Unknown')}\n**Severity**: {severity}",
+                    "inline": True
+                },
+                {
+                    "name": "🔧 Fix Details",
+                    "value": f"**Solution**: {fix_data.get('solution', 'N/A')}\n**Files Changed**: {fix_data.get('files_changed', 0)}\n**Lines Modified**: {fix_data.get('lines_modified', 0)}",
+                    "inline": True
+                },
+                {
+                    "name": "✅ Verification",
+                    "value": f"**Tested**: {fix_data.get('tested', 'Yes')}\n**Deployed**: {fix_data.get('deployed', 'Yes')}\n**Status**: {fix_data.get('status', 'Fixed')}",
+                    "inline": True
+                }
+            ],
+            "footer": {
+                "text": "TrenchCoat Pro • Bug Fix System",
+                "icon_url": "https://github.com/JLORep/ProjectTrench/raw/main/assets/logo.png"
+            },
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        
+        # Add commit info if provided
+        if fix_data.get('commit_hash'):
+            embed['fields'].append({
+                "name": "📝 Commit Info",
+                "value": f"**Hash**: {fix_data.get('commit_hash', 'N/A')[:8]}\n**Message**: {fix_data.get('commit_message', 'N/A')}\n**Author**: {fix_data.get('author', 'TrenchCoat Pro Team')}",
+                "inline": False
+            })
+        
+        return self._send_webhook('bug_fixes', embed=embed)
 
     def send_system_status(self, status_data: Dict[str, Any], channel: str = 'analytics') -> bool:
         """Send system status update"""
@@ -270,6 +330,25 @@ class TrenchCoatDiscordWebhooks:
             'target': '+250%',
             'stop_loss': '-15%',
             'risk_reward': '16.7:1'
+        })
+        
+        time.sleep(1)  # Rate limiting
+        
+        # Test bug fixes webhook
+        results['bug_fixes'] = self.send_bug_fix_notification({
+            'type': 'UI',
+            'severity': 'Medium',
+            'problem': 'Coins spreadsheet flickering and showing resize bars',
+            'component': 'Streamlit Dashboard',
+            'solution': 'Fixed width constraints and CSS to prevent dynamic resizing',
+            'files_changed': 1,
+            'lines_modified': 25,
+            'tested': 'Yes',
+            'deployed': 'Yes',
+            'status': 'Fixed',
+            'commit_hash': '749f6f6a1b2c3d4e5f6789',
+            'commit_message': 'Fix: Resolve spreadsheet flickering issue',
+            'author': 'Claude Code Assistant'
         })
         
         return results
