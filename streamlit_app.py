@@ -486,10 +486,18 @@ try:
     # Use ultra premium dashboard with datasets tab
     dashboard = UltraPremiumDashboard()
     st.stop()  # Stop here since ultra premium dashboard handles everything
-except ImportError:
-    # Fallback to basic tabs if ultra premium not available
-    st.warning("⚠️ Ultra Premium Dashboard not available, using basic version")
-    pass
+except ImportError as e:
+    # Try streamlit-safe version
+    try:
+        from streamlit_safe_dashboard import StreamlitSafeDashboard
+        st.success("🎯 Loading TrenchCoat Pro with Telegram Signals...")
+        dashboard = StreamlitSafeDashboard()
+        st.stop()  # Stop here since streamlit safe dashboard handles everything
+    except ImportError:
+        # Final fallback to basic tabs
+        st.warning(f"⚠️ Ultra Premium Dashboard import failed: {e}")
+        st.info("🔧 Using basic fallback version")
+        pass
 
 # Premium Content Tabs with Icons (fallback)
 tab1, tab2, tab3, tab4 = st.tabs(["📊 Live Dashboard", "🧠 AI Analytics", "🤖 Trading Bot", "📈 Performance"])
