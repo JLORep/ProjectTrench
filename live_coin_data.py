@@ -17,8 +17,7 @@ class LiveCoinDataConnector:
     def __init__(self):
         self.project_dir = Path.cwd()
         self.db_files = [
-            self.project_dir / "data/coins.db",
-            self.project_dir / "data/trench.db",
+            self.project_dir / "data/trench.db",  # Main production database with 1733+ coins
             self.project_dir / "trenchcoat_historic.db",
             self.project_dir / "trenchcoat_money.db"
         ]
@@ -90,112 +89,28 @@ class LiveCoinDataConnector:
             return []
     
     def _try_coins_table(self, conn, limit: int) -> List[Dict[str, Any]]:
-        """Try to get data from coins table - handles both schemas"""
+        """Get data from trench.db production database"""
         try:
-            # First try the formal schema (coins.db)
-            try:
-                query = """
-                SELECT c.symbol, c.name, c.market_cap, c.volume_24h, 
-                       c.created_at, c.updated_at,
-                       p.close as current_price, p.volume as recent_volume,
-                       cm.metadata
-                FROM coins c
-                LEFT JOIN price_data p ON c.id = p.coin_id AND p.timestamp = (
-                    SELECT MAX(timestamp) FROM price_data p2 WHERE p2.coin_id = c.id
-                )
-                LEFT JOIN coin_metadata cm ON c.id = cm.coin_id
-                ORDER BY c.volume_24h DESC NULLS LAST, c.market_cap DESC NULLS LAST
-                LIMIT ?
-                """
-                
-                df = pd.read_sql_query(query, conn, params=[limit])
-                
-                if not df.empty:
-                    return self._process_formal_schema_coins(df)
+            query = """
+            SELECT ticker, ca, discovery_time, discovery_price, 
+                   discovery_mc, liquidity, peak_volume, smart_wallets, 
+                   dex_paid, sol_price, axiom_price, axiom_mc, axiom_volume
+            FROM coins 
+            ORDER BY axiom_mc DESC NULLS LAST, discovery_mc DESC NULLS LAST
+            LIMIT ?
+            """
             
-            except Exception:
-                pass
+            df = pd.read_sql_query(query, conn, params=[limit])
             
-            # Try the trench.db schema  
-            try:
-                query = """
-                SELECT ticker, ca, discovery_time, discovery_price, 
-                       discovery_mc, liquidity, peak_volume, smart_wallets, 
-                       dex_paid, sol_price, axiom_price, axiom_mc, axiom_volume
-                FROM coins 
-                ORDER BY axiom_mc DESC NULLS LAST, discovery_mc DESC NULLS LAST
-                LIMIT ?
-                """
-                
-                df = pd.read_sql_query(query, conn, params=[limit])
-                
-                if not df.empty:
-                    return self._process_trench_schema_coins(df)
-                    
-            except Exception as e:
-                safe_print(f"Trench schema query failed: {e}")
+            if not df.empty:
+                return self._process_trench_schema_coins(df)
             
             return []
             
         except Exception as e:
-            safe_print(f"Coins table query failed: {e}")
+            safe_print(f"Trench database query failed: {e}")
             return []
             
-    def _process_formal_schema_coins(self, df) -> List[Dict[str, Any]]:
-        """Process coins from formal database schema"""
-        coins = []
-        
-        for _, row in df.iterrows():
-            # Get enrichment data from metadata
-            metadata = {}
-            if row.get('metadata'):
-                try:
-                    import json
-                    metadata = json.loads(row['metadata'])
-                except:
-                    pass
-            
-            enrichment_data = metadata.get('enrichment_data', {})
-            
-            # Get price from various sources
-            price = (row.get('current_price') or 
-                    enrichment_data.get('price') or 
-                    1.0)
-            
-            # Calculate metrics
-            volume = (row.get('volume_24h') or 
-                     enrichment_data.get('volume_24h') or 
-                     row.get('recent_volume') or 0)
-            
-            market_cap = (row.get('market_cap') or 
-                         enrichment_data.get('market_cap') or 
-                         price * volume * 100)
-            
-            change_24h = enrichment_data.get('price_change_24h', 0)
-            
-            coin = {
-                'ticker': f"${row['symbol']}",
-                'name': row.get('name', row['symbol']),
-                'price': price,
-                'volume': volume,
-                'market_cap': market_cap,
-                'change_24h': change_24h,
-                'score': min(0.95, enrichment_data.get('enrichment_score', 0.5)),
-                'stage': self._get_stage_from_score(enrichment_data.get('enrichment_score', 0.5) * 100),
-                'source': 'enriched_database',
-                'timestamp': row.get('updated_at') or row.get('created_at') or datetime.now(),
-                'liquidity': enrichment_data.get('liquidity', 0),
-                'enriched': True,
-                'contract_address': enrichment_data.get('contract_address', ''),
-                'dex_id': enrichment_data.get('dex_id', ''),
-                'buys_24h': enrichment_data.get('buys_24h', 0),
-                'sells_24h': enrichment_data.get('sells_24h', 0),
-            }
-            coins.append(coin)
-            
-        safe_print(f"Retrieved {len(coins)} coins from formal schema")
-        return coins
-    
     def _process_trench_schema_coins(self, df) -> List[Dict[str, Any]]:
         """Process coins from trench database schema"""
         coins = []

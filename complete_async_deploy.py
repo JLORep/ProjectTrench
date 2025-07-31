@@ -9,7 +9,7 @@ import os
 import time
 import json
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from unicode_handler import safe_print
 
@@ -39,7 +39,7 @@ class CompleteAsyncDeployer:
                 "title": title,
                 "description": description,
                 "color": color,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "fields": [
                     {
                         "name": "Commit",

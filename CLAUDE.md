@@ -42,9 +42,9 @@
 - `src/data/comprehensive_enricher.py` - Multi-API data enrichment system
 - `telegram_enrichment_pipeline.py` - Full Telegram parsing with regex patterns, confidence scoring
 - `live_coin_data.py` - **NEW** Live database connector with 1733 coins from trench.db (FULLY OPERATIONAL)
-- `data/trench.db` - Main production database (1733 coins with ticker, ca, discovery_price, axiom_price, etc.)
-- `data/coins.db` - Secondary database (6 coins with formal schema)
-- **Database Schemas**: Two different schemas discovered and handled by LiveCoinDataConnector
+- `data/trench.db` - **PRODUCTION DATABASE** (1733 coins with ticker, ca, discovery_price, axiom_price, etc.)
+- **Database Validation**: coins.db confirmed as early prototype artifact - removed from connector
+- **Optimized**: LiveCoinDataConnector now focuses solely on production trench.db data
 
 ### Notification Systems (READY TO USE)
 - `unified_notifications.py` - All-platform notification system (Email, Telegram, Discord)
