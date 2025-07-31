@@ -13,6 +13,13 @@ import requests
 import json
 from typing import Dict, List, Any
 import os
+import random
+
+# Import our Telegram enrichment pipeline
+try:
+    from telegram_enrichment_pipeline import TelegramEnrichmentPipeline, convert_enriched_coin_to_dashboard_format
+except ImportError:
+    TelegramEnrichmentPipeline = None
 
 class LiveDataManager:
     """Manages real-time data flow between components"""
@@ -24,6 +31,9 @@ class LiveDataManager:
             'coingecko': 'https://api.coingecko.com/api/v3/simple/price'
         }
         
+        # Initialize Telegram enrichment pipeline
+        self.enrichment_pipeline = TelegramEnrichmentPipeline() if TelegramEnrichmentPipeline else None
+        
         # Initialize session state for live data
         if 'live_coins' not in st.session_state:
             st.session_state.live_coins = []
@@ -31,6 +41,10 @@ class LiveDataManager:
             st.session_state.live_trades = []
         if 'live_notifications' not in st.session_state:
             st.session_state.live_notifications = []
+        if 'telegram_signals' not in st.session_state:
+            st.session_state.telegram_signals = []
+        if 'enriched_coins' not in st.session_state:
+            st.session_state.enriched_coins = []
     
     def detect_trending_coins(self, limit=10):
         """Detect real trending coins from DEX data"""
@@ -89,6 +103,93 @@ class LiveDataManager:
         confidence = sum(factors[key] * weights[key] for key in factors) * 100
         
         return min(max(confidence, 0), 100)  # Clamp between 0-100
+    
+    async def process_telegram_signals(self, telegram_messages: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+        """Process Telegram signals through enrichment pipeline"""
+        if not self.enrichment_pipeline:
+            st.error("Telegram enrichment pipeline not available")
+            return []
+        
+        try:
+            # Process messages through enrichment pipeline
+            enriched_coins = await self.enrichment_pipeline.process_telegram_signals(telegram_messages)
+            
+            # Convert to dashboard format
+            dashboard_coins = []
+            for enriched_coin in enriched_coins:
+                dashboard_coin = convert_enriched_coin_to_dashboard_format(enriched_coin)
+                dashboard_coins.append(dashboard_coin)
+            
+            # Store enriched coins in session state
+            st.session_state.enriched_coins.extend(dashboard_coins)
+            
+            # Keep only recent enriched coins (last 50)
+            st.session_state.enriched_coins = st.session_state.enriched_coins[-50:]
+            
+            return dashboard_coins
+            
+        except Exception as e:
+            st.error(f"Telegram signal processing error: {e}")
+            return []
+    
+    def simulate_telegram_signals(self) -> List[Dict[str, str]]:
+        """Simulate Telegram signals for demo purposes"""
+        
+        sample_signals = [
+            {
+                'text': '🚀 NEW GEM ALERT! $BONK is about to MOON! 🌙\nCA: DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263\nPrice: $0.000012\nMC: $500M\nThis is going to 100x! 💎',
+                'channel': 'CryptoGems',
+                'timestamp': datetime.now().isoformat()
+            },
+            {
+                'text': 'Found a new runner! Contract: EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v\n$WIF is launching soon! Volume already pumping!\nGet in early! 🚀',
+                'channel': 'ATM.Day',
+                'timestamp': datetime.now().isoformat()
+            },
+            {
+                'text': 'PEPE ALERT 🐸\nContract: 4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R\nPrice: $0.000089\nLiquidity: $2.5M\nConfirmed not a rug! Team is based! 💪',
+                'channel': 'PepeSignals',
+                'timestamp': datetime.now().isoformat()
+            }
+        ]
+        
+        # Randomly select 1-2 signals to simulate new activity
+        import random
+        return random.sample(sample_signals, random.randint(1, 2))
+    
+    async def get_enriched_trending_coins(self, limit=10):
+        """Get trending coins with enrichment from multiple sources"""
+        all_coins = []
+        
+        try:
+            # Method 1: Get coins from DexScreener API
+            dex_coins = self.detect_trending_coins(limit)
+            all_coins.extend(dex_coins)
+            
+            # Method 2: Process Telegram signals (simulation for demo)
+            if random.random() > 0.7:  # 30% chance of new Telegram signals
+                telegram_messages = self.simulate_telegram_signals()
+                enriched_telegram_coins = await self.process_telegram_signals(telegram_messages)
+                
+                if enriched_telegram_coins:
+                    st.info(f"📡 Processed {len(enriched_telegram_coins)} Telegram signals")
+                    # Add enriched coins to the mix
+                    all_coins.extend(enriched_telegram_coins)
+            
+            # Method 3: Include stored enriched coins
+            stored_enriched = st.session_state.get('enriched_coins', [])
+            if stored_enriched:
+                # Add recent enriched coins (last 5)
+                recent_enriched = stored_enriched[-5:]
+                all_coins.extend(recent_enriched)
+            
+            # Sort by confidence and return top coins
+            all_coins.sort(key=lambda x: x.get('score', 0) * 100, reverse=True)
+            return all_coins[:limit]
+            
+        except Exception as e:
+            st.error(f"Enriched coin detection error: {e}")
+            return self.detect_trending_coins(limit)  # Fallback to basic detection
     
     def generate_sample_coins(self, limit=10):
         """Fallback sample data when APIs are unavailable"""

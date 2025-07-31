@@ -365,27 +365,36 @@ class UltraPremiumDashboard:
         </div>
         """, unsafe_allow_html=True)
         
-        # Use live or demo data based on mode
+        # Use live or demo data based on mode  
         if st.session_state.get('live_mode', False) and LiveDataManager:
-            # LIVE MODE: Get real trending coins
+            # LIVE MODE: Get enriched trending coins
             try:
                 manager = LiveDataManager()
-                live_coins = manager.detect_trending_coins(limit=5)
+                # Use enriched coin detection that includes Telegram signals
+                live_coins = asyncio.run(manager.get_enriched_trending_coins(limit=5))
                 
                 # Convert to display format
                 processed_coins = []
                 for coin in live_coins:
-                    processed_coin = {
-                        'ticker': f"${coin['symbol']}",
-                        'stage': self.get_processing_stage(coin['confidence']),
-                        'price': coin['price'],
-                        'volume': coin['volume_24h'],
-                        'score': coin['confidence'] / 100,
-                        'timestamp': coin['detected_at'],
-                        'change_24h': coin['price_change_24h'],
-                        'liquidity': coin['liquidity']
-                    }
-                    processed_coins.append(processed_coin)
+                    # Handle different coin data formats (basic API vs enriched)
+                    if isinstance(coin, dict) and 'ticker' in coin:
+                        # Already in dashboard format (enriched coin)
+                        processed_coins.append(coin)
+                    else:
+                        # Convert from API format
+                        processed_coin = {
+                            'ticker': f"${coin.get('symbol', 'UNKNOWN')}",
+                            'stage': self.get_processing_stage(coin.get('confidence', 50)),
+                            'price': coin.get('price', 0),
+                            'volume': coin.get('volume_24h', 0),
+                            'score': coin.get('confidence', 50) / 100,
+                            'timestamp': coin.get('detected_at', datetime.now()),
+                            'change_24h': coin.get('price_change_24h', 0),
+                            'liquidity': coin.get('liquidity', 0),
+                            'source': coin.get('source', 'api'),
+                            'enriched': False
+                        }
+                        processed_coins.append(processed_coin)
                 
                 st.session_state.processed_coins = processed_coins
                 
@@ -470,18 +479,28 @@ class UltraPremiumDashboard:
             change_color = '#10b981' if price_change > 0 else '#ef4444'
             change_arrow = '↑' if price_change > 0 else '↓'
             
+            # Enhanced display for enriched coins
+            is_enriched = coin.get('source') in ['telegram', 'enriched'] or coin.get('enriched', False)
+            source_icon = "📡" if coin.get('source') == 'telegram' else "🔍" if is_enriched else "📊"
+            
             liquidity_text = f"${coin.get('liquidity', 0):,.0f}" if 'liquidity' in coin else f"Vol: ${coin.get('volume', 0):,.0f}"
+            
+            # Show additional enriched data if available
+            social_score = coin.get('social_score', 0)
+            rug_risk = coin.get('rug_risk', 0)
+            verified = coin.get('contract_verified', False)
             
             st.markdown(f"""
             <div class="coin-card {'success-flash' if coin['stage'] == 'Trading' else ''}" 
                  style="opacity: {1 - (index * 0.15)};">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <span style="color: #f9fafb; font-weight: 600;">{coin['ticker']}</span>
+                        <span style="color: #f9fafb; font-weight: 600;">{coin['ticker']} {source_icon}</span>
                         <span style="color: #6b7280; font-size: 12px; margin-left: 8px;">
                             ${coin['price']:.6f}
                         </span>
                         {f'<span style="color: {change_color}; font-size: 11px; margin-left: 8px;">{change_arrow}{abs(price_change):.1f}%</span>' if price_change != 0 else ''}
+                        {f'<span style="color: #34d399; font-size: 10px; margin-left: 4px;">✅</span>' if verified else ''}
                     </div>
                     <span style="color: {stage_color}; font-size: 12px; font-weight: 500;">
                         {coin['stage']}
@@ -501,6 +520,10 @@ class UltraPremiumDashboard:
                             Score: {coin['score']:.2f}
                         </span>
                     </div>
+                    {f'''<div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 10px;">
+                        <span style="color: #a855f7;">Social: {social_score:.1f}</span>
+                        <span style="color: {('#ef4444' if rug_risk > 0.5 else '#10b981')};">Risk: {rug_risk:.1f}</span>
+                    </div>''' if is_enriched else ''}
                 </div>
             </div>
             """, unsafe_allow_html=True)
