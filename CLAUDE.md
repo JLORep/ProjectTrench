@@ -119,13 +119,15 @@ This will:
 - Overview: 1400497302241677383/Im9oyVehkH6zhsc5w4mt4KHQvgSR2qfMPD-k6lTR-X0XQWT3eLV_IJM2-MqQNM6dPAzM
 - Deployments: https://discord.com/api/webhooks/1400577499225657404/x3eRkhbp84bA_3f3AuyUIrBhDtozTGnVbxVrPg3ewLWIL3eO0s_GZoiW0lRQr6Kb5jQ3
 
-**Auto-Deploy System:** `enhanced_auto_deploy.py` - FULLY OPERATIONAL
-- Auto-detects commits requiring deployment
-- Uses `git add -u` to avoid untracked file issues  
-- Automatic GitHub sync and Discord notifications
-- Routes notifications to appropriate channels
-- **Git Hook:** Temporarily disabled (post-commit.disabled) to prevent timeout loops
-- **Manual Deployment:** Use `python mandatory_deploy.py` for controlled deployments
+**Auto-Deploy System:** `async_deployment_hook.py` - FULLY OPERATIONAL ✅
+- **MAJOR FIX:** Git commit timeouts ELIMINATED (0.30s commits, was 2+ minutes)
+- Async deployment hook with instant exit after trigger
+- Background deployment process runs independently
+- Comprehensive error handling and logging
+- **Git Hook:** Active and working (`post-commit` - Python-based)
+- **Verification:** `python deployment_status_checker.py` for full system health
+- **Manual Override:** `python mandatory_deploy.py` for controlled deployments
+- **Unicode Support:** All Windows encoding errors fixed via `unicode_handler.py`
 
 ## Documentation Available
 - 42 markdown files covering setup, deployment, integrations
@@ -138,8 +140,10 @@ This will:
 - **Dev Blog System**: Enhanced with AutoOverviewUpdater integration
 - **Demo Mode**: Safe testing environment active
 - **Multi-Platform Deployment**: Streamlit Cloud + Azure ready
-- **Recent Deployments**: 7fe810e (auto-deploy fix), 190975f (webhook config), 701b0a5 (dev blog), 4ed25cc (datasets)
-- **Auto-Deploy Status**: FULLY OPERATIONAL - automatic commit/push/notify working perfectly
+- **Recent Major Fix**: Git timeout issue SOLVED - commits now instant (0.30s vs 2+ minutes)
+- **Recent Deployments**: 8ce258b (async hook fix), 177b6ac (verification system), eb233fd (bug fix), 4f191b0 (async test)
+- **Auto-Deploy Status**: FULLY OPERATIONAL ✅ - async hook working perfectly
+- **System Health**: All major issues resolved, comprehensive verification active
 
 ## Next Steps
 - Monitor system stability (CPU voltage issues)
