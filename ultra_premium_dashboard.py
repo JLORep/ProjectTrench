@@ -311,73 +311,59 @@ class UltraPremiumDashboard:
             self.render_datasets_section()
     
     def render_key_metrics(self):
-        """Render key performance metrics"""
+        """Render key performance metrics - LIVE DATA ONLY"""
         metrics_container = st.container()
         
         with metrics_container:
             col1, col2, col3, col4, col5 = st.columns(5)
             
-            # Simulate live profit updates
-            profit_change = random.uniform(-50, 200)
-            st.session_state.total_profit += profit_change
+            # TODO: Connect to real portfolio data
+            # profit_change = random.uniform(-50, 200)
+            # st.session_state.total_profit += profit_change
             
             with col1:
-                st.markdown(f"""
-                <div class="premium-card">
-                    <p style="color: #9ca3af; font-size: 12px; margin: 0;">Total Profit</p>
-                    <h2 class="metric-glow" style="color: #10b981; margin: 0;">
-                        ${st.session_state.total_profit:,.2f}
-                    </h2>
-                    <p style="color: {'#10b981' if profit_change > 0 else '#ef4444'}; 
-                              font-size: 12px; margin: 0;">
-                        {'↑' if profit_change > 0 else '↓'} ${abs(profit_change):.2f}
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
+                # TODO: Connect to real portfolio value
+                st.metric(
+                    label="Portfolio Value",
+                    value="$0.00",
+                    delta="No live data connected",
+                    help="Connect to real portfolio API"
+                )
             
             with col2:
-                win_rate_change = random.uniform(-0.5, 0.5)
-                st.session_state.win_rate = max(0, min(100, st.session_state.win_rate + win_rate_change))
-                
-                st.markdown(f"""
-                <div class="premium-card">
-                    <p style="color: #9ca3af; font-size: 12px; margin: 0;">Win Rate</p>
-                    <h2 style="color: #f9fafb; margin: 0;">
-                        {st.session_state.win_rate:.1f}%
-                    </h2>
-                    <div style="background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px; margin-top: 8px;">
-                        <div style="background: #10b981; height: 100%; width: {st.session_state.win_rate}%; 
-                                    border-radius: 2px; transition: width 0.5s ease;"></div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                # TODO: Connect to real win rate calculations
+                st.metric(
+                    label="Win Rate",
+                    value="0%",
+                    delta="No trades tracked",
+                    help="Connect to trading history database"
+                )
             
             with col3:
-                active_count = len(st.session_state.active_positions)
-                # Fix: Use native Streamlit metric
+                # TODO: Connect to real active trading positions
                 st.metric(
                     label="Active Trades",
-                    value=active_count,
-                    delta=f"{random.randint(5, 15)} pending"
+                    value="0",
+                    delta="No live trading data",
+                    help="Connect to trading engine API"
                 )
             
             with col4:
-                processed_today = len(st.session_state.processed_coins)
-                # Fix: Use native Streamlit metric
+                # TODO: Connect to real coins being processed
                 st.metric(
                     label="Coins Analyzed",
-                    value=processed_today,
-                    delta=f"{random.randint(50, 100)}/min"
+                    value="0",
+                    delta="No analysis pipeline connected",
+                    help="Connect to enrichment system"
                 )
             
             with col5:
-                api_health = random.randint(98, 100)
-                # Fix: Use native Streamlit metric
-                health_emoji = "🟢" if api_health > 95 else "🟡"
+                # TODO: Connect to real system health metrics
                 st.metric(
                     label="System Health",
-                    value=f"{api_health}%",
-                    delta=f"{health_emoji} All systems go"
+                    value="Unknown",
+                    delta="No monitoring connected",
+                    help="Connect to system monitoring API"
                 )
     
     def render_live_coin_feed(self):
@@ -465,12 +451,17 @@ class UltraPremiumDashboard:
                 # Fallback to demo mode
                 self.generate_demo_coins()
         else:
-            # DEMO MODE: Generate sample coins
-            self.generate_demo_coins()
+            # NO DEMO MODE: Show message about connecting live data
+            st.info("🔗 Live mode disabled. Enable live monitoring to see real coin processing.")
+            if 'processed_coins' not in st.session_state:
+                st.session_state.processed_coins = []
         
-        # Display coins with animations
-        for i, coin in enumerate(st.session_state.processed_coins[:5]):
-            self.render_coin_card(coin, i)
+        # Display coins only if we have real data
+        if st.session_state.processed_coins:
+            for i, coin in enumerate(st.session_state.processed_coins[:5]):
+                self.render_coin_card(coin, i)
+        else:
+            st.warning("📊 No live coin data available. Connect to data sources to see processed coins.")
     
     def get_processing_stage(self, confidence):
         """Determine processing stage based on confidence"""
@@ -484,26 +475,14 @@ class UltraPremiumDashboard:
             return 'Discovering'
     
     def generate_demo_coins(self):
-        """Generate demo coins for sample mode"""
-        # Simulate new coin being processed
-        if random.random() > 0.3:
-            new_coin = self.generate_fake_coin()
-            st.session_state.processed_coins.insert(0, new_coin)
-            st.session_state.processed_coins = st.session_state.processed_coins[:10]
+        """DEPRECATED: No longer generating demo coins"""
+        # TODO: Remove this method once live data is connected
+        pass
     
     def generate_fake_coin(self):
-        """Generate fake coin data for demo"""
-        tickers = ['PEPE', 'WOJAK', 'BONK', 'WIF', 'MYRO', 'BOME', 'SLERF', 'PONKE']
-        stages = ['Discovering', 'Enriching', 'Analyzing', 'Trading', 'Completed']
-        
-        return {
-            'ticker': f'${random.choice(tickers)}',
-            'stage': random.choice(stages),
-            'price': random.uniform(0.0001, 0.01),
-            'volume': random.randint(100000, 5000000),
-            'score': random.uniform(0.6, 0.95),
-            'timestamp': datetime.now()
-        }
+        """DEPRECATED: No longer generating fake coin data"""
+        # TODO: Remove this method once live data is connected
+        return None
     
     def render_coin_card(self, coin, index):
         """Render individual coin card with animation"""
@@ -573,167 +552,105 @@ class UltraPremiumDashboard:
         st.markdown("---")
     
     def render_performance_chart(self):
-        """Render real-time performance chart"""
+        """Render real-time performance chart - LIVE DATA ONLY"""
         st.markdown("""
         <div class="premium-card">
             <h3 style="color: #f9fafb; margin-bottom: 16px;">Live Performance</h3>
         </div>
         """, unsafe_allow_html=True)
         
-        # Generate performance data
-        if len(st.session_state.performance_history) == 0:
-            # Initialize with some historical data
-            for i in range(50):
-                st.session_state.performance_history.append({
-                    'time': datetime.now() - timedelta(seconds=50-i),
-                    'profit': random.uniform(-100, 200)
-                })
+        # TODO: Connect to real performance data
+        st.info("📊 No live performance data connected")
+        st.markdown("**Required connections:**")
+        st.markdown("- Trading history database")
+        st.markdown("- Portfolio tracking API")
+        st.markdown("- P&L calculation system")
         
-        # Add new data point
-        st.session_state.performance_history.append({
-            'time': datetime.now(),
-            'profit': st.session_state.total_profit
-        })
-        
-        # Keep only recent data
-        st.session_state.performance_history = st.session_state.performance_history[-100:]
-        
-        # Create chart
-        df = pd.DataFrame(st.session_state.performance_history)
-        
+        # Placeholder chart showing no data
         fig = go.Figure()
         
-        # Add gradient fill
-        fig.add_trace(go.Scatter(
-            x=df['time'],
-            y=df['profit'],
-            mode='lines',
-            line=dict(color='#10b981', width=2),
-            fill='tozeroy',
-            fillcolor='rgba(16, 185, 129, 0.1)',
-            name='Profit'
-        ))
+        # Show empty chart with message
+        fig.add_annotation(
+            x=0.5, y=0.5,
+            xref="paper", yref="paper",
+            text="No live performance data<br>Connect to trading system",
+            showarrow=False,
+            font=dict(size=16, color="#6b7280")
+        )
         
-        # Update layout for dark theme
         fig.update_layout(
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
             margin=dict(l=0, r=0, t=0, b=0),
             height=300,
             showlegend=False,
-            xaxis=dict(
-                showgrid=False,
-                showticklabels=False,
-                zeroline=False
-            ),
-            yaxis=dict(
-                showgrid=True,
-                gridcolor='rgba(255,255,255,0.05)',
-                tickfont=dict(color='#6b7280', size=10),
-                zeroline=True,
-                zerolinecolor='rgba(255,255,255,0.1)'
-            ),
-            hovermode='x unified'
+            xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
+            yaxis=dict(showgrid=False, showticklabels=False, zeroline=False)
         )
         
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
     
     def render_active_positions(self):
-        """Render active trading positions"""
-        # Fix: Use native Streamlit components
+        """Render active trading positions - LIVE DATA ONLY"""
         st.subheader("Active Positions")
         
-        # Simulate active positions
-        if random.random() > 0.7:
-            position = {
-                'ticker': f"${random.choice(['BONK', 'WIF', 'PEPE', 'MYRO'])}",
-                'entry': random.uniform(0.001, 0.01),
-                'current': random.uniform(0.001, 0.01),
-                'size': random.uniform(0.1, 0.5),
-                'time': datetime.now()
-            }
-            st.session_state.active_positions.append(position)
-            st.session_state.active_positions = st.session_state.active_positions[-5:]
+        # TODO: Connect to real trading positions
+        st.info("🔗 No live trading positions connected")
+        st.markdown("**Required connections:**")
+        st.markdown("- Trading engine API")
+        st.markdown("- Position tracking database")
+        st.markdown("- Real-time P&L calculations")
         
-        # Display positions
-        for pos in st.session_state.active_positions:
-            pnl = ((pos['current'] - pos['entry']) / pos['entry']) * 100
-            pnl_color = '#10b981' if pnl > 0 else '#ef4444'
-            
-            # Fix: Use native Streamlit components
-            with st.container():
-                pos_col1, pos_col2 = st.columns([3, 1])
-                with pos_col1:
-                    st.markdown(f"**{pos['ticker']}**")
-                    st.caption(f"Entry: ${pos['entry']:.6f} | Size: {pos['size']:.2f} SOL")
-                with pos_col2:
-                    pnl_emoji = "🟢" if pnl > 0 else "🔴"
-                    st.markdown(f"{pnl_emoji} **{pnl:+.2f}%**")
-                st.markdown("---")
+        # Show placeholder for where positions would appear
+        st.markdown("---")
+        st.caption("📊 Active positions will appear here once connected to live trading system")
     
     def render_strategy_performance(self):
-        """Render strategy performance breakdown"""
-        # Fix: Use native Streamlit components
+        """Render strategy performance breakdown - LIVE DATA ONLY"""
         st.subheader("Strategy Performance")
         
-        strategies = [
-            {'name': 'Whale Following', 'win_rate': 81.6, 'profit': random.uniform(500, 1500)},
-            {'name': 'Volume Explosion', 'win_rate': 76.8, 'profit': random.uniform(300, 1000)},
-            {'name': 'Momentum Breakout', 'win_rate': 73.2, 'profit': random.uniform(200, 800)},
-            {'name': 'Social Sentiment', 'win_rate': 68.4, 'profit': random.uniform(100, 600)},
-        ]
+        # TODO: Connect to real strategy performance data
+        st.info("📈 No live strategy performance data connected")
+        st.markdown("**Available strategies to connect:**")
+        st.markdown("- Whale Following")
+        st.markdown("- Volume Explosion")
+        st.markdown("- Momentum Breakout")
+        st.markdown("- Social Sentiment")
         
-        for strategy in strategies:
-            # Fix: Use native Streamlit components
-            st.markdown(f"**{strategy['name']}** - ${strategy['profit']:.0f}")
-            col1, col2 = st.columns([4, 1])
-            with col1:
-                st.progress(strategy['win_rate'] / 100)
-            with col2:
-                st.caption(f"{strategy['win_rate']:.1f}%")
-            st.markdown("")
+        st.markdown("**Required data:**")
+        st.markdown("- Strategy execution history")
+        st.markdown("- Win/loss ratios")
+        st.markdown("- Profit/loss calculations")
+        st.markdown("- Performance metrics")
     
     def render_recent_wins(self):
-        """Render recent winning trades"""
+        """Render recent winning trades - LIVE DATA ONLY"""
         st.markdown("""
         <div class="premium-card">
             <h3 style="color: #f9fafb; margin-bottom: 16px;">Recent Wins</h3>
         </div>
         """, unsafe_allow_html=True)
         
-        # Generate fake winning trades
-        wins = []
-        for i in range(3):
-            wins.append({
-                'ticker': f"${random.choice(['BONK', 'WIF', 'PEPE', 'MYRO', 'BOME'])}",
-                'profit': random.uniform(50, 500),
-                'roi': random.uniform(15, 85),
-                'time': datetime.now() - timedelta(minutes=random.randint(1, 60))
-            })
+        # TODO: Connect to real winning trades data
+        st.info("🏆 No live winning trades data connected")
+        st.markdown("**Required connections:**")
+        st.markdown("- Trading history database")
+        st.markdown("- Completed trades with profit/loss")
+        st.markdown("- ROI calculations")
+        st.markdown("- Trade timestamps")
         
-        for win in wins:
-            time_ago = (datetime.now() - win['time']).seconds // 60
-            st.markdown(f"""
-            <div class="premium-card success-flash" style="padding: 12px; margin: 8px 0;">
-                <div style="display: flex; justify-content: space-between;">
-                    <span style="color: #f9fafb; font-weight: 500;">{win['ticker']}</span>
-                    <span style="color: #10b981; font-weight: 600;">
-                        +${win['profit']:.2f}
-                    </span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-                    <span style="color: #6b7280; font-size: 12px;">
-                        +{win['roi']:.1f}% ROI
-                    </span>
-                    <span style="color: #6b7280; font-size: 12px;">
-                        {time_ago}m ago
-                    </span>
-                </div>
+        # Placeholder for where wins would appear
+        st.markdown("""
+        <div class="premium-card" style="padding: 12px; margin: 8px 0; opacity: 0.5;">
+            <div style="color: #6b7280; text-align: center;">
+                📊 Recent winning trades will appear here<br>
+                <small>Connect to trading system to see live data</small>
             </div>
-            """, unsafe_allow_html=True)
+        </div>
+        """, unsafe_allow_html=True)
     
     def render_ai_suggestions(self):
-        """Render AI-powered improvement suggestions"""
+        """Render AI-powered improvement suggestions - LIVE DATA ONLY"""
         st.markdown("""
         <div class="premium-card">
             <h3 style="color: #f9fafb; margin-bottom: 16px;">
@@ -745,50 +662,23 @@ class UltraPremiumDashboard:
         </div>
         """, unsafe_allow_html=True)
         
-        # Generate AI suggestions
-        suggestions = [
-            {
-                'icon': '📈',
-                'title': 'Increase Position Size',
-                'desc': 'Win rate above 80% on BONK trades',
-                'action': 'Apply'
-            },
-            {
-                'icon': '⚡',
-                'title': 'New Strategy Available',
-                'desc': 'Lightning trades showing 85% success',
-                'action': 'Enable'
-            },
-            {
-                'icon': '🎯',
-                'title': 'Optimize Entry Timing',
-                'desc': 'Shift entries 2min earlier for +15% gains',
-                'action': 'Update'
-            }
-        ]
+        # TODO: Connect to real AI suggestion system
+        st.info("🤖 No live AI suggestions connected")
+        st.markdown("**Required connections:**")
+        st.markdown("- Claude AI integration")
+        st.markdown("- Trading performance analysis")
+        st.markdown("- Strategy optimization engine")
+        st.markdown("- Market condition analysis")
         
-        for i, suggestion in enumerate(suggestions):
-            st.markdown(f"""
-            <div class="premium-card" style="padding: 16px; margin: 8px 0;">
-                <div style="display: flex; gap: 12px;">
-                    <div style="font-size: 24px;">{suggestion['icon']}</div>
-                    <div style="flex: 1;">
-                        <div style="color: #f9fafb; font-weight: 500; margin-bottom: 4px;">
-                            {suggestion['title']}
-                        </div>
-                        <div style="color: #6b7280; font-size: 13px;">
-                            {suggestion['desc']}
-                        </div>
-                    </div>
-                    <button style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                                   color: white; border: none; border-radius: 8px;
-                                   padding: 8px 16px; font-size: 12px; font-weight: 600;
-                                   cursor: pointer;">
-                        {suggestion['action']}
-                    </button>
-                </div>
+        # Placeholder for where suggestions would appear
+        st.markdown("""
+        <div class="premium-card" style="padding: 16px; margin: 8px 0; opacity: 0.5;">
+            <div style="color: #6b7280; text-align: center;">
+                🧠 AI-powered suggestions will appear here<br>
+                <small>Connect to Claude AI system for live insights</small>
             </div>
-            """, unsafe_allow_html=True)
+        </div>
+        """, unsafe_allow_html=True)
     
     def render_advanced_analytics(self):
         """Render advanced analytics section"""
@@ -806,7 +696,7 @@ class UltraPremiumDashboard:
             self.render_basic_analytics()
     
     def render_basic_analytics(self):
-        """Fallback basic analytics if advanced is not available"""
+        """Fallback basic analytics - LIVE DATA ONLY"""
         st.markdown("""
         <div style='text-align: center; padding: 2rem; margin-bottom: 2rem;
                     background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
@@ -820,43 +710,44 @@ class UltraPremiumDashboard:
         </div>
         """, unsafe_allow_html=True)
         
-        # Generate sample data
-        dates = pd.date_range(end=datetime.now(), periods=30, freq='D')
-        prices = np.random.randn(30).cumsum() + 1000
+        # TODO: Connect to real market analytics data
+        st.info("📊 No live market analytics data connected")
+        st.markdown("**Required connections:**")
+        st.markdown("- Market data API (price feeds)")
+        st.markdown("- Technical analysis calculations")
+        st.markdown("- Volatility metrics")
+        st.markdown("- Trend analysis algorithms")
         
-        # Price trend chart
+        # Show empty chart placeholder
         fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=dates,
-            y=prices,
-            mode='lines+markers',
-            line=dict(color='#10b981', width=3),
-            marker=dict(size=6, color='#34d399'),
-            name='Price Trend'
-        ))
+        fig.add_annotation(
+            x=0.5, y=0.5,
+            xref="paper", yref="paper",
+            text="No live market data<br>Connect to analytics system",
+            showarrow=False,
+            font=dict(size=16, color="#6b7280")
+        )
         
         fig.update_layout(
-            title='📈 30-Day Price Analysis',
+            title='📈 30-Day Price Analysis (No Data)',
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             font=dict(color='white'),
-            height=400,
-            xaxis=dict(gridcolor='rgba(16, 185, 129, 0.2)'),
-            yaxis=dict(gridcolor='rgba(16, 185, 129, 0.2)')
+            height=400
         )
         
         st.plotly_chart(fig, use_container_width=True)
         
-        # Analytics metrics
+        # Analytics metrics placeholders
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.metric("📊 Volatility", "12.3%", delta="↓2.1%")
+            st.metric("📊 Volatility", "No data", help="Connect to market data API")
         with col2:
-            st.metric("🎯 Trend Strength", "Strong", delta="Bullish")
+            st.metric("🎯 Trend Strength", "Unknown", help="Connect to technical analysis")
         with col3:
-            st.metric("📈 Moving Avg", f"${prices[-1]:.2f}", delta=f"{((prices[-1]/prices[-7])-1)*100:.1f}%")
+            st.metric("📈 Moving Avg", "$0.00", help="Connect to price feed")
         with col4:
-            st.metric("🏆 Performance", "87.3%", delta="↑5.2%")
+            st.metric("🏆 Performance", "0%", help="Connect to performance tracking")
     
     def render_trading_engine_config(self):
         """Render trading engine configuration"""
@@ -899,11 +790,12 @@ class UltraPremiumDashboard:
             st.markdown("### 📈 Current Stats")
             col_a, col_b = st.columns(2)
             with col_a:
-                st.metric("🎯 Success Rate", "73.2%")
-                st.metric("💰 Total P&L", "$2,341")
+                # TODO: Connect to real trading engine stats
+                st.metric("🎯 Success Rate", "No data", help="Connect to trading history")
+                st.metric("💰 Total P&L", "$0.00", help="Connect to P&L tracking")
             with col_b:
-                st.metric("🔄 Active Trades", "3")
-                st.metric("⏱️ Avg Hold Time", "4.2h")
+                st.metric("🔄 Active Trades", "0", help="Connect to active positions")
+                st.metric("⏱️ Avg Hold Time", "0h", help="Connect to trade analytics")
             
             if st.button("🚀 Deploy Strategy", type="primary"):
                 if trading_enabled:
@@ -1181,23 +1073,32 @@ class UltraPremiumDashboard:
         col1, col2 = st.columns([2, 1])
         
         with col1:
-            # Sample recent coins table
-            recent_data = {
-                'Timestamp': ['2 min ago', '5 min ago', '8 min ago', '12 min ago'],
-                'Coin': ['USDC', 'SOL', 'BONK', 'WIF'],
-                'Source': ['🔗 API', '📡 Telegram', '🔗 API', '📡 Telegram'],
-                'Status': ['✅ Enriched', '⏳ Processing', '✅ Enriched', '❌ Failed'],
-                'Confidence': ['98%', '85%', '92%', '45%']
+            # TODO: Connect to real recent dataset activity
+            st.info("📊 No live dataset activity data connected")
+            st.markdown("**Data will show:**")
+            st.markdown("- Recent coin processing activity")
+            st.markdown("- Data sources (API, Telegram, etc.)")
+            st.markdown("- Processing status and confidence")
+            st.markdown("- Timestamps and success rates")
+            
+            # Show placeholder table structure
+            placeholder_data = {
+                'Timestamp': ['No data'],
+                'Coin': ['Connect to'],
+                'Source': ['live data'],
+                'Status': ['sources'],
+                'Confidence': ['0%']
             }
             
-            df_recent = pd.DataFrame(recent_data)
-            st.dataframe(df_recent, use_container_width=True)
+            df_placeholder = pd.DataFrame(placeholder_data)
+            st.dataframe(df_placeholder, use_container_width=True)
         
         with col2:
             st.markdown("#### 🎯 Pipeline Health")
-            st.metric("Success Rate", "87.5%", "+2.3%")
-            st.metric("Avg Processing Time", "12.3s", "-1.2s")
-            st.metric("API Health", "94%", "+1%")
+            # TODO: Connect to real pipeline health metrics
+            st.metric("Success Rate", "No data", help="Connect to pipeline monitoring")
+            st.metric("Avg Processing Time", "Unknown", help="Connect to performance metrics")
+            st.metric("API Health", "No data", help="Connect to API monitoring")
     
     def create_basic_dataset_manager(self):
         """Create basic dataset manager if not available"""
