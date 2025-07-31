@@ -345,7 +345,7 @@ Updates are live at [TrenchCoat Pro]({self.streamlit_url}).
         """Fallback method for Streamlit checking"""
         print("[STREAMLIT] Using fallback deployment check...")
         
-        max_wait_time = 300  # 5 minutes
+        max_wait_time = 120  # 2 minutes (leaves plenty of buffer)
         check_interval = 15   # 15 seconds
         elapsed = 0
         
