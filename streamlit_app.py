@@ -19,24 +19,27 @@ st.set_page_config(
 
 # Import and run ultra-premium dashboard
 try:
+    st.write("🔄 Loading TrenchCoat Pro Ultra-Premium Dashboard...")
     from ultra_premium_dashboard import UltraPremiumDashboard
-    
-    # Add cloud-specific header
-    st.markdown('''
-    <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, #065f46 0%, #059669 100%); 
-                border-radius: 10px; margin-bottom: 2rem; color: white;">
-        <h2>🎯 TrenchCoat Pro - Live Demo</h2>
-        <p>Ultra-Premium Cryptocurrency Trading Dashboard</p>
-        <p><small>Running in DEMO mode - No live trading</small></p>
-    </div>
-    ''', unsafe_allow_html=True)
+    st.write("✅ Dashboard module imported successfully!")
     
     # Initialize dashboard
     dashboard = UltraPremiumDashboard()
+    st.write("✅ Dashboard initialized successfully!")
     
 except ImportError as e:
-    st.error(f"Import error: {e}")
-    st.info("Please ensure all dependencies are installed correctly.")
+    st.error(f"❌ Import error: {e}")
+    st.info("📋 Falling back to simple demo version...")
+    
+    # Fallback to simple version
+    exec(open('simple_app.py').read())
+    
 except Exception as e:
-    st.error(f"Error: {e}")
-    st.info("Please check the application logs for more details.")
+    st.error(f"❌ Dashboard error: {e}")
+    st.error(f"Error type: {type(e).__name__}")
+    import traceback
+    st.code(traceback.format_exc())
+    st.info("📋 Falling back to simple demo version...")
+    
+    # Fallback to simple version
+    exec(open('simple_app.py').read())
