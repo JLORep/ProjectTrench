@@ -74,31 +74,44 @@
 - `streamlit run app.py` - Alternative entry point
 - `python app.py` - Test basic functionality
 
-## CRITICAL DEPLOYMENT WORKFLOW (ALWAYS FOLLOW)
-**MANDATORY: For ANY new feature or bug fix, ALWAYS follow this exact sequence:**
+## 🚨 MANDATORY DEPLOYMENT WORKFLOW (NO EXCEPTIONS!)
+**CRITICAL: EVERY SINGLE CHANGE MUST BE DEPLOYED - NO EXCEPTIONS!**
 
+### Method 1: Auto-Deploy (Recommended)
+```bash
+python mandatory_deploy.py
+```
+This will:
+- Auto-detect any changes (committed or uncommitted)
+- Auto-commit uncommitted changes if needed
+- Force deployment with full validation
+- Send success/failure notifications to Discord
+
+### Method 2: Manual (If auto-deploy fails)
 1. **Local Commit & Test**
    ```bash
    git add [files]
    git commit -m "Feature/Fix: [description]"
-   # Test locally first
    ```
 
 2. **GitHub Push (UAT Streamlit)**
    ```bash
    git push origin main
-   # This deploys to UAT Streamlit environment for testing
    ```
 
-3. **Discord Notification**
-   - Send webhook notification to appropriate Discord channel
-   - Use existing webhook URLs from `webhook_config.json`
-   - Include feature/fix details and deployment status
+3. **Validate Deployment**
+   ```bash
+   python deployment_validator.py
+   ```
 
-4. **Update CLAUDE.md**
-   - Document new features/components added
-   - Update context for future Claude sessions
-   - Add any new file paths or important changes
+4. **Discord Notification** (auto-sent by validator)
+
+### 🚨 DEPLOYMENT ENFORCEMENT RULES:
+- **EVERY change must be deployed immediately**
+- **NO work continues until deployment succeeds**
+- **Failed deployments trigger CRITICAL alerts**
+- **Auto-validation catches all deployment failures**
+- **Discord notifications are mandatory for all deployments**
 
 **Available Discord Webhooks:**
 - Coin Data: https://discord.com/api/webhooks/1400573697642860639/ytKTM9Ww4oMOHqLbX3rT-NtYPffFQUuOsy_pD5oQuI0V4hYZ9IhAdUSsR2GihQxWsRRG

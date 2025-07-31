@@ -311,8 +311,27 @@ Updates are live at [TrenchCoat Pro]({self.streamlit_url}).
             return False
     
     def wait_for_streamlit_update(self) -> bool:
-        """Wait for Streamlit Cloud to update with latest changes"""
-        print("[STREAMLIT] Waiting for Streamlit Cloud to update...")
+        """Wait for Streamlit Cloud to update with latest changes using validator"""
+        print("[STREAMLIT] Using deployment validator...")
+        
+        try:
+            from deployment_validator import DeploymentValidator
+            
+            validator = DeploymentValidator()
+            validation_result = validator.wait_for_deployment_completion()
+            
+            # Store validation details for notification
+            self._validation_result = validation_result
+            
+            return validation_result['success']
+            
+        except ImportError:
+            print("[WARNING] Deployment validator not available, using fallback method")
+            return self._fallback_streamlit_check()
+    
+    def _fallback_streamlit_check(self) -> bool:
+        """Fallback method for Streamlit checking"""
+        print("[STREAMLIT] Using fallback deployment check...")
         
         max_wait_time = 300  # 5 minutes
         check_interval = 15   # 15 seconds
@@ -337,8 +356,8 @@ Updates are live at [TrenchCoat Pro]({self.streamlit_url}).
                 time.sleep(check_interval)
                 elapsed += check_interval
         
-        print("[WARNING] Streamlit update check timed out - but deployment likely succeeded")
-        return True  # Assume success after timeout
+        print("[WARNING] Streamlit update check timed out")
+        return False  # Fail on timeout with fallback method
     
     def send_discord_notification(self, deployment_info: Dict[str, any], success: bool):
         """Send deployment notification to appropriate Discord channel"""
@@ -407,6 +426,38 @@ Updates are live at [TrenchCoat Pro]({self.streamlit_url}).
                 "text": "TrenchCoat Pro Auto-Deployment System"
             }
         }
+        
+        # Add validation details if available
+        if hasattr(self, '_validation_result') and self._validation_result:
+            validation = self._validation_result
+            
+            if success:
+                embed["fields"].extend([
+                    {
+                        "name": "Deployment Time",
+                        "value": f"{validation.get('duration', 0):.1f}s",
+                        "inline": True
+                    },
+                    {
+                        "name": "Response Time",
+                        "value": f"{validation.get('final_status', {}).get('response_time', 'N/A')}ms",
+                        "inline": True
+                    }
+                ])
+            else:
+                # Add failure details
+                embed["fields"].append({
+                    "name": "Failure Reason",
+                    "value": validation.get('error', 'Unknown error'),
+                    "inline": False
+                })
+                
+                if validation.get('timeout'):
+                    embed["fields"].append({
+                        "name": "Timeout",
+                        "value": f"Failed after {validation.get('duration', 0):.1f}s",
+                        "inline": True
+                    })
         
         if success:
             embed["fields"].append({
