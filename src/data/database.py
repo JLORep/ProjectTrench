@@ -204,5 +204,34 @@ class CoinDatabase:
                 kwargs.get('raw_message'), kwargs.get('metadata')
             ))
     
+    def get_telegram_signals(self, limit: int = 50, channel_name: str = None, 
+                           min_confidence: float = None) -> List[Dict[str, Any]]:
+        """Retrieve recent telegram signals"""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            
+            query = """
+                SELECT * FROM telegram_signals 
+                WHERE 1=1
+            """
+            params = []
+            
+            if channel_name:
+                query += " AND channel_name = ?"
+                params.append(channel_name)
+                
+            if min_confidence:
+                query += " AND confidence >= ?"
+                params.append(min_confidence)
+            
+            query += " ORDER BY timestamp DESC LIMIT ?"
+            params.append(limit)
+            
+            cursor.execute(query, params)
+            rows = cursor.fetchall()
+            
+            return [dict(row) for row in rows]
+    
     def close(self):
         pass
