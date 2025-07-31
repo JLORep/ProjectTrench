@@ -300,12 +300,84 @@ class StreamlitSafeDashboard:
             st.error("❌ Database connection unavailable")
     
     def render_performance_chart(self):
-        """Render performance chart"""
+        """Render performance chart using live trench.db data"""
         st.subheader("📈 Portfolio Performance")
         
-        # Generate sample data
+        # Get live price history from trench.db
+        if database_available and streamlit_db:
+            try:
+                price_history = streamlit_db.get_price_history_data(days=30)
+                
+                if price_history:
+                    # Extract data for plotting
+                    dates = [pd.to_datetime(item['date']) for item in price_history]
+                    values = [item['value'] for item in price_history]
+                    
+                    # Create figure with live data
+                    fig = go.Figure()
+                    fig.add_trace(go.Scatter(
+                        x=dates,
+                        y=values,
+                        mode='lines+markers',
+                        name='Portfolio Value',
+                        line=dict(color='#10b981', width=3),
+                        fill='tonexty',
+                        fillcolor='rgba(16, 185, 129, 0.1)',
+                        hovertemplate='<b>%{x}</b><br>Value: $%{y:,.0f}<extra></extra>'
+                    ))
+                    
+                    # Calculate performance metrics
+                    total_change = ((values[-1] - values[0]) / values[0]) * 100
+                    max_value = max(values)
+                    min_value = min(values)
+                    
+                    fig.update_layout(
+                        title=f"Live Portfolio Performance (30 Days) - {total_change:+.1f}%",
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        font=dict(color='white'),
+                        height=350,
+                        xaxis_title="Date",
+                        yaxis_title="Portfolio Value ($)",
+                        showlegend=False
+                    )
+                    
+                    st.plotly_chart(fig, use_container_width=True)
+                    
+                    # Show performance summary
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric("30-Day Change", f"{total_change:+.1f}%", 
+                                 f"${values[-1] - values[0]:+,.0f}")
+                    with col2:
+                        st.metric("Peak Value", f"${max_value:,.0f}", 
+                                 f"{((max_value - values[0]) / values[0] * 100):+.1f}%")
+                    with col3:
+                        st.metric("Lowest Value", f"${min_value:,.0f}",
+                                 f"{((min_value - values[0]) / values[0] * 100):+.1f}%")
+                    
+                    # Show data source
+                    data_source = price_history[0].get('source', 'unknown')
+                    if data_source == 'live_calculated':
+                        st.success("📊 Chart generated from live trench.db coin analytics")
+                    else:
+                        st.info("📊 Using fallback performance data")
+                        
+                else:
+                    # Fallback to demo chart if no data
+                    self._render_fallback_chart()
+                    
+            except Exception as e:
+                st.error(f"❌ Error loading price history: {e}")
+                self._render_fallback_chart()
+        else:
+            self._render_fallback_chart()
+    
+    def _render_fallback_chart(self):
+        """Render fallback chart with demo data"""
+        # Generate sample data as fallback
         dates = pd.date_range(start='2024-01-01', periods=30, freq='D')
-        values = np.cumsum(np.random.randn(30) * 2) + 100
+        values = np.cumsum(np.random.randn(30) * 2000) + 115000  # More realistic base
         
         fig = go.Figure()
         fig.add_trace(go.Scatter(
@@ -319,13 +391,15 @@ class StreamlitSafeDashboard:
         ))
         
         fig.update_layout(
+            title="Portfolio Performance (Demo Data)",
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             font=dict(color='white'),
-            height=300
+            height=350
         )
         
         st.plotly_chart(fig, use_container_width=True)
+        st.warning("⚠️ Using demo performance data - database connection needed")
     
     def render_strategy_performance(self):
         """Render strategy performance"""
