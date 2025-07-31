@@ -481,15 +481,21 @@ with col4:
 st.markdown("---")
 
 # FORCE USE OF STREAMLIT SAFE DASHBOARD (bypassing problematic imports)
-st.success("🎯 Loading TrenchCoat Pro with Telegram Signals...")
+st.success("🎯 Loading TrenchCoat Pro with Coin Data & Telegram Signals...")
 try:
     from streamlit_safe_dashboard import StreamlitSafeDashboard
+    # The StreamlitSafeDashboard constructor automatically renders the full interface
     dashboard = StreamlitSafeDashboard()
+    # Dashboard is now fully rendered with all 8 tabs including Coin Data
     st.stop()  # Stop here since streamlit safe dashboard handles everything
 except ImportError as e:
     st.error(f"❌ Critical Error: Could not load dashboard: {e}")
     st.info("🔧 Contact support - dashboard module missing")
     st.stop()
+except Exception as e:
+    st.error(f"❌ Dashboard Error: {e}")
+    st.info("🔧 Using fallback interface...")
+    # Continue to fallback content below
 
 # Premium Content Tabs with Icons (fallback)
 tab1, tab2, tab3, tab4 = st.tabs(["📊 Live Dashboard", "🧠 AI Analytics", "🤖 Trading Bot", "📈 Performance"])
