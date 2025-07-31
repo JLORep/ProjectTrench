@@ -1,0 +1,78 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+*.egg-info/
+
+# Environment variables
+.env
+.env.local
+*.env
+
+# Databases
+*.db
+data/coins.db
+trenchcoat_money.db
+
+# Logs
+logs/
+*.log
+
+# Backups
+data/backups/
+*.backup
+*.bak
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Sensitive files
+config/trench_config.json
+users.json
+auth_config.py
+*.session
+bot.session
+trench_session.session
+CREDENTIALS.md
+*credentials*
+*secrets*
+*password*
+*token*
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# Distribution
+dist/
+build/
+*.egg
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Azure
+.azure/
+azure-pipelines.yml
+
+# Docker
+.dockerignore
+
+# Python wheels
+*.whl
+
+# Executables
+*.exeproject_trenchcoat/NUL
