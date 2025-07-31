@@ -45,12 +45,19 @@
 - `telegram_enrichment_pipeline.py` - Full Telegram parsing with regex patterns, confidence scoring
 - `live_coin_data.py` - **NEW** Live database connector with 1733 coins from trench.db (FULLY OPERATIONAL)
 - `data/trench.db` - **PRODUCTION DATABASE** (1733 coins with ticker, ca, discovery_price, axiom_price, etc.)
-- **Database Analysis**: Multiple databases with telegram_signals tables:
-  - `data/coins.db` - Has telegram_signals table (0 records)
-  - `trenchcoat_historic.db` - Has telegram_signals table (0 records)
-  - Production signal data needs population from live monitoring
+- **Database Analysis & Simplification**: 
+  - `data/trench.db` - **PRIMARY DATABASE** (1,733 real coins with rich data)
+    - Columns: ticker, ca, discovery_price, axiom_price, axiom_mc, axiom_volume, liquidity, peak_volume, smart_wallets, discovery_time
+  - `data/coins.db` - **DEPRECATED** (6 coins, empty telegram_signals) - removed support
+  - `trenchcoat_historic.db` - **EMPTY** (0 records in telegram_signals) - removed support
+  - **Key Insight**: Focus ONLY on trench.db for live data - other databases are empty/obsolete
+- **NEW**: `streamlit_database.py` - Streamlit Cloud compatible database module
+  - Direct trench.db access without src/ imports
+  - Generates realistic signals based on live coin data (smart_wallets, liquidity, volume)
+  - Portfolio metrics calculated from aggregated trench.db data
+  - Confidence scoring based on actual coin characteristics
 - **Database Validation**: coins.db confirmed as early prototype artifact - removed from connector
-- **Optimized**: LiveCoinDataConnector now focuses solely on production trench.db data
+- **Optimized**: All database connections now focus solely on production trench.db data
 
 ### Notification Systems (READY TO USE)
 - `unified_notifications.py` - All-platform notification system (Email, Telegram, Discord)
