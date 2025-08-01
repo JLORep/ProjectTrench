@@ -870,9 +870,12 @@ with col3:
     """, unsafe_allow_html=True)
 
 # Main content
-if st.session_state.show_coin_detail:
+if st.session_state.show_coin_detail and isinstance(st.session_state.show_coin_detail, dict):
     show_coin_detail(st.session_state.show_coin_detail)
 else:
+    # Reset invalid session state
+    if st.session_state.show_coin_detail and not isinstance(st.session_state.show_coin_detail, dict):
+        st.session_state.show_coin_detail = False
     # Tab interface
     tabs = st.tabs([
         "🗄️ Coin Data",
