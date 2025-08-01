@@ -612,44 +612,44 @@ class StreamlitSafeDashboard:
                 total_volume = 45600000
                 st.info("📊 Using demo database statistics")
                 
-                # Display metrics
-                col1, col2, col3, col4 = st.columns(4)
+            # Display metrics
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric(
+                    "📊 Total Coins",
+                    f"{total_coins:,}",
+                    "Live Database",
+                    help="Total number of coins in trench.db"
+                )
+            
+            with col2:
+                st.metric(
+                    "💰 Total Liquidity",
+                    f"${total_liquidity/1e6:.1f}M",
+                    f"${total_liquidity/total_coins:,.0f} avg" if total_coins > 0 else "$0 avg",
+                    help="Combined liquidity across all coins"
+                )
+            
+            with col3:
+                st.metric(
+                    "🧠 Avg Smart Wallets",
+                    f"{avg_smart_wallets:.1f}",
+                    "Per coin",
+                    help="Average number of smart wallets holding each coin"
+                )
+            
+            with col4:
+                st.metric(
+                    "📈 Total Volume",
+                    f"${total_volume/1e6:.1f}M",
+                    "24h volume",
+                    help="Combined 24h trading volume"
+                )
                 
-                with col1:
-                    st.metric(
-                        "📊 Total Coins",
-                        f"{total_coins:,}",
-                        "Live Database",
-                        help="Total number of coins in trench.db"
-                    )
-                
-                with col2:
-                    st.metric(
-                        "💰 Total Liquidity",
-                        f"${total_liquidity/1e6:.1f}M",
-                        f"${total_liquidity/total_coins:,.0f} avg" if total_coins > 0 else "$0 avg",
-                        help="Combined liquidity across all coins"
-                    )
-                
-                with col3:
-                    st.metric(
-                        "🧠 Avg Smart Wallets",
-                        f"{avg_smart_wallets:.1f}",
-                        "Per coin",
-                        help="Average number of smart wallets holding each coin"
-                    )
-                
-                with col4:
-                    st.metric(
-                        "📈 Total Volume",
-                        f"${total_volume/1e6:.1f}M",
-                        "24h volume",
-                        help="Combined 24h trading volume"
-                    )
-            except Exception as e:
-                st.error(f"Error loading database stats: {e}")
-        else:
-            # Demo stats
+        except Exception as e:
+            st.error(f"Error loading database stats: {e}")
+            # Fallback demo stats
             col1, col2, col3, col4 = st.columns(4)
             with col1:
                 st.metric("📊 Total Coins", "1,733", "Demo Data")
