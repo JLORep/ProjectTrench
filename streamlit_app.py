@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# DEPLOYMENT_TIMESTAMP: 2025-07-31 23:44:00 - Force deployment
+# DEPLOYMENT_TIMESTAMP: 2025-08-01 10:23:05 - COMPREHENSIVE DEPLOYMENT FIX
 """
 TrenchCoat Pro - Premium Trading Intelligence Platform
 Ultra-professional design with stunning visuals
@@ -483,6 +483,9 @@ st.markdown("---")
 # FORCE USE OF STREAMLIT SAFE DASHBOARD (bypassing problematic imports)
 st.success("🎯 Loading TrenchCoat Pro with Coin Data & Telegram Signals...")
 try:
+    # Force cache clear for deployment
+    st.cache_data.clear()
+    
     from streamlit_safe_dashboard import StreamlitSafeDashboard
     # The StreamlitSafeDashboard constructor automatically renders the full interface
     dashboard = StreamlitSafeDashboard()
