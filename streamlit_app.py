@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# DEPLOYMENT_TIMESTAMP: 2025-08-01 16:53:27 - Force deployment
+# DEPLOYMENT_TIMESTAMP: 2025-08-01 16:56:54 - Force deployment
 # -*- coding: utf-8 -*-
 """
 TrenchCoat Pro - FIXED VERSION
@@ -42,16 +42,19 @@ with status_col3:
 with status_col4:
     st.info("💎 Premium Mode")
 
-# Key Metrics
+# Key Metrics - Real Data
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    st.metric("💰 Portfolio Value", "$127,845", "+$12,845 (+11.2%)")
+    st.metric("💰 Portfolio Value", "$0.00", "Connect wallet")
 with col2:
-    st.metric("📡 Active Signals", "23", "+8 signals")
+    st.metric("📡 Active Signals", "0", "Setup pending")
 with col3:
-    st.metric("🎯 Win Rate", "78.3%", "+2.1%")
+    st.metric("🎯 Win Rate", "0%", "No trades yet")
 with col4:
-    st.metric("⚡ Speed", "12ms", "-3ms")
+    # Get database connection speed
+    coins, status = get_live_coins_simple()
+    db_status = "✅ Connected" if "SUCCESS" in status else "❌ Offline"
+    st.metric("📊 Database", db_status, f"{len(coins) if coins else 0} coins")
 
 st.markdown("---")
 
@@ -603,33 +606,52 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(expected_t
 
 with tab1:
     st.header("🔥 Live Market Signals")
-    st.success("🚀 **$PEPE**: Strong Buy Signal (+250% potential)")
-    st.info("📈 **$SHIB**: Moderate Buy (+125% potential)")
-    st.warning("⚠️ **$DOGE**: Consolidation phase")
     
-    # Sample performance chart
-    dates = pd.date_range(start='2024-01-01', periods=100, freq='D')
-    performance = np.cumsum(np.random.randn(100) * 0.02) + 100
+    # Load real coins from database for signals
+    coins, status = get_live_coins_simple()
     
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=dates, y=performance, mode='lines', name='Portfolio'))
-    fig.update_layout(title="Portfolio Performance", height=400)
-    st.plotly_chart(fig, use_container_width=True)
+    if "SUCCESS" in status and coins:
+        st.success(f"📊 Displaying signals from {len(coins)} live coins")
+        
+        # Show top performing coins as signals
+        for i, coin in enumerate(coins[:5]):
+            gain_pct = coin['Price Gain %'].replace('+', '').replace('%', '')
+            gain_val = float(gain_pct)
+            
+            if gain_val > 300:
+                st.success(f"🚀 **{coin['Ticker']}**: Strong Buy Signal ({coin['Price Gain %']} potential)")
+            elif gain_val > 100:
+                st.info(f"📈 **{coin['Ticker']}**: Moderate Buy ({coin['Price Gain %']} potential)")
+            else:
+                st.warning(f"⚡ **{coin['Ticker']}**: Active monitoring ({coin['Price Gain %']} current)")
+    else:
+        st.warning("🔄 Live market signals loading...")
+        st.info("📡 Connect to live data feeds to see real-time signals")
 
 with tab2:
     st.header("🧠 AI-Powered Analysis")
-    st.success("🎯 AI Prediction Accuracy: 78.6%")
-    st.info("📊 Current Market Sentiment: Bullish")
-    st.metric("🔮 Next Hour Prediction", "+15.3%", "+2.1%")
     
-    # Sentiment pie chart
-    fig = go.Figure(data=go.Pie(
-        labels=['Bullish', 'Neutral', 'Bearish'],
-        values=[65, 25, 10],
-        marker_colors=['#22c55e', '#6b7280', '#ef4444']
-    ))
-    fig.update_layout(title="Market Sentiment Analysis")
-    st.plotly_chart(fig, use_container_width=True)
+    # Load real data for analysis
+    coins, status = get_live_coins_simple()
+    
+    if "SUCCESS" in status and coins:
+        # Calculate real metrics from database
+        gains = [float(coin['Price Gain %'].replace('+', '').replace('%', '')) for coin in coins]
+        avg_gain = sum(gains) / len(gains)
+        positive_coins = len([g for g in gains if g > 0])
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("📊 Coins Analyzed", len(coins))
+        with col2: 
+            st.metric("📈 Average Gain", f"+{avg_gain:.1f}%")
+        with col3:
+            st.metric("🟢 Positive Performers", f"{positive_coins}/{len(coins)}")
+            
+        st.info("🧠 AI analysis based on live database of 1,733 coins")
+    else:
+        st.warning("🔄 AI analysis loading...")
+        st.info("🤖 Advanced AI models will analyze live market data")
 
 with tab3:
     st.header("🤖 Model Builder")
@@ -644,41 +666,40 @@ with tab3:
 
 with tab4:
     st.header("⚙️ Trading Engine")
-    st.success("🟢 Trading Engine: ACTIVE")
+    st.warning("🛠️ Trading Engine: Development Mode")
     
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("💰 Account Balance", "$127,845")
-        st.metric("📈 Today's Profit", "$12,845")
+        st.metric("💰 Account Balance", "$0.00", "Connect wallet")
+        st.metric("📈 Today's Profit", "$0.00", "No trades")
     with col2:
-        st.metric("🔄 Trades Today", "12")
-        st.metric("🎯 Win Rate", "78.3%")
+        st.metric("🔄 Trades Today", "0", "Engine offline")
+        st.metric("🎯 Win Rate", "0%", "No history")
     
-    auto_trading = st.checkbox("Enable Auto-Trading", value=True)
-    max_risk = st.slider("Max Risk per Trade (%)", 1, 10, 3)
+    st.info("🚀 Trading engine will integrate with live wallet connections")
+    auto_trading = st.checkbox("Enable Auto-Trading", value=False, disabled=True)
+    max_risk = st.slider("Max Risk per Trade (%)", 1, 10, 3, disabled=True)
 
 with tab5:
     st.header("📡 Telegram Signals")
-    st.info("🔄 Real-time Telegram monitoring active")
+    st.warning("🛠️ Telegram monitoring: Coming Soon")
     
-    # Load and display telegram-style signals
+    # Load real coins for future signal integration
     coins, status = get_live_coins_simple()
     
-    if coins:
-        st.markdown("### 📡 Recent Signals")
-        for i, coin in enumerate(coins[:5]):
-            signal_type = ["🚀 STRONG BUY", "📈 BUY", "💎 HOLD"][i % 3]
-            channel = ["@CryptoGems", "@MoonSignals", "@AltcoinDaily"][i % 3]
-            
-            with st.container():
-                col1, col2, col3 = st.columns([2, 1, 1])
-                with col1:
-                    st.markdown(f"**{coin['Ticker']}** - {signal_type}")
-                    st.caption(f"Source: {channel}")
-                with col2:
-                    st.metric("Confidence", f"{85 + i*2}%")
-                with col3:
-                    st.metric("Expected", coin['Price Gain %'])
+    if "SUCCESS" in status and coins:
+        st.info(f"📊 Ready to monitor signals from {len(coins)} tracked coins")
+        st.markdown("### 🚀 Signal Sources (Coming Soon)")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("📊 Monitored Channels", "0", "Setup pending")
+            st.metric("📡 Signals Today", "0", "No monitoring")
+        with col2:
+            st.metric("🎯 Accuracy Rate", "0%", "No history")
+            st.metric("⏱️ Last Update", "Never", "Offline")
+    else:
+        st.error("❌ Database connection needed for signal monitoring")
 
 with tab6:
     st.header("🪙 Live Coin Data")
@@ -773,7 +794,7 @@ with tab7:
         st.metric("💹 PnL Today", "0.00 SOL", "0.0%")
         st.metric("🎯 Success Rate", "0%", "No trades yet")
     
-    st.info("🔗 Connect your Solana wallet to start automated trading")
+    st.info("🔗 Wallet integration coming soon - connect to start trading")
 
 with tab8:
     st.header("🗄️ Coin Data")
@@ -832,17 +853,17 @@ with tab10:
     st.header("🔔 Incoming Coins")
     st.markdown("### 📡 Real-time Coin Discovery Monitor")
     
-    st.info("🚀 Monitoring for new cryptocurrency discoveries...")
+    st.warning("🛠️ Real-time monitoring: Coming Soon")
     
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("📊 Monitored Sources", "6 APIs")
-        st.metric("⏱️ Scan Frequency", "30 seconds")
+        st.metric("📊 Monitored Sources", "0", "Setup pending")
+        st.metric("⏱️ Scan Frequency", "--", "Offline")
     with col2:
-        st.metric("🔔 New Today", "0")
-        st.metric("📈 Queue Status", "Active")
+        st.metric("🔔 New Today", "0", "No monitoring")
+        st.metric("📈 Queue Status", "Inactive", "Development")
     
-    st.warning("🔧 Real-time monitoring features coming soon!")
+    st.info("🚀 Will monitor multiple APIs for new coin discoveries")
 
 # Footer  
 st.markdown("---")
