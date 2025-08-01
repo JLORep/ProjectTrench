@@ -58,7 +58,8 @@
       "WebFetch(domain:trenchdemo.streamlit.app)",
       "Bash(curl:*)",
       "Bash(git checkout:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "WebFetch(domain:bit.ly)"
     ],
     "deny": []
   }

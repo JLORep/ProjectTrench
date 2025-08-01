@@ -122,6 +122,7 @@ C:\trench\
 ├── stunning_charts_system.py             # 📈 Interactive charts with Plotly
 ├── enhanced_charts_system.py             # 📈 Enhanced auto-scaling charts
 ├── breadcrumb_navigation.py              # 🧭 Breadcrumb navigation system
+├── super_claude_system.py                # 🤖 AI-powered trading intelligence system
 │
 ## TELEGRAM & SOCIAL INTEGRATION
 ├── telegram_bot.py                       # Main Telegram bot
