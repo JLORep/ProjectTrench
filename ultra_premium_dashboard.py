@@ -373,8 +373,10 @@ class UltraPremiumDashboard:
             
             # Use existing live coin data functionality
             try:
-                coins = self.get_validated_coin_data()
-                if coins:
+                # Import the working coin data function
+                from streamlit_app import get_live_coins_simple
+                coins, status = get_live_coins_simple()
+                if coins and status.startswith("SUCCESS"):
                     col1, col2, col3, col4 = st.columns(4)
                     with col1:
                         st.metric("📊 Total Coins", "1,733")
@@ -388,9 +390,11 @@ class UltraPremiumDashboard:
                     # Enhanced coin display with analytics
                     st.subheader("🎯 Top Performing Coins")
                     for i, coin in enumerate(coins[:5]):
-                        ticker = coin.get('ticker', f'COIN_{i+1}')
-                        price_gain = coin.get('price_gain_pct', 0)
-                        smart_wallets = coin.get('smart_wallets', 0)
+                        ticker = coin.get('Ticker', coin.get('ticker', f'COIN_{i+1}'))
+                        price_gain_str = coin.get('Price Gain %', coin.get('price_gain_pct', '0%'))
+                        price_gain = float(price_gain_str.replace('%', '').replace('+', '')) if isinstance(price_gain_str, str) else price_gain_str
+                        smart_wallets_str = coin.get('Smart Wallets', coin.get('smart_wallets', '0'))
+                        smart_wallets = int(smart_wallets_str.replace(',', '')) if isinstance(smart_wallets_str, str) else smart_wallets_str
                         
                         col1, col2, col3 = st.columns([2, 1, 1])
                         with col1:
@@ -400,9 +404,11 @@ class UltraPremiumDashboard:
                         with col3:
                             st.metric("👥 Wallets", f"{smart_wallets:,}")
                 else:
-                    st.error("❌ Failed to load coin data")
-            except:
-                st.error("❌ Coin data not available")
+                    st.error(f"❌ Failed to load coin data: {status}")
+            except Exception as e:
+                st.error(f"❌ Coin data not available: {str(e)}")
+                # Fallback message
+                st.info("🔄 Retrying connection to live database...")
                 
         with tab9:
             # Database Management Tab
