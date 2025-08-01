@@ -20,6 +20,7 @@ import tempfile
 import json
 import re
 from datetime import datetime
+from unicode_handler import safe_print, safe_format, unicode_handler
 
 class GitHistoryScrubber:
     """Remove sensitive data from entire Git history"""
@@ -52,7 +53,7 @@ class GitHistoryScrubber:
                                  capture_output=True, text=True, check=True)
             return True
         except subprocess.CalledProcessError:
-            print("❌ Not in a Git repository!")
+            safe_print("❌ Not in a Git repository!")
             return False
     
     def backup_repository(self) -> str:
@@ -63,10 +64,10 @@ class GitHistoryScrubber:
         try:
             # Create backup directory
             subprocess.run(['git', 'clone', '.', f'../{backup_name}'], check=True)
-            print(f"✅ Backup created: ../{backup_name}")
+            safe_print(f"✅ Backup created: ../{backup_name}")
             return backup_name
         except subprocess.CalledProcessError as e:
-            print(f"❌ Backup failed: {e}")
+            safe_print(f"❌ Backup failed: {e}")
             return None
     
     def find_sensitive_commits(self) -> list:
@@ -76,7 +77,7 @@ class GitHistoryScrubber:
         try:
             # Get all commits
             result = subprocess.run(['git', 'log', '--all', '--oneline', '--grep=webhook', '-i'], 
-                                  capture_output=True, text=True)
+                                  capture_output=True, text=True, encoding='utf-8', errors='ignore')
             
             webhook_commits = result.stdout.strip().split('\n') if result.stdout.strip() else []
             
@@ -84,7 +85,7 @@ class GitHistoryScrubber:
             for filename in self.files_to_scrub:
                 try:
                     result = subprocess.run(['git', 'log', '--all', '--oneline', '--', filename], 
-                                          capture_output=True, text=True)
+                                          capture_output=True, text=True, encoding='utf-8', errors='ignore')
                     file_commits = result.stdout.strip().split('\n') if result.stdout.strip() else []
                     webhook_commits.extend(file_commits)
                 except subprocess.CalledProcessError:
@@ -114,7 +115,7 @@ class GitHistoryScrubber:
             return unique_commits
             
         except subprocess.CalledProcessError as e:
-            print(f"❌ Error finding sensitive commits: {e}")
+            safe_print(f"❌ Error finding sensitive commits: {e}")
             return []
     
     def scan_commit_for_webhooks(self, commit_hash: str) -> dict:
@@ -126,10 +127,10 @@ class GitHistoryScrubber:
         }
         
         try:
-            # Get commit content
+            # Get commit content with proper encoding handling
             result = subprocess.run(['git', 'show', commit_hash], 
-                                  capture_output=True, text=True)
-            commit_content = result.stdout
+                                  capture_output=True, text=True, encoding='utf-8', errors='ignore')
+            commit_content = result.stdout if result.stdout else ""
             
             # Find webhook URLs
             for pattern in self.webhook_patterns:
@@ -196,8 +197,8 @@ exit 0
     
     def dry_run_analysis(self) -> dict:
         """Analyze what would be removed (dry run)"""
-        print("ANALYZING REPOSITORY FOR SENSITIVE DATA")
-        print("=" * 50)
+        safe_print("🔍 ANALYZING REPOSITORY FOR SENSITIVE DATA")
+        safe_print("=" * 50)
         
         analysis = {
             'sensitive_commits': [],
@@ -210,11 +211,11 @@ exit 0
         sensitive_commits = self.find_sensitive_commits()
         analysis['total_commits_to_rewrite'] = len(sensitive_commits)
         
-        print(f"Found {len(sensitive_commits)} commits with potential sensitive data:")
-        print()
+        safe_print(f"Found {len(sensitive_commits)} commits with potential sensitive data:")
+        safe_print("")
         
         for commit in sensitive_commits:
-            print(f"COMMIT {commit['short_hash']}: {commit['message'][:60]}...")
+            safe_print(f"COMMIT {commit['short_hash']}: {commit['message'][:60]}...")
             
             # Scan commit for actual webhook content
             webhook_data = self.scan_commit_for_webhooks(commit['hash'])
@@ -231,30 +232,30 @@ exit 0
             analysis['files_affected'].update(webhook_data['files'])
             
             if webhook_data['urls']:
-                print(f"   ALERT: Found {len(webhook_data['urls'])} webhook URLs")
+                safe_print(f"   ALERT: Found {len(webhook_data['urls'])} webhook URLs")
             if webhook_data['files']:
-                print(f"   FILES: Affected files: {', '.join(webhook_data['files'])}")
-            print()
+                safe_print(f"   FILES: Affected files: {', '.join(webhook_data['files'])}")
+            safe_print("")
         
-        print("=" * 50)
-        print("ANALYSIS SUMMARY:")
-        print(f"Total commits to rewrite: {analysis['total_commits_to_rewrite']}")
-        print(f"Total webhook URLs found: {analysis['webhook_urls_found']}")
-        print(f"Affected files: {', '.join(analysis['files_affected']) if analysis['files_affected'] else 'None'}")
+        safe_print("=" * 50)
+        safe_print("ANALYSIS SUMMARY:")
+        safe_print(f"Total commits to rewrite: {analysis['total_commits_to_rewrite']}")
+        safe_print(f"Total webhook URLs found: {analysis['webhook_urls_found']}")
+        safe_print(f"Affected files: {', '.join(analysis['files_affected']) if analysis['files_affected'] else 'None'}")
         
         return analysis
     
     def execute_scrubbing(self, backup_name: str) -> bool:
         """Execute the actual Git history rewriting"""
-        print("🧹 EXECUTING GIT HISTORY SCRUBBING")
-        print("=" * 40)
-        print("⚠️  WARNING: This will rewrite Git history!")
-        print("⚠️  Backup created at:", f"../{backup_name}")
-        print()
+        safe_print("🧹 EXECUTING GIT HISTORY SCRUBBING")
+        safe_print("=" * 40)
+        safe_print("⚠️  WARNING: This will rewrite Git history!")
+        safe_print(f"⚠️  Backup created at: ../{backup_name}")
+        safe_print("")
         
         try:
             # Method 1: Use git filter-repo (preferred if available)
-            print("Attempting git filter-repo...")
+            safe_print("Attempting git filter-repo...")
             
             # Create expressions file for git filter-repo
             expressions = [
@@ -275,19 +276,19 @@ exit 0
                     '--force'
                 ], capture_output=True, text=True, check=True)
                 
-                print("✅ git filter-repo completed successfully")
+                safe_print("✅ git filter-repo completed successfully")
                 os.remove(expressions_file)
                 return True
                 
             except (subprocess.CalledProcessError, FileNotFoundError):
-                print("git filter-repo not available, trying git filter-branch...")
+                safe_print("git filter-repo not available, trying git filter-branch...")
                 os.remove(expressions_file)
                 
                 # Method 2: Use git filter-branch (fallback)
                 return self.filter_branch_scrub()
                 
         except Exception as e:
-            print(f"❌ Scrubbing failed: {e}")
+            safe_print(f"❌ Scrubbing failed: {e}")
             return False
     
     def filter_branch_scrub(self) -> bool:
@@ -303,14 +304,14 @@ exit 0
                 '--all'
             ]
             
-            print("Running git filter-branch...")
+            safe_print("Running git filter-branch...")
             result = subprocess.run(cmd, capture_output=True, text=True)
             
             # Clean up
             os.unlink(script_path)
             
             if result.returncode == 0:
-                print("✅ git filter-branch completed")
+                safe_print("✅ git filter-branch completed")
                 
                 # Force garbage collection
                 subprocess.run(['git', 'for-each-ref', '--format=delete %(refname)', 'refs/original/'], 
@@ -324,17 +325,17 @@ exit 0
                 
                 return True
             else:
-                print(f"❌ git filter-branch failed: {result.stderr}")
+                safe_print(f"❌ git filter-branch failed: {result.stderr}")
                 return False
                 
         except Exception as e:
-            print(f"❌ filter-branch scrubbing failed: {e}")
+            safe_print(f"❌ filter-branch scrubbing failed: {e}")
             return False
     
     def verify_scrubbing(self) -> bool:
         """Verify that scrubbing was successful"""
-        print("\n🔍 VERIFYING SCRUBBING RESULTS")
-        print("=" * 35)
+        safe_print("\n🔍 VERIFYING SCRUBBING RESULTS")
+        safe_print("=" * 35)
         
         try:
             # Check if any webhook URLs remain
@@ -342,10 +343,10 @@ exit 0
                                   capture_output=True, text=True)
             
             if result.stdout.strip():
-                print("❌ Webhook URLs still found in history!")
+                safe_print("❌ Webhook URLs still found in history!")
                 return False
             else:
-                print("✅ No webhook URLs found in Git history")
+                safe_print("✅ No webhook URLs found in Git history")
                 
             # Check current working directory
             webhook_files = ['webhook_config.json', 'discord_webhooks.json']
@@ -354,14 +355,14 @@ exit 0
                     with open(filename, 'r') as f:
                         content = f.read()
                         if 'discord.com/api/webhooks' in content:
-                            print(f"⚠️  {filename} still contains webhook URLs")
+                            safe_print(f"⚠️  {filename} still contains webhook URLs")
                         else:
-                            print(f"✅ {filename} is clean")
+                            safe_print(f"✅ {filename} is clean")
                 
             return True
             
         except Exception as e:
-            print(f"❌ Verification failed: {e}")
+            safe_print(f"❌ Verification failed: {e}")
             return False
     
     def run(self, dry_run: bool = True) -> bool:
@@ -371,21 +372,21 @@ exit 0
             return False
         
         if dry_run:
-            print("DRY RUN MODE - No changes will be made")
+            safe_print("DRY RUN MODE - No changes will be made")
             analysis = self.dry_run_analysis()
             
             if analysis['webhook_urls_found'] > 0:
-                print("\nWEBHOOKS FOUND IN HISTORY!")
-                print("Run with --execute to remove them")
+                safe_print("\nWEBHOOKS FOUND IN HISTORY!")
+                safe_print("Run with --execute to remove them")
                 return False
             else:
-                print("No webhook URLs found in Git history")
+                safe_print("No webhook URLs found in Git history")
                 return True
         else:
             # Create backup first
             backup_name = self.backup_repository()
             if not backup_name:
-                print("❌ Could not create backup. Aborting.")
+                safe_print("❌ Could not create backup. Aborting.")
                 return False
             
             # Execute scrubbing
@@ -394,18 +395,18 @@ exit 0
             if success:
                 # Verify results
                 if self.verify_scrubbing():
-                    print("\n🎉 GIT HISTORY SCRUBBING COMPLETED!")
-                    print(f"Backup available at: ../{backup_name}")
-                    print("\nNext steps:")
-                    print("1. git push --force-with-lease origin main")
-                    print("2. Notify team about history rewrite")
-                    print("3. Team members need to re-clone repository")
+                    safe_print("\n🎉 GIT HISTORY SCRUBBING COMPLETED!")
+                    safe_print(f"Backup available at: ../{backup_name}")
+                    safe_print("\nNext steps:")
+                    safe_print("1. git push --force-with-lease origin main")
+                    safe_print("2. Notify team about history rewrite")
+                    safe_print("3. Team members need to re-clone repository")
                     return True
                 else:
-                    print("❌ Scrubbing verification failed")
+                    safe_print("❌ Scrubbing verification failed")
                     return False
             else:
-                print("❌ Scrubbing failed")
+                safe_print("❌ Scrubbing failed")
                 return False
 
 def main():
@@ -414,22 +415,22 @@ def main():
     scrubber = GitHistoryScrubber()
     
     if len(sys.argv) < 2:
-        print("Usage:")
-        print("  python scrub_git_history.py --dry-run     # Preview what will be removed")
-        print("  python scrub_git_history.py --execute     # Actually clean the history")
+        safe_print("Usage:")
+        safe_print("  python scrub_git_history.py --dry-run     # Preview what will be removed")
+        safe_print("  python scrub_git_history.py --execute     # Actually clean the history")
         return
     
     if sys.argv[1] == '--dry-run':
         scrubber.run(dry_run=True)
     elif sys.argv[1] == '--execute':
-        print("⚠️  This will rewrite Git history and cannot be undone!")
+        safe_print("⚠️  This will rewrite Git history and cannot be undone!")
         confirm = input("Type 'CONFIRM' to proceed: ")
         if confirm == 'CONFIRM':
             scrubber.run(dry_run=False)
         else:
-            print("Aborted.")
+            safe_print("Aborted.")
     else:
-        print("Invalid argument. Use --dry-run or --execute")
+        safe_print("Invalid argument. Use --dry-run or --execute")
 
 if __name__ == "__main__":
     main()
