@@ -1,18 +1,34 @@
 #!/usr/bin/env python3
-# DEPLOYMENT_TIMESTAMP: 2025-08-01 17:45:00 - HTML Fix: Cleaned broken HTML fragments in render_stunning_coin_card
+# DEPLOYMENT_TIMESTAMP: 2025-08-01 20:15:00 - MAJOR RELEASE v2.3.0: Charts and breadcrumb navigation
 # -*- coding: utf-8 -*-
 """
-TrenchCoat Pro - FIXED VERSION
-Simple working dashboard with all 7 tabs
+TrenchCoat Pro v2.3.0 - Major Release
+Integrated stunning charts and breadcrumb navigation
 """
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
-from datetime import datetime
+from plotly.subplots import make_subplots
+from datetime import datetime, timedelta
 import os
 import sqlite3
 import hashlib
+
+# Try to import new features with fallback
+try:
+    from breadcrumb_navigation import BreadcrumbNavigation, render_breadcrumb
+    from stunning_charts_system import (
+        create_main_price_chart,
+        create_liquidity_depth_chart,
+        create_holder_distribution_chart,
+        create_performance_metrics_chart,
+        create_volume_heatmap
+    )
+    CHARTS_AVAILABLE = True
+except ImportError:
+    CHARTS_AVAILABLE = False
+    print("Warning: Charts or breadcrumb navigation not available")
 
 # Set environment
 os.environ['STREAMLIT_CLOUD'] = 'true'
@@ -122,12 +138,16 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Initialize breadcrumb navigation if available
+if CHARTS_AVAILABLE:
+    breadcrumb_nav = BreadcrumbNavigation()
+
 # TOP-LEVEL NAVIGATION - Tabs moved to very top with coin data first
 expected_tabs = ["🗄️ Coin Data", "📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📡 Telegram Signals", "📝 Dev Blog", "💎 Solana Wallet", "🗃️ Database", "🔔 Incoming Coins"]
 
 # Premium dashboard status - minimal header
-st.markdown("### 🎯 TrenchCoat Pro | Premium Crypto Intelligence")
-st.success(f"✅ Premium Dashboard - {len(expected_tabs)} Tabs Loaded")
+st.markdown("### 🎯 TrenchCoat Pro v2.3.0 | Premium Crypto Intelligence")
+st.success(f"✅ Premium Dashboard - {len(expected_tabs)} Tabs Loaded | {'Charts Available' if CHARTS_AVAILABLE else 'Basic Mode'}")
     
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(expected_tabs)
 
@@ -436,8 +456,144 @@ def render_coin_detail_page(coin):
         }
         st.json(raw_data)
 
+def render_coin_detail_with_charts(coin_data):
+    """Render detailed coin view with integrated stunning charts"""
+    if CHARTS_AVAILABLE:
+        # Breadcrumb navigation
+        breadcrumb_nav.render(["Home", "Coin Data", coin_data.get('ticker', 'Coin Details')])
+    
+    st.markdown(f"# {coin_data.get('ticker', 'COIN')} - Detailed Analysis")
+    
+    # Quick stats row
+    col1, col2, col3, col4, col5 = st.columns(5)
+    
+    with col1:
+        price = coin_data.get('current_price', coin_data.get('axiom_price', 0.001))
+        st.metric("Current Price", f"${price:.8f}")
+    
+    with col2:
+        gain = coin_data.get('price_gain', 0)
+        st.metric("24h Change", f"{gain:+.2f}%", delta=f"{gain:.2f}%")
+    
+    with col3:
+        volume = coin_data.get('volume', coin_data.get('axiom_volume', 10000))
+        st.metric("24h Volume", f"${volume:,.0f}")
+    
+    with col4:
+        liquidity = coin_data.get('liquidity', 100000)
+        st.metric("Liquidity", f"${liquidity:,.0f}")
+    
+    with col5:
+        holders = coin_data.get('smart_wallets', 1000)
+        st.metric("Holders", f"{holders:,}")
+    
+    st.markdown("---")
+    
+    if CHARTS_AVAILABLE:
+        # Chart container styling
+        st.markdown("""
+        <style>
+        .chart-container {
+            background: linear-gradient(135deg, rgba(26,26,26,0.95) 0%, rgba(45,45,45,0.95) 100%);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 10px 0;
+            border: 1px solid rgba(16,185,129,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        # Main price chart
+        with st.container():
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            try:
+                main_chart = create_main_price_chart(coin_data)
+                st.plotly_chart(main_chart, use_container_width=True)
+            except Exception as e:
+                st.error(f"Error creating price chart: {e}")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Row 1: Liquidity and Holders
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            try:
+                liquidity_chart = create_liquidity_depth_chart(coin_data)
+                st.plotly_chart(liquidity_chart, use_container_width=True)
+            except Exception as e:
+                st.error(f"Error creating liquidity chart: {e}")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            try:
+                holder_chart = create_holder_distribution_chart(coin_data)
+                st.plotly_chart(holder_chart, use_container_width=True)
+            except Exception as e:
+                st.error(f"Error creating holder chart: {e}")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Row 2: Performance and Volume Heatmap
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            try:
+                performance_chart = create_performance_metrics_chart(coin_data)
+                st.plotly_chart(performance_chart, use_container_width=True)
+            except Exception as e:
+                st.error(f"Error creating performance chart: {e}")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            try:
+                heatmap = create_volume_heatmap(coin_data)
+                st.plotly_chart(heatmap, use_container_width=True)
+            except Exception as e:
+                st.error(f"Error creating heatmap: {e}")
+            st.markdown('</div>', unsafe_allow_html=True)
+    else:
+        st.info("📊 Advanced charts will be available after deployment completes")
+    
+    # Additional coin information
+    st.markdown("---")
+    st.markdown("### 📋 Token Information")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(f"""
+        **Contract Address**: `{coin_data.get('ca', 'N/A')}`  
+        **Discovery Time**: {coin_data.get('discovery_time', 'Unknown')}  
+        **Chain**: Solana  
+        """)
+    
+    with col2:
+        st.markdown(f"""
+        **Discovery Price**: ${coin_data.get('discovery_price', 0):.8f}  
+        **Peak Volume**: ${coin_data.get('peak_volume', 0):,.0f}  
+        **Data Source**: {coin_data.get('data_source', 'Live Database')}  
+        """)
+    
+    # Back button
+    if st.button("← Back to Coin List", type="primary"):
+        if 'show_coin_detail' in st.session_state:
+            del st.session_state.show_coin_detail
+        st.rerun()
+
 def render_enhanced_coin_data_tab():
     """Render the enhanced coin data tab with stunning cards"""
+    
+    # Check if we should show detail view
+    if 'show_coin_detail' in st.session_state:
+        render_coin_detail_with_charts(st.session_state.show_coin_detail)
+        return
+    
+    # Breadcrumb for list view
+    if CHARTS_AVAILABLE:
+        breadcrumb_nav.render(["Home", "Coin Data"])
     
     # Initialize session state for pagination and filtering
     if 'coin_page' not in st.session_state:
@@ -636,10 +792,28 @@ def render_enhanced_coin_data_tab():
                 with st.container():
                     st.markdown(card_html, unsafe_allow_html=True)
                     
-                    # Click button to view full details
-                    if st.button(f"📊 View Full Details", key=f"detail_{coin['ticker']}_{i}", 
+                    # Click button to view full details with charts
+                    button_text = "📊 View Charts & Details" if CHARTS_AVAILABLE else "📊 View Details"
+                    if st.button(button_text, key=f"detail_{coin['ticker']}_{i}", 
                                 use_container_width=True):
-                        st.session_state.show_coin_detail = coin
+                        # Prepare coin data for charts
+                        coin_detail = {
+                            'ticker': coin['ticker'],
+                            'ca': coin['ca'],
+                            'current_price': coin.get('axiom_price', coin.get('discovery_price', 0.001)),
+                            'price_gain': coin['price_gain'],
+                            'liquidity': coin['liquidity'],
+                            'volume': coin.get('axiom_volume', coin.get('peak_volume', 10000)),
+                            'market_cap': coin.get('axiom_mc', coin.get('discovery_mc', 100000)),
+                            'smart_wallets': coin['smart_wallets'],
+                            'axiom_price': coin.get('axiom_price', 0),
+                            'axiom_volume': coin.get('axiom_volume', 0),
+                            'discovery_time': coin.get('discovery_time', 'Unknown'),
+                            'discovery_price': coin.get('discovery_price', 0),
+                            'peak_volume': coin.get('peak_volume', 0),
+                            'data_source': coin.get('data_source', 'TrenchDB')
+                        }
+                        st.session_state.show_coin_detail = coin_detail
                         st.rerun()
     
     else:
