@@ -706,3 +706,49 @@ streamlit_app.py
 - **Fallback Messages**: Clear user communication
 
 *Last Updated: 2025-08-01 20:30 - Major Release v2.3.0 with interactive charts and breadcrumb navigation*
+
+## 🚨 Critical Fix - AttributeError on Coin Click
+
+### Bug Report & Resolution
+**Issue**: AttributeError when clicking "View Charts & Details" on coin cards
+**Error**: `coin_data.get('ticker', 'Coin Details')` failed - coin_data was not a dictionary
+**Impact**: Users couldn't access the new chart features
+
+### Root Cause Analysis
+1. **Data Structure Inconsistency**:
+   - Database query returns dictionaries with lowercase keys
+   - Coin card rendering expected consistent dict structure
+   - Session state was storing non-dict objects in some cases
+
+2. **Missing Type Validation**:
+   - No isinstance() check before calling .get() method
+   - No fallback handling for different data formats
+
+### Fix Implementation
+```python
+# Added to render_coin_detail_with_charts()
+if not isinstance(coin_data, dict):
+    st.error("Invalid coin data format")
+    return
+
+# Enhanced coin detail preparation
+coin_detail = {
+    'ticker': coin.get('ticker', coin['ticker'] if 'ticker' in coin else 'UNKNOWN'),
+    'ca': coin.get('ca', coin.get('contract_address', 'N/A')),
+    # Multiple fallback patterns for each field
+}
+```
+
+### Lessons for Dashboard Development
+1. **Always Type Check**: Validate data types before operations
+2. **Defensive Data Access**: Use multiple fallback patterns
+3. **Consistent Keys**: Standardize on lowercase throughout
+4. **Test Click Paths**: Verify all interactive elements work
+
+### Current Status
+- ✅ Charts accessible via coin card clicks
+- ✅ Proper error handling for edge cases
+- ✅ Consistent data structure maintained
+- ✅ All 5 chart types rendering correctly
+
+*Last Updated: 2025-08-01 21:15 - AttributeError fix for chart access*

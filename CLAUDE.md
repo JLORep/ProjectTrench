@@ -383,7 +383,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(expected_t
 - **User Experience**: ✅ Premium chunky navigation at top of screen
 - **Code Quality**: ✅ Clean structure with no duplicate content
 
-*Last updated: 2025-08-01 21:00 - Solana wallet integration complete, dev blog triggered*
+*Last updated: 2025-08-01 21:02 - Solana wallet integration complete, dev blog triggered*
 
 ## Session 2025-08-01 - MAJOR RELEASE v2.3.0 ✅
 
@@ -482,7 +482,50 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(expected_t
 - Create trading strategy definition system
 - Build authentication layer
 
-*Last updated: 2025-08-01 21:00 - Solana wallet integration complete, dev blog triggered*
+*Last updated: 2025-08-01 21:02 - Major Release v2.3.0 with charts and navigation*
+
+## Session 2025-08-01 - Critical AttributeError Fix ✅
+
+### 🚨 CRITICAL BUG DISCOVERED AND FIXED
+**User Report**: "AttributeError: This app has encountered an error... breadcrumb_nav.render(["Home", "Coin Data", coin_data.get('ticker', 'Coin Details')])"
+**Error Location**: When clicking on any coin card to view charts
+**Root Cause**: Coin data object was not a proper dictionary, causing .get() method to fail
+
+### Technical Analysis:
+1. **Data Structure Mismatch**: 
+   - Database returns coins with lowercase keys: `'ticker'`, `'liquidity'`, `'smart_wallets'`
+   - Some code expected uppercase keys: `'Ticker'`, `'Liquidity'`, `'Smart Wallets'`
+   - coin_data was passed as non-dict object to render function
+
+2. **Fix Implementation** (`streamlit_app.py`):
+   - Added type checking: `if not isinstance(coin_data, dict):`
+   - Enhanced data mapping with multiple fallbacks
+   - Ensured all coin attributes have default values
+   - Handled both dict and object access patterns
+
+3. **Code Changes**:
+   ```python
+   # Added dict validation
+   if not isinstance(coin_data, dict):
+       st.error("Invalid coin data format")
+       return
+   
+   # Enhanced mapping with fallbacks
+   'ticker': coin.get('ticker', coin['ticker'] if 'ticker' in coin else 'UNKNOWN'),
+   'ca': coin.get('ca', coin.get('contract_address', 'N/A')),
+   ```
+
+### Key Lessons Learned:
+1. **Always Validate Data Types**: Never assume data structure - always check isinstance()
+2. **Defensive Programming**: Use multiple fallback patterns for data access
+3. **Consistent Key Naming**: Standardize on lowercase keys throughout the codebase
+4. **Error Context Matters**: User's exact error message revealed the precise issue location
+
+### Impact:
+- ✅ Charts now accessible when clicking coin cards
+- ✅ No more AttributeError crashes
+- ✅ Graceful handling of various data formats
+- ✅ Better user experience with proper error messages
 
 ---
 

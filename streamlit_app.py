@@ -249,13 +249,16 @@ def get_all_coins_from_db(limit_per_page=20, page=1, search_filter="", sort_by="
             
             coins.append({
                 'ticker': ticker,
+                'ca': ca,  # Add 'ca' key for compatibility
                 'contract_address': ca,
                 'discovery_price': disc_price,
                 'current_price': axiom_price,
+                'axiom_price': axiom_price,  # Add for chart compatibility
                 'price_gain': gain,
                 'smart_wallets': display_wallets,
                 'liquidity': display_liquidity,
                 'market_cap': display_mc,
+                'axiom_mc': mc,  # Add original key
                 'peak_volume': display_peak_volume,
                 'discovery_mc': display_disc_mc,
                 'axiom_volume': display_axiom_volume,
@@ -263,7 +266,8 @@ def get_all_coins_from_db(limit_per_page=20, page=1, search_filter="", sort_by="
                 'available_fields': available_fields,
                 'missing_fields': missing_fields,
                 'completeness_score': completeness_score,
-                'ticker_hash': ticker_hash
+                'ticker_hash': ticker_hash,
+                'volume': display_axiom_volume or display_peak_volume  # Add for charts
             })
         
         return coins, total_coins, f"SUCCESS: {len(coins)} coins loaded (page {page})"
@@ -593,7 +597,16 @@ def render_enhanced_coin_data_tab():
     
     # Check if we should show detail view
     if 'show_coin_detail' in st.session_state:
-        render_coin_detail_with_charts(st.session_state.show_coin_detail)
+        coin_detail = st.session_state.show_coin_detail
+        
+        # Validate coin detail data
+        if coin_detail is None or not isinstance(coin_detail, dict):
+            # Clear invalid state and refresh
+            del st.session_state.show_coin_detail
+            st.rerun()
+            return
+            
+        render_coin_detail_with_charts(coin_detail)
         return
     
     # Breadcrumb for list view
