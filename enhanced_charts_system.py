@@ -37,12 +37,7 @@ def create_enhanced_price_chart(coin_data, df, volumes):
             increasing=dict(line=dict(color=increasing_color, width=1), fillcolor=increasing_color),
             decreasing=dict(line=dict(color=decreasing_color, width=1), fillcolor=decreasing_color),
             hoverlabel=dict(font_size=14),
-            hovertemplate='<b>%{x|%Y-%m-%d}</b><br>' +
-                          'Open: $%{open:.6f}<br>' +
-                          'High: $%{high:.6f}<br>' +
-                          'Low: $%{low:.6f}<br>' +
-                          'Close: $%{close:.6f}<br>' +
-                          '<extra></extra>'
+            hoverinfo='x+y'
         ),
         row=1, col=1
     )
