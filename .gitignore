@@ -94,3 +94,10 @@ auth.py
 authentication.py
 tokens.py
 api_keys.py
+
+# URGENT SECURITY - Discord Webhooks and Sensitive Config
+webhook_config.json
+*webhook*.json
+discord_webhooks.json
+webhook_urls.json
+*_webhooks.json
