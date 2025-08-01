@@ -288,8 +288,8 @@ def render_half_screen_coin_card(coin, index):
     # Generate coin image/icon (using first letter as fallback)
     coin_icon = ticker[0].upper() if ticker else '?'
     
-    # Clean single-line HTML to prevent parsing errors
-    card_html = f"""<div class="half-screen-coin-card" style="background: {bg_gradient}; border-radius: 12px; padding: 16px; margin: 8px; color: white; box-shadow: 0 6px 20px rgba(0,0,0,0.25); border: 2px solid {border_color}; transition: all 0.3s ease; cursor: pointer; min-height: 140px; display: flex; flex-direction: column; justify-content: space-between;"><div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;"><div style="display: flex; align-items: center; gap: 12px;"><div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">{coin_icon}</div><div><h4 style="margin: 0; font-size: 18px; font-weight: 700;">{ticker}</h4><div style="opacity: 0.85; font-size: 10px; margin-top: 1px;">{status_text}</div></div></div><div style="background: rgba(255,255,255,0.2); border-radius: 8px; padding: 4px 8px; font-size: 14px; font-weight: 700;">+{gain:.1f}%</div></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;"><div style="background: rgba(255,255,255,0.15); border-radius: 6px; padding: 8px; text-align: center;"><div style="opacity: 0.8; font-size: 9px; margin-bottom: 2px;">👥 Wallets</div><div style="font-size: 12px; font-weight: 600;">{smart_wallets}</div></div><div style="background: rgba(255,255,255,0.15); border-radius: 6px; padding: 8px; text-align: center;"><div style="opacity: 0.8; font-size: 9px; margin-bottom: 2px;">💧 Liquidity</div><div style="font-size: 12px; font-weight: 600;">{liquidity}</div></div></div><div style="margin-top: auto;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;"><span style="opacity: 0.8; font-size: 9px;">Data Complete</span><span style="font-size: 9px; font-weight: 600;">{completeness:.0f}%</span></div><div style="width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden;"><div style="width: {completeness}%; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%); transition: width 0.6s ease;"></div></div></div></div>"""
+    # Clean single-line HTML with larger text sizes
+    card_html = f"""<div class="half-screen-coin-card" style="background: {bg_gradient}; border-radius: 12px; padding: 20px; margin: 8px; color: white; box-shadow: 0 6px 20px rgba(0,0,0,0.25); border: 2px solid {border_color}; transition: all 0.3s ease; cursor: pointer; min-height: 160px; display: flex; flex-direction: column; justify-content: space-between;"><div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;"><div style="display: flex; align-items: center; gap: 16px;"><div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">{coin_icon}</div><div><h4 style="margin: 0; font-size: 22px; font-weight: 700;">{ticker}</h4><div style="opacity: 0.85; font-size: 13px; margin-top: 2px;">{status_text}</div></div></div><div style="background: rgba(255,255,255,0.2); border-radius: 8px; padding: 6px 12px; font-size: 18px; font-weight: 700;">+{gain:.1f}%</div></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;"><div style="background: rgba(255,255,255,0.15); border-radius: 8px; padding: 12px; text-align: center;"><div style="opacity: 0.8; font-size: 12px; margin-bottom: 4px;">👥 Wallets</div><div style="font-size: 16px; font-weight: 600;">{smart_wallets}</div></div><div style="background: rgba(255,255,255,0.15); border-radius: 8px; padding: 12px; text-align: center;"><div style="opacity: 0.8; font-size: 12px; margin-bottom: 4px;">💧 Liquidity</div><div style="font-size: 16px; font-weight: 600;">{liquidity}</div></div></div><div style="margin-top: auto;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;"><span style="opacity: 0.8; font-size: 12px;">Data Complete</span><span style="font-size: 12px; font-weight: 600;">{completeness:.0f}%</span></div><div style="width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden;"><div style="width: {completeness}%; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%); transition: width 0.6s ease;"></div></div></div></div>"""
     
     return card_html
 
@@ -302,7 +302,7 @@ def render_coin_detail_page(coin):
     coin_icon = ticker[0] if ticker else '?'
     short_contract = contract_address[:20] + ('...' if len(contract_address) > 20 else '')
     
-    st.markdown(f"""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); padding: 24px; border-radius: 16px; margin-bottom: 24px; border: 2px solid #10b981;"><h1 style="color: #10b981; margin: 0; display: flex; align-items: center; gap: 16px;"><span style="width: 50px; height: 50px; background: linear-gradient(135deg, #10b981, #047857); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">{coin_icon}</span>{ticker} - Complete Database Analysis</h1><p style="color: #94a3b8; margin: 8px 0 0 66px; font-size: 16px;">Contract: {short_contract}</p></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); padding: 32px; border-radius: 16px; margin-bottom: 24px; border: 2px solid #10b981;"><h1 style="color: #10b981; margin: 0; display: flex; align-items: center; gap: 20px; font-size: 32px;"><span style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981, #047857); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold;">{coin_icon}</span>{ticker} - Complete Database Analysis</h1><p style="color: #94a3b8; margin: 12px 0 0 80px; font-size: 18px;">Contract: {short_contract}</p></div>""", unsafe_allow_html=True)
     
     # Back button
     col1, col2 = st.columns([1, 4])
@@ -555,9 +555,44 @@ def render_enhanced_coin_data_tab():
         </style>
         """, unsafe_allow_html=True)
         
-        # Enhanced CSS for half-screen cards
+        # Enhanced CSS for half-screen cards and global text sizing
         st.markdown("""
         <style>
+        /* Global text size increases */
+        .stApp {
+            font-size: 16px !important;
+        }
+        
+        .stMarkdown p {
+            font-size: 18px !important;
+        }
+        
+        .stSubheader {
+            font-size: 24px !important;
+        }
+        
+        .stSelectbox label {
+            font-size: 16px !important;
+        }
+        
+        .stTextInput label {
+            font-size: 16px !important;
+        }
+        
+        .stButton button {
+            font-size: 16px !important;
+            padding: 12px 24px !important;
+        }
+        
+        .stMetric {
+            font-size: 18px !important;
+        }
+        
+        .stMetric .metric-value {
+            font-size: 24px !important;
+        }
+        
+        /* Card hover effects */
         .half-screen-coin-card:hover {
             transform: translateY(-4px) scale(1.02) !important;
             box-shadow: 0 12px 30px rgba(0,0,0,0.4) !important;
