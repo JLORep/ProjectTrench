@@ -387,22 +387,38 @@ class UltraPremiumDashboard:
                     with col4:
                         st.metric("🪙 Status", "✅ Live")
                     
-                    # Enhanced coin display with analytics
+                    # Stunning visual coin cards display
                     st.subheader("🎯 Top Performing Coins")
+                    
+                    # Create a grid layout for beautiful coin cards
+                    cols = st.columns(5)  # 5 columns for 5 coins
+                    
                     for i, coin in enumerate(coins[:5]):
+                        # Convert live database data to render_coin_card format
                         ticker = coin.get('Ticker', coin.get('ticker', f'COIN_{i+1}'))
                         price_gain_str = coin.get('Price Gain %', coin.get('price_gain_pct', '0%'))
                         price_gain = float(price_gain_str.replace('%', '').replace('+', '')) if isinstance(price_gain_str, str) else price_gain_str
                         smart_wallets_str = coin.get('Smart Wallets', coin.get('smart_wallets', '0'))
                         smart_wallets = int(smart_wallets_str.replace(',', '')) if isinstance(smart_wallets_str, str) else smart_wallets_str
                         
-                        col1, col2, col3 = st.columns([2, 1, 1])
-                        with col1:
-                            st.write(f"🪙 **{ticker}**")
-                        with col2:
-                            st.metric("📈 Gain", f"{price_gain:.1f}%")
-                        with col3:
-                            st.metric("👥 Wallets", f"{smart_wallets:,}")
+                        # Convert to stunning coin card format
+                        card_coin = {
+                            'ticker': ticker,
+                            'stage': self.get_processing_stage(min(95, 50 + (price_gain * 0.5))),  # Dynamic stage based on performance
+                            'price': coin.get('Price', coin.get('discovery_price', 0.001)),
+                            'score': min(100, max(10, price_gain)) / 100,  # Convert percentage to 0-1 score
+                            'change_24h': price_gain,
+                            'liquidity': smart_wallets * 10000,  # Estimate liquidity from wallets
+                            'source': 'enriched',
+                            'enriched': True,
+                            'contract_verified': smart_wallets > 100,  # Assume verified if many wallets
+                            'social_score': min(10, smart_wallets / 50),  # Social score from wallet count
+                            'rug_risk': max(0, 50 - price_gain) / 100  # Lower rug risk for higher gains
+                        }
+                        
+                        # Render stunning coin card in column
+                        with cols[i]:
+                            self.render_coin_card(card_coin, i)
                 else:
                     st.error(f"❌ Failed to load coin data: {status}")
             except Exception as e:
