@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# DEPLOYMENT_TIMESTAMP: 2025-08-01 16:56:54 - Force deployment
+# DEPLOYMENT_TIMESTAMP: 2025-08-01 16:58:52 - Force deployment
 # -*- coding: utf-8 -*-
 """
 TrenchCoat Pro - FIXED VERSION
@@ -51,10 +51,8 @@ with col2:
 with col3:
     st.metric("🎯 Win Rate", "0%", "No trades yet")
 with col4:
-    # Get database connection speed
-    coins, status = get_live_coins_simple()
-    db_status = "✅ Connected" if "SUCCESS" in status else "❌ Offline"
-    st.metric("📊 Database", db_status, f"{len(coins) if coins else 0} coins")
+    # Database status without calling function yet
+    st.metric("📊 Database", "Checking...", "Loading")
 
 st.markdown("---")
 
