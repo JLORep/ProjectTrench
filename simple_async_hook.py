@@ -17,8 +17,8 @@ def should_deploy(commit_msg: str) -> bool:
     # Keywords that trigger deployment (more restrictive)
     deploy_keywords = ['fix:', 'bug:', 'feature:', 'major:', 'critical:', 'implement', 'complete', 'deploy:', 'deployment', 'beautiful', 'card', 'display', 'runners']
     
-    # Skip keywords  
-    skip_keywords = ['wip', 'temp', 'draft', 'test:', 'trigger:', 'reboot', 'auto-commit', 'sync']
+    # Skip keywords (including rate limit prevention)
+    skip_keywords = ['wip', 'temp', 'draft', 'test:', 'trigger:', 'reboot', 'auto-commit', 'sync', 'rate-limit']
     
     # Check if should deploy
     should = any(keyword in msg_lower for keyword in deploy_keywords)
