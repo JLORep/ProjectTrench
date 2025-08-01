@@ -165,13 +165,17 @@ class CompleteAsyncDeployer:
         """Run the complete deployment pipeline"""
         self.log_message(f"PIPELINE START: Complete async deployment for {self.commit_hash}")
         
+        # Check if we should send notifications for this commit
+        send_notifications = self.should_send_notifications()
+        
         try:
-            # Step 1: Send start notification
-            self.send_discord_notification(
-                "🚀 Async Deployment Started", 
-                f"Background deployment initiated for commit {self.commit_hash}",
-                0x3b82f6  # Blue
-            )
+            # Step 1: Send start notification (only for major changes)
+            if send_notifications:
+                self.send_discord_notification(
+                    "🚀 Async Deployment Started", 
+                    f"Background deployment initiated for commit {self.commit_hash}",
+                    0x3b82f6  # Blue
+                )
             
             # Step 2: Run the fast deployer
             self.log_message("DEPLOY: Starting fast_deployment.py")
