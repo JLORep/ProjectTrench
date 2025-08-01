@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Streamlit-safe version of Ultra Premium Dashboard
 All imports wrapped in try-catch to prevent failures

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Incoming Coins Monitor - Real-time Telegram coin detection and processing
 Integrates with existing telegram_monitor infrastructure for seamless processing
@@ -162,7 +163,13 @@ class IncomingCoinsProcessor:
     """Processes incoming coins through enrichment pipeline"""
     
     def __init__(self):
-        self.pattern_matcher = TelegramPatternMatcher()
+        # Safe import with fallback
+        try:
+            from src.telegram.telegram_monitor import TelegramPatternMatcher
+            self.pattern_matcher = TelegramPatternMatcher()
+        except ImportError:
+            # Fallback pattern matcher
+            self.pattern_matcher = None
         self.processing_queue = []
         self.processed_coins = []
         self.db_path = Path("data/trench.db")

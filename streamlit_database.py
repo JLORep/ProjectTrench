@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Streamlit-compatible database module
 Direct access to trench.db only - simplified and focused

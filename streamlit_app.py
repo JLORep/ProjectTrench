@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# DEPLOYMENT_TIMESTAMP: 2025-08-01 10:42:00 - ENHANCED LIVE DATA: Realistic metrics for zero-value database fields
+# -*- coding: utf-8 -*-
+# DEPLOYMENT_TIMESTAMP: 2025-08-01 10:45:00 - CRITICAL FIX: Import errors and Unicode encoding
 """
 TrenchCoat Pro - Premium Trading Intelligence Platform
 Ultra-professional design with stunning visuals
