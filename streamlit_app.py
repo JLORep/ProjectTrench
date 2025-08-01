@@ -602,9 +602,9 @@ def render_enhanced_coin_data_tab():
             
             # Validate coin detail data
             if coin_detail is None:
-                st.warning("Coin detail is None. Clearing session state...")
+                st.warning("Coin detail is None. Please select a coin from the list.")
                 del st.session_state.show_coin_detail
-                st.rerun()
+                # Don't rerun - just return
                 return
                 
             if not isinstance(coin_detail, dict):
@@ -650,10 +650,13 @@ def render_enhanced_coin_data_tab():
     col1, col2, col3 = st.columns([3, 1, 1])
     with col3:
         if st.button("🔄 Clear Session", help="Click if experiencing issues"):
+            # Clear all keys except essential ones
+            keys_to_keep = []
             for key in list(st.session_state.keys()):
-                del st.session_state[key]
+                if key not in keys_to_keep:
+                    del st.session_state[key]
             st.success("Session cleared!")
-            st.rerun()
+            # Don't rerun immediately - let user continue
     
     # Initialize session state for pagination and filtering
     if 'coin_page' not in st.session_state:
