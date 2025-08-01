@@ -167,7 +167,9 @@ def get_all_coins_from_db(limit_per_page=20, page=1, search_filter="", sort_by="
                 'missing_fields': missing_fields,
                 'completeness_score': completeness_score,
                 'ticker_hash': ticker_hash
-            })\n        \n        return coins, total_coins, f"SUCCESS: {len(coins)} coins loaded (page {page})"
+            })
+        
+        return coins, total_coins, f"SUCCESS: {len(coins)} coins loaded (page {page})"
     
     except Exception as e:
         return [], 0, f"Database error: {e}"
