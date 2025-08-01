@@ -800,8 +800,8 @@ with tab4:
         st.metric("🎯 Win Rate", "0%", "No history")
     
     st.info("🚀 Trading engine will integrate with live wallet connections")
-    auto_trading = st.checkbox("Enable Auto-Trading", value=False, disabled=True)
-    max_risk = st.slider("Max Risk per Trade (%)", 1, 10, 3, disabled=True)
+    auto_trading = st.checkbox("Enable Auto-Trading", value=False, disabled=True, key="auto_trading_unique")
+    max_risk = st.slider("Max Risk per Trade (%)", 1, 10, 3, disabled=True, key="max_risk_unique")
 
 with tab5:
     st.header("⚙️ Trading Engine")
@@ -816,8 +816,8 @@ with tab5:
         st.metric("🎯 Win Rate", "0%", "No history")
     
     st.info("🚀 Trading engine will integrate with live wallet connections")
-    auto_trading = st.checkbox("Enable Auto-Trading", value=False, disabled=True)
-    max_risk = st.slider("Max Risk per Trade (%)", 1, 10, 3, disabled=True)
+    auto_trading = st.checkbox("Enable Auto-Trading", value=False, disabled=True, key="auto_trading_tab5")
+    max_risk = st.slider("Max Risk per Trade (%)", 1, 10, 3, disabled=True, key="max_risk_tab5")
     coins, status = get_live_coins_simple()
     
     if "SUCCESS" in status and coins:
