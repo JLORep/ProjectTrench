@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Automated Documentation Updater
 Updates all relevant MD files with new developments, fixes, and changes
@@ -463,7 +464,7 @@ class DocumentationUpdater:
                 continue
                 
             try:
-                print(f"Updating {file_name} ({file_context['size']:,} chars)...", end=" ")
+                print(f"Updating {file_name} ({file_context['size']:,} chars)...", end=" ", flush=True)
                 
                 # Use specialized update if available
                 if file_name in specialized_updates:
@@ -481,8 +482,8 @@ class DocumentationUpdater:
                     print("[SKIPPED]")
                     
             except Exception as e:
-                print(f"[ERROR] {e}")
-                self.errors.append(f"{file_name}: {e}")
+                print(f"[ERROR] {str(e).encode('ascii', 'replace').decode('ascii')}")
+                self.errors.append(f"{file_name}: {str(e).encode('ascii', 'replace').decode('ascii')}")
                 results[file_name] = False
         
         return results
@@ -507,10 +508,12 @@ class DocumentationUpdater:
         print(f"Errors: {len(self.errors)}")
         
         if self.files_updated:
-            print(f"Successfully updated: {', '.join(self.files_updated)}")
+            files_str = ', '.join([f.encode('ascii', 'replace').decode('ascii') for f in self.files_updated])
+            print(f"Successfully updated: {files_str}")
             
         if self.errors:
-            print(f"Errors encountered: {'; '.join(self.errors)}")
+            error_str = '; '.join([e.encode('ascii', 'replace').decode('ascii') for e in self.errors])
+            print(f"Errors encountered: {error_str}")
         
         # Send Discord notifications
         print("\n" + "-" * 40)

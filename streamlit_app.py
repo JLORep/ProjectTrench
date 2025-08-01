@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# DEPLOYMENT_TIMESTAMP: 2025-08-01 22:15:00 - GRADUAL RESTORE v4: Charts, breadcrumbs, and advanced features
+# DEPLOYMENT_TIMESTAMP: 2025-08-01 22:40:00 - ENHANCED CHARTS & BREADCRUMB NAVIGATION ACTIVE
 # -*- coding: utf-8 -*-
 """
 TrenchCoat Pro v2.3.3 - Gradual Restoration
@@ -30,11 +30,22 @@ st.set_page_config(
 
 # Try to import chart system with fallback
 CHARTS_AVAILABLE = False
+ENHANCED_CHARTS = None
 try:
     import plotly.graph_objects as go
     import plotly.express as px
     from plotly.subplots import make_subplots
     CHARTS_AVAILABLE = True
+    try:
+        from enhanced_charts_system import (
+            create_enhanced_price_chart,
+            create_enhanced_holder_distribution,
+            create_enhanced_liquidity_depth,
+            create_enhanced_performance_radar
+        )
+        ENHANCED_CHARTS = True
+    except ImportError:
+        ENHANCED_CHARTS = False
 except ImportError:
     pass
 
@@ -157,7 +168,7 @@ class BreadcrumbNavigation:
         }
     
     def render(self, current_path, coin_name=None):
-        """Render breadcrumb navigation"""
+        """Render breadcrumb navigation with working buttons"""
         if current_path not in self.paths:
             return
         
@@ -169,24 +180,33 @@ class BreadcrumbNavigation:
             path_items.insert(0, (current, path_data.get("name", current)))
             current = path_data.get("parent")
         
-        # Render breadcrumb HTML
-        breadcrumb_html = '<div class="breadcrumb-nav">'
+        # Render with buttons instead of links
+        cols = st.columns(len(path_items) * 2 - 1)
+        col_idx = 0
+        
         for i, (key, name) in enumerate(path_items):
             if i > 0:
-                breadcrumb_html += '<span class="breadcrumb-separator"> › </span>'
+                with cols[col_idx]:
+                    st.markdown("<span style='color: rgba(255,255,255,0.3); padding: 0 8px;'>›</span>", unsafe_allow_html=True)
+                col_idx += 1
             
-            if i == len(path_items) - 1:
-                # Current page
-                if coin_name and key == "coin_detail":
-                    breadcrumb_html += f'<span class="breadcrumb-item" style="color: #10b981;">{coin_name}</span>'
+            with cols[col_idx]:
+                if i == len(path_items) - 1:
+                    # Current page
+                    if coin_name and key == "coin_detail":
+                        st.markdown(f"<span style='color: #10b981; font-weight: 600;'>{coin_name}</span>", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"<span style='color: #10b981; font-weight: 600;'>{name}</span>", unsafe_allow_html=True)
                 else:
-                    breadcrumb_html += f'<span class="breadcrumb-item" style="color: #10b981;">{name}</span>'
-            else:
-                # Clickable parent
-                breadcrumb_html += f'<a href="#" class="breadcrumb-item">{name}</a>'
-        
-        breadcrumb_html += '</div>'
-        st.markdown(breadcrumb_html, unsafe_allow_html=True)
+                    # Clickable parent
+                    if st.button(name, key=f"breadcrumb_{key}_{current_path}", help=f"Go to {name}"):
+                        if key == "home":
+                            st.session_state.show_coin_detail = False
+                            st.session_state.selected_coin = None
+                        elif key == "coin_data":
+                            st.session_state.show_coin_detail = False
+                        st.rerun()
+            col_idx += 1
 
 # Chart System Functions
 def generate_chart_data(coin_data):
@@ -223,11 +243,16 @@ def generate_chart_data(coin_data):
 def create_price_chart(coin_data):
     """Create main price chart with volume"""
     if not CHARTS_AVAILABLE:
-        return None
+        return None, None
     
     try:
         df, volumes = generate_chart_data(coin_data)
         
+        # Use enhanced charts if available
+        if ENHANCED_CHARTS:
+            return create_enhanced_price_chart(coin_data, df, volumes)
+        
+        # Fallback to basic chart
         fig = make_subplots(
             rows=2, cols=1,
             shared_xaxes=True,
@@ -294,19 +319,23 @@ def create_price_chart(coin_data):
         
         fig.update_xaxes(rangeslider_visible=False)
         
-        return fig
+        return fig, {}
     
     except Exception as e:
         st.error(f"Chart error: {e}")
-        return None
+        return None, None
 
 def create_holder_distribution_chart(coin_data):
     """Create holder distribution donut chart"""
     if not CHARTS_AVAILABLE:
-        return None
+        return None, None
     
     try:
-        # Generate distribution data
+        # Use enhanced charts if available
+        if ENHANCED_CHARTS:
+            return create_enhanced_holder_distribution(coin_data)
+        
+        # Fallback to basic chart
         smart_wallets = coin_data.get('smart_wallets', 100)
         
         labels = ['Smart Wallets', 'Retail Holders', 'Dev/Team', 'Others']
@@ -336,17 +365,22 @@ def create_holder_distribution_chart(coin_data):
             )]
         )
         
-        return fig
+        return fig, {}
     
     except Exception as e:
-        return None
+        return None, None
 
 def create_liquidity_depth_chart(coin_data):
     """Create liquidity depth chart"""
     if not CHARTS_AVAILABLE:
-        return None
+        return None, None
     
     try:
+        # Use enhanced charts if available
+        if ENHANCED_CHARTS:
+            return create_enhanced_liquidity_depth(coin_data)
+        
+        # Fallback to basic chart
         liquidity = coin_data.get('liquidity', 1000000)
         
         # Generate order book data
@@ -382,10 +416,10 @@ def create_liquidity_depth_chart(coin_data):
             height=400
         )
         
-        return fig
+        return fig, {}
     
     except Exception as e:
-        return None
+        return None, None
 
 def render_coin_detail_with_charts(coin_data):
     """Render detailed coin view with charts"""
@@ -417,22 +451,28 @@ def render_coin_detail_with_charts(coin_data):
         st.markdown("### 📊 Interactive Charts")
         
         # Price chart
-        price_chart = create_price_chart(coin_data)
+        price_chart, price_config = create_price_chart(coin_data)
         if price_chart:
-            st.plotly_chart(price_chart, use_container_width=True)
+            st.plotly_chart(price_chart, use_container_width=True, config=price_config)
         
         # Distribution and liquidity charts
         col1, col2 = st.columns(2)
         
         with col1:
-            holder_chart = create_holder_distribution_chart(coin_data)
+            holder_chart, holder_config = create_holder_distribution_chart(coin_data)
             if holder_chart:
-                st.plotly_chart(holder_chart, use_container_width=True)
+                st.plotly_chart(holder_chart, use_container_width=True, config=holder_config)
         
         with col2:
-            liquidity_chart = create_liquidity_depth_chart(coin_data)
+            liquidity_chart, liquidity_config = create_liquidity_depth_chart(coin_data)
             if liquidity_chart:
-                st.plotly_chart(liquidity_chart, use_container_width=True)
+                st.plotly_chart(liquidity_chart, use_container_width=True, config=liquidity_config)
+        
+        # Add performance radar if enhanced charts available
+        if ENHANCED_CHARTS:
+            st.markdown("### 📈 Performance Analysis")
+            perf_chart, perf_config = create_enhanced_performance_radar(coin_data)
+            st.plotly_chart(perf_chart, use_container_width=True, config=perf_config)
     else:
         st.info("📊 Charts are being loaded...")
     
@@ -445,9 +485,15 @@ def render_coin_detail_with_charts(coin_data):
         st.session_state.show_coin_detail = False
         st.rerun()
 
-# Enhanced header
+# Enhanced header with feature indicators
 st.markdown("### 🎯 TrenchCoat Pro v2.3.3 | Premium Crypto Intelligence")
-st.success("✅ Gradual Restore - Step 3: Charts, breadcrumbs, and advanced features")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.success("✅ Enhanced Charts Active")
+with col2:
+    st.success("✅ Breadcrumb Navigation")
+with col3:
+    st.success("✅ Performance Radar Chart")
 
 # Initialize session state
 if 'show_coin_detail' not in st.session_state:
