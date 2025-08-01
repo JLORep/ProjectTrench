@@ -22,6 +22,14 @@ try:
 except ImportError:
     pass
 
+# Try to import Super Claude
+SUPER_CLAUDE_AVAILABLE = False
+try:
+    from super_claude_system import SuperClaudeSystem, integrate_super_claude_with_dashboard, analyze_coins_with_super_claude
+    SUPER_CLAUDE_AVAILABLE = True
+except ImportError:
+    pass
+
 # Page config
 st.set_page_config(
     page_title="TrenchCoat Pro | Premium Crypto Intelligence",
@@ -957,6 +965,59 @@ else:
         
         st.markdown("### 🎯 Live Trading Signals")
         st.info("🟢 LIVE: Monitoring 247 Telegram channels for alpha signals")
+        
+        # Integrate Super Claude AI
+        if SUPER_CLAUDE_AVAILABLE:
+            st.markdown("---")
+            super_claude = integrate_super_claude_with_dashboard()
+            
+            # Get coins for analysis
+            coins, _ = get_all_coins_from_db(1, 100)  # Get top 100 coins
+            if coins:
+                # Perform AI market analysis
+                with st.spinner("🧠 Super Claude analyzing market conditions..."):
+                    market_analysis = analyze_coins_with_super_claude(coins)
+                
+                # Display AI insights
+                st.markdown("### 🤖 Super Claude AI Analysis")
+                
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    sentiment_color = "#10b981" if market_analysis['market_sentiment'] == "BULLISH" else "#ef4444" if market_analysis['market_sentiment'] == "BEARISH" else "#f59e0b"
+                    st.markdown(f"""
+                    <div style="background: {sentiment_color}20; padding: 16px; border-radius: 12px; border: 1px solid {sentiment_color};">
+                        <h4 style="margin: 0; color: {sentiment_color};">Market Sentiment</h4>
+                        <h2 style="margin: 8px 0;">{market_analysis['market_sentiment']}</h2>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                with col2:
+                    st.metric("AI Confidence", f"{market_analysis['confidence']:.1%}")
+                
+                with col3:
+                    st.metric("Opportunities", len(market_analysis['opportunities']))
+                
+                # AI Summary
+                st.markdown(f"""
+                <div style="background: rgba(139, 92, 246, 0.1); padding: 16px; border-radius: 12px; margin: 16px 0;">
+                    <p style="margin: 0; font-size: 16px;">{market_analysis['ai_summary']}</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Top opportunities
+                if market_analysis['opportunities']:
+                    st.markdown("#### 🎯 Top AI-Identified Opportunities")
+                    opp_cols = st.columns(len(market_analysis['opportunities'][:3]))
+                    for i, opp in enumerate(market_analysis['opportunities'][:3]):
+                        with opp_cols[i]:
+                            st.success(f"**{opp.get('ticker', 'Unknown')}**")
+                            gain = opp.get('price_gain_pct', 0)
+                            st.write(f"Gain: +{gain:.1f}%")
+                
+                # Render full Super Claude dashboard
+                super_claude.render_super_claude_dashboard()
+        else:
+            st.info("🤖 Super Claude AI system not available")
     
     with tabs[2]:
         render_breadcrumb([("Home", None), ("Analytics", None)])
@@ -976,6 +1037,71 @@ else:
             trending = ["AI Agents", "Solana Memes", "Gaming Tokens", "RWA", "DePIN"]
             for topic in trending:
                 st.button(f"🏷️ {topic}", key=f"trend_{topic}", use_container_width=True)
+        
+        # Add Super Claude integration to Analytics
+        if SUPER_CLAUDE_AVAILABLE:
+            st.markdown("---")
+            st.markdown("### 🧠 Super Claude Deep Analysis")
+            
+            if st.button("🤖 Run Deep AI Analysis", use_container_width=True):
+                with st.spinner("🔮 Super Claude performing deep market analysis..."):
+                    # Get more coins for comprehensive analysis
+                    coins, _ = get_all_coins_from_db(1, 200)
+                    if coins:
+                        super_claude = integrate_super_claude_with_dashboard()
+                        
+                        # Analyze individual coins
+                        high_confidence = []
+                        medium_confidence = []
+                        warnings = []
+                        
+                        progress_bar = st.progress(0)
+                        for i, coin in enumerate(coins[:50]):
+                            insight = super_claude.analyze_coin_for_opportunity(coin)
+                            
+                            if insight.confidence > 0.85:
+                                high_confidence.append((coin, insight))
+                            elif insight.confidence > 0.65:
+                                medium_confidence.append((coin, insight))
+                            elif insight.insight_type in ["WARNING", "RISK"]:
+                                warnings.append((coin, insight))
+                            
+                            progress_bar.progress((i + 1) / 50)
+                        
+                        progress_bar.empty()
+                        
+                        # Display results
+                        col1, col2, col3 = st.columns(3)
+                        
+                        with col1:
+                            st.markdown("#### 🎯 High Confidence Plays")
+                            for coin, insight in high_confidence[:5]:
+                                st.markdown(f"""
+                                <div style="background: #10b98120; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                                    <strong>{coin['ticker']}</strong> - {insight.confidence:.1%}<br>
+                                    <small>{insight.message}</small>
+                                </div>
+                                """, unsafe_allow_html=True)
+                        
+                        with col2:
+                            st.markdown("#### 📊 Medium Confidence")
+                            for coin, insight in medium_confidence[:5]:
+                                st.markdown(f"""
+                                <div style="background: #f59e0b20; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                                    <strong>{coin['ticker']}</strong> - {insight.confidence:.1%}<br>
+                                    <small>{insight.message}</small>
+                                </div>
+                                """, unsafe_allow_html=True)
+                        
+                        with col3:
+                            st.markdown("#### ⚠️ Risk Warnings")
+                            for coin, insight in warnings[:5]:
+                                st.markdown(f"""
+                                <div style="background: #ef444420; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                                    <strong>{coin['ticker']}</strong><br>
+                                    <small>{insight.message}</small>
+                                </div>
+                                """, unsafe_allow_html=True)
     
     with tabs[3]:
         render_breadcrumb([("Home", None), ("Model Builder", None)])
