@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# DEPLOYMENT_TIMESTAMP: 2025-08-01 10:23:05 - COMPREHENSIVE DEPLOYMENT FIX
+# DEPLOYMENT_TIMESTAMP: 2025-08-01 10:25:27 - FORCE DEPLOYMENT WITH ALL FEATURES
 """
 TrenchCoat Pro - Premium Trading Intelligence Platform
 Ultra-professional design with stunning visuals
