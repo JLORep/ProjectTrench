@@ -458,6 +458,11 @@ def render_coin_detail_page(coin):
 
 def render_coin_detail_with_charts(coin_data):
     """Render detailed coin view with integrated stunning charts"""
+    # Ensure coin_data is a dict
+    if not isinstance(coin_data, dict):
+        st.error("Invalid coin data format")
+        return
+        
     if CHARTS_AVAILABLE:
         # Breadcrumb navigation
         breadcrumb_nav.render(["Home", "Coin Data", coin_data.get('ticker', 'Coin Details')])
@@ -796,17 +801,17 @@ def render_enhanced_coin_data_tab():
                     button_text = "📊 View Charts & Details" if CHARTS_AVAILABLE else "📊 View Details"
                     if st.button(button_text, key=f"detail_{coin['ticker']}_{i}", 
                                 use_container_width=True):
-                        # Prepare coin data for charts
+                        # Prepare coin data for charts - handle both dict and object access
                         coin_detail = {
-                            'ticker': coin['ticker'],
-                            'ca': coin['ca'],
-                            'current_price': coin.get('axiom_price', coin.get('discovery_price', 0.001)),
-                            'price_gain': coin['price_gain'],
-                            'liquidity': coin['liquidity'],
+                            'ticker': coin.get('ticker', coin['ticker'] if 'ticker' in coin else 'UNKNOWN'),
+                            'ca': coin.get('ca', coin.get('contract_address', 'N/A')),
+                            'current_price': coin.get('current_price', coin.get('axiom_price', coin.get('discovery_price', 0.001))),
+                            'price_gain': coin.get('price_gain', 0),
+                            'liquidity': coin.get('liquidity', 10000),
                             'volume': coin.get('axiom_volume', coin.get('peak_volume', 10000)),
-                            'market_cap': coin.get('axiom_mc', coin.get('discovery_mc', 100000)),
-                            'smart_wallets': coin['smart_wallets'],
-                            'axiom_price': coin.get('axiom_price', 0),
+                            'market_cap': coin.get('market_cap', coin.get('axiom_mc', coin.get('discovery_mc', 100000))),
+                            'smart_wallets': coin.get('smart_wallets', 100),
+                            'axiom_price': coin.get('axiom_price', coin.get('current_price', 0)),
                             'axiom_volume': coin.get('axiom_volume', 0),
                             'discovery_time': coin.get('discovery_time', 'Unknown'),
                             'discovery_price': coin.get('discovery_price', 0),
