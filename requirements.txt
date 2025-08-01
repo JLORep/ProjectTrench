@@ -4,4 +4,9 @@ pandas==2.0.3
 numpy==1.24.4
 requests==2.31.0
 base58==2.1.1
-# Python 3.9 compatibility - Updated: 2025-08-01 01:00:00
+# Python 3.9 compatibility - FORCE REBUILD: 2025-08-01 02:20:00
+# Latest deployment includes:
+# - Coin Image System with multi-source logo fetching
+# - Database Management Tab with real-time progress
+# - Enhanced coin cards with performance-based colors
+# - Data validation system with Live/Demo indicators
