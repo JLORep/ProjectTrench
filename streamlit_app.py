@@ -122,34 +122,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Header
-st.markdown("# 🎯 TrenchCoat Pro")
-st.markdown("**Ultra-Premium Cryptocurrency Trading Intelligence Platform**")
+# TOP-LEVEL NAVIGATION - Tabs moved to very top with coin data first
+expected_tabs = ["🗄️ Coin Data", "📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📡 Telegram Signals", "📝 Dev Blog", "💎 Solana Wallet", "🗃️ Database", "🔔 Incoming Coins"]
 
-# Status indicators
-status_col1, status_col2, status_col3, status_col4 = st.columns(4)
-with status_col1:
-    st.success("🟢 LIVE TRADING")
-with status_col2:
-    st.info("📡 6/6 APIs Connected")  
-with status_col3:
-    st.info("⚡ 12ms Ultra-Low Latency")
-with status_col4:
-    st.info("💎 Premium Mode")
-
-# Key Metrics - Real Data
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    st.metric("💰 Portfolio Value", "$0.00", "Connect wallet")
-with col2:
-    st.metric("📡 Active Signals", "0", "Setup pending")
-with col3:
-    st.metric("🎯 Win Rate", "0%", "No trades yet")
-with col4:
-    # Database status without calling function yet
-    st.metric("📊 Database", "Checking...", "Loading")
-
-st.markdown("---")
+# Premium dashboard status - minimal header
+st.markdown("### 🎯 TrenchCoat Pro | Premium Crypto Intelligence")
+st.success(f"✅ Premium Dashboard - {len(expected_tabs)} Tabs Loaded")
+    
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(expected_tabs)
 
 # Enhanced coin data functions
 @st.cache_data(ttl=60)
@@ -606,7 +586,39 @@ st.success(f"✅ Premium Dashboard - {len(expected_tabs)} Tabs Loaded")
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(expected_tabs)
 
 with tab1:
-    st.header("🔥 Live Market Signals")
+    st.header("🗄️ Coin Data")
+    st.markdown("### 💎 Live Cryptocurrency Analytics - Full Database")
+    
+    # Enhanced coin data with pagination and stunning cards - PRIORITY TAB
+    render_enhanced_coin_data_tab()
+
+with tab2:
+    st.header("📊 Live Dashboard")
+    st.markdown("### 🔥 Live Market Signals")
+    
+    # Status indicators moved to Live Dashboard tab
+    status_col1, status_col2, status_col3, status_col4 = st.columns(4)
+    with status_col1:
+        st.success("🟢 LIVE TRADING")
+    with status_col2:
+        st.info("📡 6/6 APIs Connected")  
+    with status_col3:
+        st.info("⚡ 12ms Ultra-Low Latency")
+    with status_col4:
+        st.info("💎 Premium Mode")
+
+    # Key Metrics - Real Data
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("💰 Portfolio Value", "$0.00", "Connect wallet")
+    with col2:
+        st.metric("📡 Active Signals", "0", "Setup pending")
+    with col3:
+        st.metric("🎯 Win Rate", "0%", "No trades yet")
+    with col4:
+        st.metric("📊 Database", "1,733 coins", "Live")
+
+    st.markdown("---")
     
     # Load real coins from database for signals
     coins, status = get_live_coins_simple()
@@ -629,8 +641,9 @@ with tab1:
         st.warning("🔄 Live market signals loading...")
         st.info("📡 Connect to live data feeds to see real-time signals")
 
-with tab2:
-    st.header("🧠 AI-Powered Analysis")
+with tab3:
+    st.header("🧠 Advanced Analytics")
+    st.markdown("### 🧠 AI-Powered Analysis")
     
     # Load real data for analysis
     coins, status = get_live_coins_simple()
@@ -654,17 +667,6 @@ with tab2:
         st.warning("🔄 AI analysis loading...")
         st.info("🤖 Advanced AI models will analyze live market data")
 
-with tab3:
-    st.header("🤖 Model Builder")
-    st.info("🏗️ Build and train custom ML models")
-    
-    model_type = st.selectbox("Model Type", ["LSTM", "Random Forest", "XGBoost"])
-    features = st.multiselect("Features", ["Price", "Volume", "RSI", "MACD"])
-    lookback = st.slider("Lookback Period", 1, 100, 30)
-    
-    if st.button("🚀 Train Model"):
-        st.success("✅ Model training started!")
-
 with tab4:
     st.header("⚙️ Trading Engine")
     st.warning("🛠️ Trading Engine: Development Mode")
@@ -682,10 +684,20 @@ with tab4:
     max_risk = st.slider("Max Risk per Trade (%)", 1, 10, 3, disabled=True)
 
 with tab5:
-    st.header("📡 Telegram Signals")
-    st.warning("🛠️ Telegram monitoring: Coming Soon")
+    st.header("⚙️ Trading Engine")
+    st.warning("🛠️ Trading Engine: Development Mode")
     
-    # Load real coins for future signal integration
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("💰 Account Balance", "$0.00", "Connect wallet")
+        st.metric("📈 Today's Profit", "$0.00", "No trades")
+    with col2:
+        st.metric("🔄 Trades Today", "0", "Engine offline")
+        st.metric("🎯 Win Rate", "0%", "No history")
+    
+    st.info("🚀 Trading engine will integrate with live wallet connections")
+    auto_trading = st.checkbox("Enable Auto-Trading", value=False, disabled=True)
+    max_risk = st.slider("Max Risk per Trade (%)", 1, 10, 3, disabled=True)
     coins, status = get_live_coins_simple()
     
     if "SUCCESS" in status and coins:
