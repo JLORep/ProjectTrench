@@ -288,93 +288,8 @@ def render_half_screen_coin_card(coin, index):
     # Generate coin image/icon (using first letter as fallback)
     coin_icon = ticker[0].upper() if ticker else '?'
     
-    # Half-screen card HTML with enhanced layout
-    card_html = f"""
-    <div class="half-screen-coin-card" 
-         style="background: {bg_gradient}; 
-                border-radius: 12px; 
-                padding: 16px; 
-                margin: 8px; 
-                color: white; 
-                box-shadow: 0 6px 20px rgba(0,0,0,0.25); 
-                border: 2px solid {border_color}; 
-                transition: all 0.3s ease; 
-                cursor: pointer;
-                position: relative;
-                min-height: 140px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;">
-        
-        <!-- Header with coin icon and ticker -->
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 36px; 
-                           height: 36px; 
-                           border-radius: 50%; 
-                           background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%); 
-                           display: flex; 
-                           align-items: center; 
-                           justify-content: center; 
-                           font-size: 14px; 
-                           font-weight: bold;
-                           box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
-                    {coin_icon}
-                </div>
-                <div>
-                    <h4 style="margin: 0; font-size: 18px; font-weight: 700;">{ticker}</h4>
-                    <div style="opacity: 0.85; font-size: 10px; margin-top: 1px;">{status_text}</div>
-                </div>
-            </div>
-            
-            <!-- Price gain badge -->
-            <div style="background: rgba(255,255,255,0.2); 
-                        border-radius: 8px; 
-                        padding: 4px 8px; 
-                        font-size: 14px; 
-                        font-weight: 700;">
-                +{gain:.1f}%
-            </div>
-        </div>
-        
-        <!-- Key stats grid -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-            <div style="background: rgba(255,255,255,0.15); border-radius: 6px; padding: 8px; text-align: center;">
-                <div style="opacity: 0.8; font-size: 9px; margin-bottom: 2px;">👥 Wallets</div>
-                <div style="font-size: 12px; font-weight: 600;">{smart_wallets}</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.15); border-radius: 6px; padding: 8px; text-align: center;">
-                <div style="opacity: 0.8; font-size: 9px; margin-bottom: 2px;">💧 Liquidity</div>
-                <div style="font-size: 12px; font-weight: 600;">{liquidity}</div>
-            </div>
-        </div>
-        
-        <!-- Data completeness bar -->
-        <div style="margin-top: auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                <span style="opacity: 0.8; font-size: 9px;">Data Complete</span>
-                <span style="font-size: 9px; font-weight: 600;">{completeness:.0f}%</span>
-            </div>
-            <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden;">
-                <div style="width: {completeness}%; 
-                           height: 100%; 
-                           background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%); 
-                           transition: width 0.6s ease;">
-                </div>
-            </div>
-        </div>
-        
-        <!-- Hover effect background -->
-        <div style="position: absolute; 
-                    top: 0; left: 0; right: 0; bottom: 0; 
-                    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%); 
-                    border-radius: 12px; 
-                    opacity: 0; 
-                    transition: opacity 0.3s ease;
-                    pointer-events: none;">
-        </div>
-    </div>
-    """
+    # Clean single-line HTML to prevent parsing errors
+    card_html = f"""<div class="half-screen-coin-card" style="background: {bg_gradient}; border-radius: 12px; padding: 16px; margin: 8px; color: white; box-shadow: 0 6px 20px rgba(0,0,0,0.25); border: 2px solid {border_color}; transition: all 0.3s ease; cursor: pointer; min-height: 140px; display: flex; flex-direction: column; justify-content: space-between;"><div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;"><div style="display: flex; align-items: center; gap: 12px;"><div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">{coin_icon}</div><div><h4 style="margin: 0; font-size: 18px; font-weight: 700;">{ticker}</h4><div style="opacity: 0.85; font-size: 10px; margin-top: 1px;">{status_text}</div></div></div><div style="background: rgba(255,255,255,0.2); border-radius: 8px; padding: 4px 8px; font-size: 14px; font-weight: 700;">+{gain:.1f}%</div></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;"><div style="background: rgba(255,255,255,0.15); border-radius: 6px; padding: 8px; text-align: center;"><div style="opacity: 0.8; font-size: 9px; margin-bottom: 2px;">👥 Wallets</div><div style="font-size: 12px; font-weight: 600;">{smart_wallets}</div></div><div style="background: rgba(255,255,255,0.15); border-radius: 6px; padding: 8px; text-align: center;"><div style="opacity: 0.8; font-size: 9px; margin-bottom: 2px;">💧 Liquidity</div><div style="font-size: 12px; font-weight: 600;">{liquidity}</div></div></div><div style="margin-top: auto;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;"><span style="opacity: 0.8; font-size: 9px;">Data Complete</span><span style="font-size: 9px; font-weight: 600;">{completeness:.0f}%</span></div><div style="width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden;"><div style="width: {completeness}%; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%); transition: width 0.6s ease;"></div></div></div></div>"""
     
     return card_html
 
@@ -383,26 +298,11 @@ def render_coin_detail_page(coin):
     ticker = coin['ticker']
     contract_address = coin.get('contract_address', 'N/A')
     
-    # Full-screen header with coin info
-    st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); 
-                padding: 24px; 
-                border-radius: 16px; 
-                margin-bottom: 24px;
-                border: 2px solid #10b981;">
-        <h1 style="color: #10b981; margin: 0; display: flex; align-items: center; gap: 16px;">
-            <span style="width: 50px; height: 50px; background: linear-gradient(135deg, #10b981, #047857); 
-                         border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-                         font-size: 24px; font-weight: bold;">
-                {ticker[0] if ticker else '?'}
-            </span>
-            {ticker} - Complete Database Analysis
-        </h1>
-        <p style="color: #94a3b8; margin: 8px 0 0 66px; font-size: 16px;">
-            Contract: {contract_address[:20]}{'...' if len(contract_address) > 20 else ''}
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    # Clean single-line header HTML
+    coin_icon = ticker[0] if ticker else '?'
+    short_contract = contract_address[:20] + ('...' if len(contract_address) > 20 else '')
+    
+    st.markdown(f"""<div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); padding: 24px; border-radius: 16px; margin-bottom: 24px; border: 2px solid #10b981;"><h1 style="color: #10b981; margin: 0; display: flex; align-items: center; gap: 16px;"><span style="width: 50px; height: 50px; background: linear-gradient(135deg, #10b981, #047857); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">{coin_icon}</span>{ticker} - Complete Database Analysis</h1><p style="color: #94a3b8; margin: 8px 0 0 66px; font-size: 16px;">Contract: {short_contract}</p></div>""", unsafe_allow_html=True)
     
     # Back button
     col1, col2 = st.columns([1, 4])
@@ -514,20 +414,7 @@ def render_coin_detail_page(coin):
     
     # Potential API Enhancements
     st.subheader("🚀 Potential API Enhancements")
-    st.markdown("""
-    <div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); 
-                padding: 16px; border-radius: 12px; color: white;">
-        <h4 style="margin: 0 0 12px 0;">🔗 Additional metrics available via API integration:</h4>
-        <ul style="margin: 0; padding-left: 20px;">
-            <li><strong>Real-time Price Data</strong> - Live price feeds from DEX</li>
-            <li><strong>Social Metrics</strong> - Twitter mentions, Telegram activity</li>
-            <li><strong>Holder Analytics</strong> - Distribution, whale movements</li>
-            <li><strong>Trading Metrics</strong> - Depth, spread, volatility</li>
-            <li><strong>Security Scores</strong> - Rug pull risk, audit status</li>
-            <li><strong>Cross-chain Data</strong> - Multi-blockchain presence</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("""<div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); padding: 16px; border-radius: 12px; color: white;"><h4 style="margin: 0 0 12px 0;">🔗 Additional metrics available via API integration:</h4><ul style="margin: 0; padding-left: 20px;"><li><strong>Real-time Price Data</strong> - Live price feeds from DEX</li><li><strong>Social Metrics</strong> - Twitter mentions, Telegram activity</li><li><strong>Holder Analytics</strong> - Distribution, whale movements</li><li><strong>Trading Metrics</strong> - Depth, spread, volatility</li><li><strong>Security Scores</strong> - Rug pull risk, audit status</li><li><strong>Cross-chain Data</strong> - Multi-blockchain presence</li></ul></div>""", unsafe_allow_html=True)
     
     # Raw JSON Data
     with st.expander("🔍 Raw Database JSON"):
