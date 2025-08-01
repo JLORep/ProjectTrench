@@ -585,9 +585,9 @@ class StreamlitSafeDashboard:
         self.render_searchable_coin_table()
     
     def get_validated_coin_data(self):
-        """Get coin data using validation system"""
+        """Get coin data with images using validation system"""
         if validation_available and data_validator:
-            return data_validator.get_validated_coin_data()
+            coins = data_validator.get_validated_coin_data()
         else:
             # Fallback demo data with contract addresses
             return [
@@ -602,6 +602,29 @@ class StreamlitSafeDashboard:
                 {"ticker": "LINK", "price_gain_pct": 89.2, "smart_wallets": 3450, "liquidity": 23400000.0, "axiom_mc": 34500000000.0, "peak_volume": 267800000.0, "ca": "LNKxYz8vMJKLNOPQRSTUVWXYZ123456789abcdef654", "data_source": "demo", "mode": "demo"},
                 {"ticker": "UNI", "price_gain_pct": 65.4, "smart_wallets": 2780, "liquidity": 18900000.0, "axiom_mc": 27800000000.0, "peak_volume": 178900000.0, "ca": "UNIxYz8vMJKLNOPQRSTUVWXYZ123456789abcdef987", "data_source": "demo", "mode": "demo"}
             ]
+        
+        # Add coin images using the image system  
+        try:
+            from coin_image_system import coin_image_system
+            coin_images = coin_image_system.get_coin_images_for_dashboard(coins)
+            
+            # Add image URLs to coin data
+            for coin in coins:
+                ticker = coin.get('ticker', 'UNK')
+                if ticker in coin_images:
+                    coin['image_url'] = coin_images[ticker]
+                    coin['has_image'] = True
+                else:
+                    coin['image_url'] = coin_image_system.get_fallback_image(ticker)
+                    coin['has_image'] = False
+                    
+        except Exception as img_error:
+            # If image system fails, add fallback generic crypto icon
+            for coin in coins:
+                coin['image_url'] = "https://cryptologos.cc/logos/bitcoin-btc-logo.png" 
+                coin['has_image'] = False
+        
+        return coins
 
     def render_database_stats(self):
         """Render database statistics with validated data"""
@@ -939,20 +962,32 @@ class StreamlitSafeDashboard:
             border_color = "#6b7280"  # Gray for lower gains
             bg_gradient = "linear-gradient(135deg, #374151 0%, #4b5563 100%)"
         
+        # Get coin image
+        image_url = coin.get('image_url', 'https://cryptologos.cc/logos/bitcoin-btc-logo.png')
+        has_image = coin.get('has_image', False)
+        
         st.markdown(f"""
         <div style='background: {bg_gradient}; 
                    border-radius: 15px; padding: 20px; margin: 10px 0;
-                   border: 2px solid {border_color}; min-height: 280px;
+                   border: 2px solid {border_color}; min-height: 320px;
                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);'>
             
-            <!-- Header with ticker -->
+            <!-- Header with coin image and ticker -->
             <div style='text-align: center; border-bottom: 1px solid {border_color}; padding-bottom: 15px; margin-bottom: 15px;'>
+                <div style='margin-bottom: 10px;'>
+                    <img src='{image_url}' alt='{coin['ticker']} Logo' 
+                         style='width: 48px; height: 48px; border-radius: 50%; 
+                                border: 2px solid {border_color}; 
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                                object-fit: cover;'
+                         onerror="this.src='https://cryptologos.cc/logos/bitcoin-btc-logo.png'">
+                </div>
                 <h2 style='color: #f8fafc; margin: 0; font-size: 1.8rem; font-weight: bold;'>{coin['ticker']}</h2>
                 <div style='color: #cbd5e1; font-size: 0.8rem; margin-top: 5px;'>
                     {self.format_contract_address(coin.get('ca', 'N/A'))}
                 </div>
                 <div style='color: {"#10b981" if data_mode == "live" else "#f59e0b"}; font-size: 0.7rem; margin-top: 3px;'>
-                    {"🟢 LIVE" if data_mode == "live" else "🟡 DEMO"}
+                    {"🟢 LIVE" if data_mode == "live" else "🟡 DEMO"} {"🖼️" if has_image else "🔄"}
                 </div>
             </div>
             
