@@ -431,19 +431,19 @@ class UltraPremiumDashboard:
         except Exception as e:
             st.error(f"❌ Error connecting to live coin data: {e}")
             st.session_state.processed_coins = []
-                # Fix: Handle async in sync context properly
-                try:
-                    import nest_asyncio
-                    nest_asyncio.apply()
-                    live_coins = asyncio.run(manager.get_enriched_trending_coins(limit=5))
-                except ImportError:
-                    # Fallback: use sync method if available
-                    if hasattr(manager, 'get_enriched_trending_coins_sync'):
-                        live_coins = manager.get_enriched_trending_coins_sync(limit=5)
-                    else:
-                        # Use demo data if async not working
-                        self.generate_demo_coins()
-                        return
+            # Fix: Handle async in sync context properly
+            try:
+                import nest_asyncio
+                nest_asyncio.apply()
+                live_coins = asyncio.run(manager.get_enriched_trending_coins(limit=5))
+            except ImportError:
+                # Fallback: use sync method if available
+                if hasattr(manager, 'get_enriched_trending_coins_sync'):
+                    live_coins = manager.get_enriched_trending_coins_sync(limit=5)
+                else:
+                    # Use demo data if async not working
+                    self.generate_demo_coins()
+                    return
                 
                 # Convert to display format
                 processed_coins = []
