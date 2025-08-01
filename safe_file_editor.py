@@ -192,7 +192,9 @@ class SafeEditor:
     
     def string_exists(self, search_string: str) -> Tuple[bool, List[int]]:
         """Check if string exists and return line numbers"""
-        if not self.read_file():
+        # ALWAYS read file first (force refresh to ensure current content)
+        if not self.read_file(force_refresh=True):
+            print(f"[ERROR] Could not read file: {self.file_path}")
             return False, []
             
         lines = self.content.split('\n')
@@ -213,8 +215,9 @@ class SafeEditor:
     def safe_replace(self, old_string: str, new_string: str, confirm_exists: bool = True) -> bool:
         """Safely replace string with existence confirmation"""
         
-        # Step 1: Read file
-        if not self.read_file():
+        # Step 1: ALWAYS read file first (force refresh to ensure current content)
+        if not self.read_file(force_refresh=True):
+            print(f"[ERROR] Could not read file: {self.file_path}")
             return False
             
         # Step 2: Check if string exists (if requested)
@@ -257,8 +260,9 @@ class SafeEditor:
     def append_to_end(self, new_content: str, separator: str = "\n\n") -> bool:
         """Safely append content to end of file"""
         
-        # Step 1: Read file
-        if not self.read_file():
+        # Step 1: ALWAYS read file first (force refresh to ensure current content)
+        if not self.read_file(force_refresh=True):
+            print(f"[ERROR] Could not read file: {self.file_path}")
             return False
             
         # Step 2: Create backup
@@ -288,7 +292,9 @@ class SafeEditor:
     
     def find_similar_strings(self, target: str, max_results: int = 5) -> List[Tuple[str, int]]:
         """Find similar strings in file to help with replacements"""
-        if not self.read_file():
+        # ALWAYS read file first (force refresh to ensure current content)
+        if not self.read_file(force_refresh=True):
+            print(f"[ERROR] Could not read file: {self.file_path}")
             return []
             
         lines = self.content.split('\n')
@@ -317,7 +323,9 @@ class SafeEditor:
     def replace_last_updated(self, new_update: str) -> bool:
         """Specifically handle 'Last updated' pattern replacements"""
         
-        if not self.read_file():
+        # ALWAYS read file first (force refresh to ensure current content)
+        if not self.read_file(force_refresh=True):
+            print(f"[ERROR] Could not read file: {self.file_path}")
             return False
             
         # Look for common last updated patterns
@@ -343,7 +351,9 @@ class SafeEditor:
     def smart_claude_md_update(self, session_title: str, content: str) -> bool:
         """Smart update specifically for CLAUDE.md files"""
         
-        if not self.read_file():
+        # ALWAYS read file first (force refresh to ensure current content)
+        if not self.read_file(force_refresh=True):
+            print(f"[ERROR] Could not read file: {self.file_path}")
             return False
             
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -370,7 +380,9 @@ class SafeEditor:
     
     def get_file_info(self) -> dict:
         """Get comprehensive file information"""
-        if not self.read_file():
+        # ALWAYS read file first (force refresh to ensure current content)
+        if not self.read_file(force_refresh=True):
+            print(f"[ERROR] Could not read file: {self.file_path}")
             return {}
             
         lines = self.content.split('\n')
