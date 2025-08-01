@@ -75,4 +75,21 @@ azure-pipelines.yml
 *.whl
 
 # Executables
-*.exeproject_trenchcoat/NUL
+*.exe
+
+# GitHub Tokens and API Keys (EXTRA PROTECTION)
+*github_pat_*
+*ghp_*
+*gho_*
+*ghu_*
+*ghs_*
+github_token*
+api_key*
+*_token*
+*_secret*
+
+# Authentication files
+auth.py
+authentication.py
+tokens.py
+api_keys.py
