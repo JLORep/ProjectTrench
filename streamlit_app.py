@@ -597,21 +597,63 @@ def render_enhanced_coin_data_tab():
     
     # Check if we should show detail view
     if 'show_coin_detail' in st.session_state:
-        coin_detail = st.session_state.show_coin_detail
-        
-        # Validate coin detail data
-        if coin_detail is None or not isinstance(coin_detail, dict):
-            # Clear invalid state and refresh
-            del st.session_state.show_coin_detail
-            st.rerun()
+        try:
+            coin_detail = st.session_state.show_coin_detail
+            
+            # Validate coin detail data
+            if coin_detail is None:
+                st.warning("Coin detail is None. Clearing session state...")
+                del st.session_state.show_coin_detail
+                st.rerun()
+                return
+                
+            if not isinstance(coin_detail, dict):
+                st.error(f"Invalid coin data type: {type(coin_detail).__name__}")
+                st.write("Debug - coin_detail content:", coin_detail)
+                # Clear invalid state and refresh
+                del st.session_state.show_coin_detail
+                if st.button("Click to refresh", type="primary"):
+                    st.rerun()
+                return
+                
+            # Additional validation - check for required keys
+            required_keys = ['ticker', 'ca', 'price_gain']
+            missing_keys = [key for key in required_keys if key not in coin_detail]
+            if missing_keys:
+                st.error(f"Missing required keys: {missing_keys}")
+                st.write("Available keys:", list(coin_detail.keys()) if isinstance(coin_detail, dict) else "Not a dict")
+                del st.session_state.show_coin_detail
+                if st.button("Click to refresh", type="primary"):
+                    st.rerun()
+                return
+                
+            render_coin_detail_with_charts(coin_detail)
             return
             
-        render_coin_detail_with_charts(coin_detail)
-        return
+        except Exception as e:
+            st.error(f"Error rendering coin detail: {str(e)}")
+            st.write("Exception type:", type(e).__name__)
+            if 'show_coin_detail' in st.session_state:
+                del st.session_state.show_coin_detail
+            if st.button("Return to coin list", type="primary"):
+                st.rerun()
+            return
     
     # Breadcrumb for list view
     if CHARTS_AVAILABLE:
         breadcrumb_nav.render(["Home", "Coin Data"])
+    
+    st.header("🗄️ Coin Data")
+    st.markdown("### 💎 Live Cryptocurrency Analytics - Full Database")
+    
+    # Add session clear button in case of issues
+    col1, col2, col3 = st.columns([3, 1, 1])
+    with col3:
+        if st.button("🔄 Clear Session", help="Click if experiencing issues"):
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            st.success("Session cleared!")
+            st.rerun()
     
     # Initialize session state for pagination and filtering
     if 'coin_page' not in st.session_state:
@@ -898,9 +940,6 @@ def get_live_coins_simple():
 # Main dashboard content starts here with restructured tabs
 
 with tab1:
-    st.header("🗄️ Coin Data")
-    st.markdown("### 💎 Live Cryptocurrency Analytics - Full Database")
-    
     # Enhanced coin data with pagination and stunning cards - PRIORITY TAB
     render_enhanced_coin_data_tab()
 

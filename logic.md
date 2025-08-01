@@ -98,6 +98,43 @@ coins, status = get_live_coins_simple()
 print(f'Status: {status}, Count: {len(coins)}')
 ```
 
+### **Critical Data Structure Lessons - Session 2025-08-01**
+
+#### **Issue: AttributeError on Coin Click**
+When users clicked "View Charts & Details", the system crashed with:
+```
+AttributeError: coin_data.get('ticker', 'Coin Details')
+```
+
+#### **Root Causes Identified**:
+1. **Inconsistent Key Naming**: Database returns lowercase keys ('ticker', 'liquidity') but some code expected different formats
+2. **Missing Required Keys**: Chart system expected keys like 'ca', 'volume', 'axiom_price' that weren't in the base coin dict
+3. **Session State Persistence**: Invalid data could persist in session state across reruns
+
+#### **Comprehensive Fix Applied**:
+```python
+# Complete coin data structure with ALL required keys
+coins.append({
+    'ticker': ticker,
+    'ca': ca,  # Chart system expects 'ca'
+    'contract_address': ca,  # Original key maintained
+    'axiom_price': axiom_price,  # Charts need this specific key
+    'volume': display_axiom_volume or display_peak_volume,  # Fallback pattern
+    # ... all other fields
+})
+
+# Robust session state validation
+if coin_detail is None or not isinstance(coin_detail, dict):
+    del st.session_state.show_coin_detail
+    st.rerun()
+```
+
+#### **Best Practices Established**:
+1. **Always Include All Expected Keys**: Even if redundant, include all variations
+2. **Type Check Before Operations**: Never assume data types, always validate
+3. **Clean Session State on Errors**: Remove invalid state and rerun
+4. **Document Key Requirements**: Chart system needs specific keys documented
+
 #### **Data Format Validation**:
 ```python
 # Verify data structure compatibility
