@@ -247,8 +247,133 @@ class SuperClaudeCommandSystem:
                 ]
             ),
             
-            # Additional commands would continue here...
-            # For brevity, showing core structure
+            # Trading-Specific Commands
+            "/trade": SuperClaudeCommand(
+                name="/trade",
+                category=CommandCategory.ANALYSIS,
+                description="Trading analysis and strategy execution",
+                flags=[
+                    CommandFlag("analyze", "Analyze trading opportunity", "trading"),
+                    CommandFlag("entry", "Determine entry points", "trading"),
+                    CommandFlag("exit", "Determine exit points", "trading"),
+                    CommandFlag("strategy", "Apply trading strategy", "trading"),
+                    CommandFlag("backtest", "Backtest strategy", "trading"),
+                    CommandFlag("risk-reward", "Risk-reward analysis", "trading"),
+                    CommandFlag("seq", "Use Sequential analysis", "mcp")
+                ],
+                examples=[
+                    "/trade --analyze $PEPE --entry --exit --seq",
+                    "/trade --strategy momentum --backtest --c7"
+                ]
+            ),
+            
+            "/signal": SuperClaudeCommand(
+                name="/signal",
+                category=CommandCategory.ANALYSIS,
+                description="Trading signal generation and validation",
+                flags=[
+                    CommandFlag("generate", "Generate trading signals", "trading"),
+                    CommandFlag("validate", "Validate signal accuracy", "trading"),
+                    CommandFlag("timeframe", "Signal timeframe", "trading"),
+                    CommandFlag("confidence", "Confidence threshold", "trading"),
+                    CommandFlag("backtest", "Backtest signals", "trading"),
+                    CommandFlag("evidence", "Evidence-based signals", "quality")
+                ],
+                examples=[
+                    "/signal --generate --timeframe 4h --seq",
+                    "/signal --validate $BTC --confidence 90"
+                ]
+            ),
+            
+            "/portfolio": SuperClaudeCommand(
+                name="/portfolio",
+                category=CommandCategory.ANALYSIS,
+                description="Portfolio optimization and management",
+                flags=[
+                    CommandFlag("optimize", "Optimize portfolio allocation", "trading"),
+                    CommandFlag("rebalance", "Rebalance portfolio", "trading"),
+                    CommandFlag("diversify", "Diversification analysis", "trading"),
+                    CommandFlag("risk-level", "Risk level assessment", "trading"),
+                    CommandFlag("modern-theory", "Modern Portfolio Theory", "trading"),
+                    CommandFlag("seq", "Sequential analysis", "mcp")
+                ],
+                examples=[
+                    "/portfolio --optimize --modern-theory --seq",
+                    "/portfolio --rebalance --risk-level conservative"
+                ]
+            ),
+            
+            "/research": SuperClaudeCommand(
+                name="/research",
+                category=CommandCategory.ANALYSIS,
+                description="Market research and fundamental analysis",
+                flags=[
+                    CommandFlag("coin", "Research specific coin", "trading"),
+                    CommandFlag("sector", "Sector analysis", "trading"),
+                    CommandFlag("fundamentals", "Fundamental analysis", "trading"),
+                    CommandFlag("trends", "Trend analysis", "trading"),
+                    CommandFlag("correlation", "Correlation analysis", "trading"),
+                    CommandFlag("c7", "Use Context7 documentation", "mcp")
+                ],
+                examples=[
+                    "/research --coin $PEPE --fundamentals --c7",
+                    "/research --sector defi --trends --seq"
+                ]
+            ),
+            
+            "/bot": SuperClaudeCommand(
+                name="/bot",
+                category=CommandCategory.OPERATIONS,
+                description="Trading bot creation and management",
+                flags=[
+                    CommandFlag("create", "Create trading bot", "trading"),
+                    CommandFlag("optimize", "Optimize bot performance", "trading"),
+                    CommandFlag("test", "Test bot functionality", "testing"),
+                    CommandFlag("paper-trading", "Paper trading mode", "trading"),
+                    CommandFlag("risk-limits", "Risk management limits", "trading"),
+                    CommandFlag("pup", "Use Puppeteer testing", "mcp")
+                ],
+                examples=[
+                    "/bot --create dca-strategy --test --pup",
+                    "/bot --optimize --performance --risk-limits"
+                ]
+            ),
+            
+            "/chart": SuperClaudeCommand(
+                name="/chart",
+                category=CommandCategory.DEVELOPMENT,
+                description="Trading chart and visualization generation",
+                flags=[
+                    CommandFlag("coin", "Chart specific coin", "trading"),
+                    CommandFlag("technical", "Technical analysis", "trading"),
+                    CommandFlag("portfolio", "Portfolio charts", "trading"),
+                    CommandFlag("interactive", "Interactive charts", "frontend"),
+                    CommandFlag("heatmap", "Correlation heatmap", "trading"),
+                    CommandFlag("magic", "Use Magic UI generation", "mcp")
+                ],
+                examples=[
+                    "/chart --coin $BTC --technical --magic",
+                    "/chart --portfolio --performance --interactive"
+                ]
+            ),
+            
+            "/validate": SuperClaudeCommand(
+                name="/validate",
+                category=CommandCategory.QUALITY,
+                description="Trading validation and compliance",
+                flags=[
+                    CommandFlag("trades", "Validate trades", "trading"),
+                    CommandFlag("signals", "Validate signals", "trading"),
+                    CommandFlag("portfolio", "Validate portfolio", "trading"),
+                    CommandFlag("risk-management", "Risk management validation", "trading"),
+                    CommandFlag("threshold", "Confidence threshold", "quality"),
+                    CommandFlag("evidence", "Evidence-based validation", "quality")
+                ],
+                examples=[
+                    "/validate --trades --risk-management --evidence",
+                    "/validate --signals --confidence --threshold 80"
+                ]
+            )
         }
     
     def _initialize_universal_flags(self) -> Dict[str, CommandFlag]:
@@ -605,20 +730,64 @@ class SuperClaudeCommandSystem:
         with col2:
             execute_btn = st.button("Execute", type="primary", key="execute_super_claude")
         
-        # Quick command buttons
-        st.markdown("#### Quick Commands")
-        cmd_cols = st.columns(4)
+        # Trading Commands Dropdown
+        st.markdown("#### 🎯 Trading Commands")
         
-        quick_commands = [
-            ("/analyze --code --performance", "📊 Analyze Performance"),
-            ("/scan --security --owasp", "🔒 Security Scan"),
-            ("/build --feature --tdd", "🏗️ Build Feature"),
+        trading_categories = {
+            "📊 Analysis": [
+                ("/analyze --coin $PEPE --seq --c7", "Deep Coin Analysis with MCP"),
+                ("/analyze --market --performance --ultrathink", "Market Performance Analysis"),
+                ("/scan --opportunities --confidence 85", "High-Confidence Opportunities"),
+                ("/research --coin $BTC --fundamentals --c7", "Fundamental Research")
+            ],
+            "💰 Trading": [
+                ("/trade --analyze $SOLANA --entry --exit --seq", "Complete Trading Analysis"),
+                ("/signal --generate --timeframe 4h --seq", "Generate 4H Signals"),
+                ("/portfolio --optimize --modern-theory --seq", "Portfolio Optimization"),
+                ("/validate --trades --risk-management --evidence", "Trade Validation")
+            ],
+            "🤖 Automation": [
+                ("/bot --create dca-strategy --test --pup", "Create DCA Bot"),
+                ("/bot --optimize --performance --risk-limits", "Optimize Trading Bot"),
+                ("/deploy --strategy live --validate --monitor", "Deploy Live Strategy"),
+                ("/test --strategy momentum --coverage --pup", "Test Trading Strategy")
+            ],
+            "📈 Visualization": [
+                ("/chart --coin $BTC --technical --magic", "Technical Analysis Chart"),
+                ("/chart --portfolio --performance --interactive", "Portfolio Performance"),
+                ("/chart --correlation-matrix --heatmap --magic", "Correlation Heatmap"),
+                ("/report --trading --monthly --evidence", "Monthly Trading Report")
+            ]
+        }
+        
+        # Create columns for trading categories
+        trade_cols = st.columns(2)
+        
+        for idx, (category, commands) in enumerate(trading_categories.items()):
+            with trade_cols[idx % 2]:
+                st.markdown(f"**{category}**")
+                for cmd, description in commands:
+                    if st.button(f"{description}", key=f"trade_cmd_{cmd.replace(' ', '_').replace('/', '_')}", use_container_width=True):
+                        st.session_state.super_claude_command = cmd
+                        st.success(f"✅ Command loaded: `{cmd}`")
+                        st.rerun()
+        
+        st.markdown("---")
+        
+        # Quick Development Commands  
+        st.markdown("#### ⚡ Quick Development Commands")
+        dev_cols = st.columns(4)
+        
+        quick_dev_commands = [
+            ("/analyze --code --performance --seq", "📊 Code Analysis"),
+            ("/scan --security --owasp --strict", "🔒 Security Scan"),
+            ("/build --feature --tdd --magic", "🏗️ Build Feature"),
             ("/improve --quality --iterate", "✨ Improve Quality")
         ]
         
-        for idx, (cmd, label) in enumerate(quick_commands):
-            with cmd_cols[idx % 4]:
-                if st.button(label, key=f"quick_cmd_{idx}"):
+        for idx, (cmd, label) in enumerate(quick_dev_commands):
+            with dev_cols[idx % 4]:
+                if st.button(label, key=f"dev_cmd_{idx}"):
                     st.session_state.super_claude_command = cmd
                     st.rerun()
         

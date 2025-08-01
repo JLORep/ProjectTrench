@@ -41,6 +41,15 @@ TrenchCoat Pro is a sophisticated cryptocurrency trading intelligence platform t
 - `/improve --performance --iterate` - Code optimization
 - `/deploy --env prod --validate --monitor` - Production deployment
 
+**Trading-Specific Commands:**
+- `/trade --analyze $COIN --entry --exit --seq` - Complete trading analysis
+- `/signal --generate --timeframe 4h --seq` - Trading signal generation  
+- `/portfolio --optimize --modern-theory --seq` - Portfolio optimization
+- `/research --coin $BTC --fundamentals --c7` - Market research with documentation
+- `/bot --create dca-strategy --test --pup` - Trading bot creation and testing
+- `/chart --coin $BTC --technical --magic` - Technical analysis visualization
+- `/validate --trades --risk-management --evidence` - Trade validation
+
 #### 2. **super_claude_personas.py** - AI Expert Personas
 - **Location:** `C:\trench\super_claude_personas.py:1-320`
 - **Purpose:** 9 specialized AI personalities for targeted expertise
@@ -111,7 +120,7 @@ TrenchCoat Pro is a sophisticated cryptocurrency trading intelligence platform t
 - **Status check fix** (line 320): Changed from `== "success"` to `status.startswith("SUCCESS")`
 - **Data mapping fix** (lines 334-338): Enhanced format compatibility with fallback support
 
-## 🏗️ **ARCHITECTURE PATTERNS & LESSONS LEARNED**
+## 🏗 **ARCHITECTURE PATTERNS & LESSONS LEARNED**
 
 ### **Dual Dashboard Architecture**
 The TrenchCoat Pro system implements a sophisticated dual-dashboard pattern:
@@ -341,12 +350,12 @@ insight = super_claude.analyze_coin_for_opportunity(coin_data)
 1. **📊 Live Dashboard** - Real-time market signals and performance
 2. **🧠 Advanced Analytics** - AI-powered analysis and insights  
 3. **🤖 Model Builder** - ML model configuration interface
-4. **⚙️ Trading Engine** - Automated trading controls
+4. **⚙ Trading Engine** - Automated trading controls
 5. **📡 Telegram Signals** - Real-time signal monitoring
 6. **📝 Dev Blog** - Development updates and progress
 7. **💎 Solana Wallet** - Solana trading integration
-8. **🗄️ Coin Data** - Live cryptocurrency analytics
-9. **🗃️ Database** - Database management interface
+8. **🗄 Coin Data** - Live cryptocurrency analytics
+9. **🗃 Database** - Database management interface
 10. **🔔 Incoming Coins** - Real-time discovery monitoring
 
 **Key Classes & Methods:**
@@ -371,7 +380,7 @@ insight = super_claude.analyze_coin_for_opportunity(coin_data)
 
 ---
 
-## 🗄️ Database Architecture
+## 🗄 Database Architecture
 
 ### Core Database Module
 
@@ -470,6 +479,46 @@ insight = super_claude.analyze_coin_for_opportunity(coin_data)
 ---
 
 ## 🔧 Configuration & Utilities
+### safe_file_editor.py - Error Prevention System
+- **Location:** `C:\trench\safe_file_editor.py:1-400+`
+- **Purpose:** Prevent credit-wasting file editing errors
+- **Added:** 2025-08-01 23:44
+
+**Key Classes & Methods:**
+- `SafeEditor` (main class): Comprehensive file editing with error prevention
+- `fix_unicode()`: Handles extensive emoji whitelist and Unicode normalization
+- `safe_replace()`: String replacement with existence confirmation
+- `string_exists()`: Pre-check string existence to prevent errors
+- `append_to_end()`: Always-safe content appending
+- `smart_claude_md_update()`: Intelligent CLAUDE.md session updates
+- `find_similar_strings()`: Alternative string discovery for failed matches
+
+**Error Prevention Features:**
+- Pre-validates string existence before replacement attempts
+- Caches file content to prevent "file not read" errors
+- Creates automatic backups before modifications
+- Provides smart fallbacks when operations fail
+- Handles Unicode normalization for deployment safety
+### safe_file_editor.py - Error Prevention System
+- **Location:** `C:\trench\safe_file_editor.py:1-400+`
+- **Purpose:** Prevent credit-wasting file editing errors
+- **Added:** 2025-08-01 23:28
+
+**Key Classes & Methods:**
+- `SafeEditor` (main class): Comprehensive file editing with error prevention
+- `fix_unicode()`: Handles extensive emoji whitelist and Unicode normalization
+- `safe_replace()`: String replacement with existence confirmation
+- `string_exists()`: Pre-check string existence to prevent errors
+- `append_to_end()`: Always-safe content appending
+- `smart_claude_md_update()`: Intelligent CLAUDE.md session updates
+- `find_similar_strings()`: Alternative string discovery for failed matches
+
+**Error Prevention Features:**
+- Pre-validates string existence before replacement attempts
+- Caches file content to prevent "file not read" errors
+- Creates automatic backups before modifications
+- Provides smart fallbacks when operations fail
+- Handles Unicode normalization for deployment safety
 
 ### Configuration Management
 
@@ -587,27 +636,27 @@ insight = super_claude.analyze_coin_for_opportunity(coin_data)
 
 ### 1. Signal Processing Flow
 ```
-Telegram Channels → SignalMonitor → PatternMatching → Database → TradingEngine
+Telegram Channels -> SignalMonitor -> PatternMatching -> Database -> TradingEngine
 ```
 
 ### 2. Rug Detection Flow
 ```
-TokenData → RugIntelligence → HistoricalAnalysis → RealTimeMonitoring → EmergencyExit
+TokenData -> RugIntelligence -> HistoricalAnalysis -> RealTimeMonitoring -> EmergencyExit
 ```
 
 ### 3. Dashboard Data Flow
 ```
-Database(trench.db) → LiveDataManager → Dashboard → UserInterface
+Database(trench.db) -> LiveDataManager -> Dashboard -> UserInterface
 ```
 
 ### 4. Trading Execution Flow
 ```
-Signal → Analysis → PositionSizing → Execution → Monitoring → Exit
+Signal -> Analysis -> PositionSizing -> Execution -> Monitoring -> Exit
 ```
 
 ---
 
-## 🗃️ Database Schema Summary
+## 🗃 Database Schema Summary
 
 ### Core Tables
 
@@ -694,9 +743,9 @@ streamlit_app.py
 ### Data Flow Architecture
 
 ```
-External APIs → Data Enrichment → Database → Dashboard
+External APIs -> Data Enrichment -> Database -> Dashboard
                                      ↓
-Telegram → Signal Processing → Trading Engine → Position Management
+Telegram -> Signal Processing -> Trading Engine -> Position Management
 ```
 
 ---

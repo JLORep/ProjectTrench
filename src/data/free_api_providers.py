@@ -171,6 +171,138 @@ class FreeAPIProviders:
                 params_template={},
                 data_extractor="data"
             ),
+            
+            # NEW COMPREHENSIVE API SOURCES
+            
+            # Birdeye - Solana DEX aggregator (Free tier: 100 requests/day)
+            "birdeye_token": APIEndpoint(
+                name="Birdeye Token Data",
+                url="https://public-api.birdeye.so/public/token_overview",
+                rate_limit=0.5,  # Conservative for free tier
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={"address": "{address}"},
+                data_extractor="data"
+            ),
+            
+            "birdeye_price_history": APIEndpoint(
+                name="Birdeye Price History", 
+                url="https://public-api.birdeye.so/public/price_history",
+                rate_limit=0.5,
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={"address": "{address}", "time_from": "{time_from}", "time_to": "{time_to}"},
+                data_extractor="data"
+            ),
+            
+            # Raydium API - Solana DEX
+            "raydium_pairs": APIEndpoint(
+                name="Raydium Pairs",
+                url="https://api.raydium.io/v2/main/pairs",
+                rate_limit=2.0,
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={},
+                data_extractor="data"
+            ),
+            
+            # Orca API - Solana DEX
+            "orca_pools": APIEndpoint(
+                name="Orca Pools",
+                url="https://api.orca.so/v1/pools",
+                rate_limit=5.0,
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={},
+                data_extractor="data"
+            ),
+            
+            # Pump.fun API - Solana meme coin tracker
+            "pumpfun_token": APIEndpoint(
+                name="Pump.fun Token",
+                url="https://frontend-api.pump.fun/coins/{address}",
+                rate_limit=2.0,
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={},
+                data_extractor="data"
+            ),
+            
+            # GMGN API - On-chain analytics
+            "gmgn_token": APIEndpoint(
+                name="GMGN Token Analytics",
+                url="https://gmgn.ai/api/v1/token_security/solana/{address}",
+                rate_limit=1.0,
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={},
+                data_extractor="data"
+            ),
+            
+            # Dune Analytics - On-chain data
+            "dune_query": APIEndpoint(
+                name="Dune Analytics",
+                url="https://api.dune.com/api/v1/query/{query_id}/results",
+                rate_limit=0.1,  # Very conservative for free tier
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={},
+                data_extractor="result.rows",
+                requires_auth=True
+            ),
+            
+            # CoinPaprika - Free crypto API
+            "coinpaprika_ticker": APIEndpoint(
+                name="CoinPaprika Ticker",
+                url="https://api.coinpaprika.com/v1/tickers/{coin_id}",
+                rate_limit=10.0,  # 10 req/sec for free
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={},
+                data_extractor="data"
+            ),
+            
+            "coinpaprika_historical": APIEndpoint(
+                name="CoinPaprika Historical",
+                url="https://api.coinpaprika.com/v1/tickers/{coin_id}/historical",
+                rate_limit=5.0,
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={"start": "{start_date}", "interval": "1d"},
+                data_extractor="data"
+            ),
+            
+            # Coinglass - Derivatives data
+            "coinglass_funding": APIEndpoint(
+                name="Coinglass Funding Rates",
+                url="https://open-api.coinglass.com/public/v2/funding",
+                rate_limit=1.0,
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={"symbol": "{symbol}"},
+                data_extractor="data"
+            ),
+            
+            # Defillama - TVL and DeFi data
+            "defillama_protocol": APIEndpoint(
+                name="DefiLlama Protocol",
+                url="https://api.llama.fi/protocol/{protocol}",
+                rate_limit=2.0,
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={},
+                data_extractor="data"
+            ),
+            
+            # CryptoPanic - News and sentiment
+            "cryptopanic_news": APIEndpoint(
+                name="CryptoPanic News",
+                url="https://cryptopanic.com/api/v1/posts/",
+                rate_limit=1.0,
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={"auth_token": "free", "currencies": "{symbol}"},
+                data_extractor="results"
+            ),
+            
+            # Token Metrics - On-chain metrics
+            "tokenmetrics_overview": APIEndpoint(
+                name="Token Metrics Overview",
+                url="https://api.tokenmetrics.com/v2/tokens/{address}/overview",
+                rate_limit=0.5,
+                headers={"User-Agent": "TrenchCoat-Analytics/1.0"},
+                params_template={},
+                data_extractor="data",
+                requires_auth=True
+            ),
         }
     
     async def __aenter__(self):
@@ -580,3 +712,186 @@ class FreeAPIProviders:
         max_price = max(prices)
         
         return (max_price - min_price) / min_price <= 0.05  # 5% tolerance
+    
+    async def get_birdeye_token_data(self, address: str) -> Dict[str, Any]:
+        """Get comprehensive token data from Birdeye"""
+        data = await self._make_request("birdeye_token", address=address)
+        
+        if data and data.get('success'):
+            token_data = data.get('data', {})
+            return {
+                'price': token_data.get('price'),
+                'price_change_24h': token_data.get('priceChange24h'),
+                'volume_24h': token_data.get('volume24h'),
+                'liquidity': token_data.get('liquidity'),
+                'market_cap': token_data.get('mc'),
+                'holders': token_data.get('holder'),
+                'unique_wallet_24h': token_data.get('uniqueWallet24h'),
+                'trade_24h': token_data.get('trade24h'),
+                'buy_24h': token_data.get('buy24h'),
+                'sell_24h': token_data.get('sell24h')
+            }
+        return {}
+    
+    async def get_birdeye_price_history(self, address: str, days: int = 30) -> List[Dict]:
+        """Get historical price data from Birdeye"""
+        import time
+        time_to = int(time.time())
+        time_from = time_to - (days * 24 * 60 * 60)
+        
+        data = await self._make_request("birdeye_price_history", 
+                                      address=address, 
+                                      time_from=time_from, 
+                                      time_to=time_to)
+        
+        if data and data.get('success'):
+            return data.get('data', {}).get('items', [])
+        return []
+    
+    async def get_coinpaprika_historical(self, coin_id: str, days: int = 30) -> List[Dict]:
+        """Get historical data from CoinPaprika"""
+        from datetime import datetime, timedelta
+        start_date = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')
+        
+        data = await self._make_request("coinpaprika_historical", 
+                                      coin_id=coin_id, 
+                                      start_date=start_date)
+        
+        return data if data else []
+    
+    async def get_pumpfun_data(self, address: str) -> Dict[str, Any]:
+        """Get token data from Pump.fun"""
+        data = await self._make_request("pumpfun_token", address=address)
+        
+        if data:
+            return {
+                'name': data.get('name'),
+                'symbol': data.get('symbol'),
+                'description': data.get('description'),
+                'image_uri': data.get('image_uri'),
+                'metadata_uri': data.get('metadata_uri'),
+                'twitter': data.get('twitter'),
+                'telegram': data.get('telegram'),
+                'website': data.get('website'),
+                'show_name': data.get('show_name'),
+                'created_timestamp': data.get('created_timestamp'),
+                'raydium_pool': data.get('raydium_pool'),
+                'complete': data.get('complete'),
+                'virtual_sol_reserves': data.get('virtual_sol_reserves'),
+                'virtual_token_reserves': data.get('virtual_token_reserves'),
+                'total_supply': data.get('total_supply'),
+                'king_of_the_hill_timestamp': data.get('king_of_the_hill_timestamp'),
+                'market_cap': data.get('usd_market_cap'),
+                'reply_count': data.get('reply_count')
+            }
+        return {}
+    
+    async def get_gmgn_analytics(self, address: str) -> Dict[str, Any]:
+        """Get on-chain analytics from GMGN"""
+        data = await self._make_request("gmgn_token", address=address)
+        
+        if data and data.get('code') == 0:
+            token_security = data.get('data', {})
+            return {
+                'is_honeypot': token_security.get('is_honeypot'),
+                'buy_tax': token_security.get('buy_tax'),
+                'sell_tax': token_security.get('sell_tax'),
+                'is_mintable': token_security.get('is_mintable'),
+                'is_proxy': token_security.get('is_proxy'),
+                'slippage_modifiable': token_security.get('slippage_modifiable'),
+                'is_blacklisted': token_security.get('is_blacklisted'),
+                'is_whitelisted': token_security.get('is_whitelisted'),
+                'is_in_dex': token_security.get('is_in_dex'),
+                'transfer_pausable': token_security.get('transfer_pausable'),
+                'creator_address': token_security.get('creator_address'),
+                'creator_balance': token_security.get('creator_balance'),
+                'creator_percent': token_security.get('creator_percent'),
+                'lp_holder_count': token_security.get('lp_holder_count'),
+                'lp_total_supply': token_security.get('lp_total_supply'),
+                'holder_count': token_security.get('holder_count'),
+                'total_supply': token_security.get('total_supply')
+            }
+        return {}
+    
+    async def get_comprehensive_historical_data(self, contract_address: str, symbol: str = None, days: int = 30) -> Dict[str, Any]:
+        """Get comprehensive historical data from all sources"""
+        logger.info(f"Fetching comprehensive historical data for {symbol or contract_address[:10]}... ({days} days)")
+        
+        historical_data = {
+            'contract_address': contract_address,
+            'symbol': symbol,
+            'timeframe_days': days,
+            'data_sources': [],
+            'price_history': [],
+            'volume_history': [],
+            'holder_history': [],
+            'security_analysis': {},
+            'social_data': {},
+            'last_updated': datetime.now().isoformat()
+        }
+        
+        # Birdeye historical data
+        try:
+            birdeye_history = await self.get_birdeye_price_history(contract_address, days)
+            if birdeye_history:
+                historical_data['data_sources'].append('birdeye_history')
+                historical_data['price_history'].extend([
+                    {
+                        'timestamp': item.get('unixTime'),
+                        'price': item.get('value'),
+                        'source': 'birdeye'
+                    } for item in birdeye_history
+                ])
+        except Exception as e:
+            logger.warning(f"Birdeye historical data failed: {e}")
+        
+        # CoinPaprika historical data
+        if symbol:
+            try:
+                paprika_history = await self.get_coinpaprika_historical(symbol.lower(), days)
+                if paprika_history:
+                    historical_data['data_sources'].append('coinpaprika_history')
+                    historical_data['price_history'].extend([
+                        {
+                            'timestamp': item.get('timestamp'),
+                            'price': item.get('price'),
+                            'volume_24h': item.get('volume_24h'),
+                            'market_cap': item.get('market_cap'),
+                            'source': 'coinpaprika'
+                        } for item in paprika_history
+                    ])
+            except Exception as e:
+                logger.warning(f"CoinPaprika historical data failed: {e}")
+        
+        # Current comprehensive snapshot
+        current_data = await self.get_comprehensive_data(contract_address, symbol)
+        if current_data:
+            historical_data['current_snapshot'] = current_data
+            historical_data['data_sources'].extend(current_data.get('data_sources', []))
+        
+        # Security analysis from GMGN
+        try:
+            security_data = await self.get_gmgn_analytics(contract_address)
+            if security_data:
+                historical_data['security_analysis'] = security_data
+                historical_data['data_sources'].append('gmgn_security')
+        except Exception as e:
+            logger.warning(f"GMGN security analysis failed: {e}")
+        
+        # Pump.fun social data
+        try:
+            pumpfun_data = await self.get_pumpfun_data(contract_address)
+            if pumpfun_data:
+                historical_data['social_data'] = pumpfun_data
+                historical_data['data_sources'].append('pumpfun_social')
+        except Exception as e:
+            logger.warning(f"Pump.fun social data failed: {e}")
+        
+        # Calculate enrichment score
+        total_possible_sources = 15  # Updated count
+        actual_sources = len(set(historical_data['data_sources']))
+        historical_data['enrichment_score'] = actual_sources / total_possible_sources
+        
+        logger.info(f"Historical enrichment complete: {actual_sources}/{total_possible_sources} sources ({historical_data['enrichment_score']:.1%})")
+        
+        return historical_data

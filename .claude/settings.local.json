@@ -59,7 +59,16 @@
       "Bash(curl:*)",
       "Bash(git checkout:*)",
       "Bash(sed:*)",
-      "WebFetch(domain:bit.ly)"
+      "WebFetch(domain:bit.ly)",
+      "Bash(npm i:*)",
+      "Bash(claude-code --version)",
+      "Bash(npx:*)",
+      "Bash(npm config:*)",
+      "Bash(echo $PATH)",
+      "Bash(claude --version)",
+      "Bash(git fsck:*)",
+      "Bash(git gc:*)",
+      "WebFetch(domain:trenchcoat-pro.streamlit.app)"
     ],
     "deny": []
   }

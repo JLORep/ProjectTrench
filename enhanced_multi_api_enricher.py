@@ -182,13 +182,42 @@ class MultiAPIEnricher:
         )
     
     async def enrich_coin_multi_source(self, ticker: str, contract_address: str) -> Optional[EnrichedCoinData]:
-        """Try multiple APIs in priority order"""
-        enriched_data = None
-        
+        """Use comprehensive API system for maximum data coverage"""
         # Skip if no contract address
         if not contract_address or contract_address == 'N/A':
             return None
         
+        try:
+            # Import the comprehensive API system
+            from src.data.free_api_providers import FreeAPIProviders
+            
+            async with FreeAPIProviders() as api:
+                # Get comprehensive data from all sources
+                comprehensive_data = await api.get_comprehensive_data(contract_address, ticker)
+                
+                if comprehensive_data and comprehensive_data.get('price'):
+                    # Convert to EnrichedCoinData format
+                    enriched_data = EnrichedCoinData(
+                        ticker=ticker,
+                        contract_address=contract_address,
+                        price_usd=float(comprehensive_data.get('price', 0)),
+                        liquidity_usd=float(comprehensive_data.get('liquidity', 0)),
+                        market_cap=float(comprehensive_data.get('market_cap', 0)),
+                        volume_24h=float(comprehensive_data.get('volume_24h', 0)),
+                        holders=int(comprehensive_data.get('total_holders', 0)),
+                        price_change_24h=float(comprehensive_data.get('price_change_24h', 0)),
+                        data_source=f"Comprehensive ({len(comprehensive_data.get('data_sources', []))} sources)",
+                        last_updated=datetime.now().isoformat()
+                    )
+                    
+                    sources = comprehensive_data.get('data_sources', [])
+                    logger.info(f"[Comprehensive] Enriched {ticker}: ${enriched_data.price_usd:.8f} from {len(sources)} sources")
+                    return enriched_data
+                
+        except Exception as e:
+            logger.warning(f"Comprehensive API failed for {ticker}, falling back to legacy: {e}")
+        
+        # Fallback to original logic if comprehensive system fails
         # Try DexScreener first (most comprehensive for DEX tokens)
         dex_data = await self.fetch_dexscreener(contract_address)
         if dex_data:

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
 """
 Automated Documentation Updater
 Updates all relevant MD files with new developments, fixes, and changes
@@ -18,6 +17,22 @@ import json
 import requests
 from datetime import datetime
 from safe_file_editor import SafeEditor
+
+# Fix console encoding for Windows
+if sys.platform == "win32":
+    import codecs
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.detach())
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.detach())
+
+def safe_print(text):
+    """Print text safely, handling Unicode issues"""
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        # Fallback: replace problematic Unicode with ASCII equivalents
+        text = text.replace('✅', '[OK]').replace('❌', '[ERROR]').replace('⚠️', '[WARN]')
+        text = text.replace('🎯', '*').replace('🔧', '[TOOL]').replace('📊', '[DATA]')
+        print(text)
 
 class DocumentationUpdater:
     """Automated system to update all project documentation"""
@@ -103,7 +118,7 @@ class DocumentationUpdater:
                 'alerts': None   # Set to actual webhook URL
             }
         except Exception as e:
-            print(f"[WARNING] Could not load Discord webhooks: {e}")
+            safe_print(f"[WARNING] Could not load Discord webhooks: {e}")
             return {}
     
     def send_discord_notification(self, webhook_url: str, title: str, description: str, color: int = 0x00ff00) -> bool:
@@ -160,7 +175,7 @@ class DocumentationUpdater:
             return True
             
         except Exception as e:
-            print(f"[ERROR] Discord notification failed: {e}")
+            safe_print(f"[ERROR] Discord notification failed: {e}")
             return False
     
     def notify_discord_channels(self, session_title: str, description: str) -> dict:
@@ -203,9 +218,9 @@ class DocumentationUpdater:
                 notifications[channel] = success
                 
                 if success:
-                    print(f"[OK] Discord notification sent to #{channel}")
+                    safe_print(f"[OK] Discord notification sent to #{channel}")
                 else:
-                    print(f"[ERROR] Failed to send Discord notification to #{channel}")
+                    safe_print(f"[ERROR] Failed to send Discord notification to #{channel}")
         
         return notifications
     
@@ -375,7 +390,7 @@ class DocumentationUpdater:
     def update_generic_md(self, file_name: str, session_title: str, description: str) -> bool:
         """Generic update method for any MD file"""
         if not os.path.exists(file_name):
-            print(f"[SKIP] {file_name} not found")
+            safe_print(f"[SKIP] {file_name} not found")
             return False
             
         editor = SafeEditor(file_name)
@@ -413,7 +428,7 @@ class DocumentationUpdater:
         """Read all documentation files to understand current state"""
         context = {}
         
-        print("Reading documentation files for context...")
+        safe_print("Reading documentation files for context...")
         for file_name, category in self.doc_files.items():
             if os.path.exists(file_name):
                 editor = SafeEditor(file_name)
@@ -440,8 +455,8 @@ class DocumentationUpdater:
         # First, read all files to understand current state
         context = self.read_all_docs_for_context()
         
-        print(f"\nANALYZED {len(context)} DOCUMENTATION FILES")
-        print("=" * 60)
+        safe_print(f"\nANALYZED {len(context)} DOCUMENTATION FILES")
+        safe_print("=" * 60)
         
         results = {}
         
@@ -459,12 +474,12 @@ class DocumentationUpdater:
         # Update each file
         for file_name, file_context in context.items():
             if 'error' in file_context:
-                print(f"[SKIP] {file_name}: {file_context['error']}")
+                safe_print(f"[SKIP] {file_name}: {file_context['error']}")
                 results[file_name] = False
                 continue
                 
             try:
-                print(f"Updating {file_name} ({file_context['size']:,} chars)...", end=" ", flush=True)
+                safe_print(f"Updating {file_name} ({file_context['size']:,} chars)...")
                 
                 # Use specialized update if available
                 if file_name in specialized_updates:
@@ -476,13 +491,13 @@ class DocumentationUpdater:
                 results[file_name] = success
                 
                 if success:
-                    print("[UPDATED]")
+                    safe_print("[UPDATED]")
                     self.files_updated.append(file_name)
                 else:
-                    print("[SKIPPED]")
+                    safe_print("[SKIPPED]")
                     
             except Exception as e:
-                print(f"[ERROR] {str(e).encode('ascii', 'replace').decode('ascii')}")
+                safe_print(f"[ERROR] {str(e).encode('ascii', 'replace').decode('ascii')}")
                 self.errors.append(f"{file_name}: {str(e).encode('ascii', 'replace').decode('ascii')}")
                 results[file_name] = False
         
@@ -491,41 +506,41 @@ class DocumentationUpdater:
     def run_full_update(self, session_title: str, description: str) -> dict:
         """Run complete documentation update across ALL files"""
         
-        print(f"COMPREHENSIVE DOCUMENTATION UPDATE")
-        print(f"Session: {session_title}")
-        print(f"Description: {description}")
-        print(f"Time: {self.timestamp}")
-        print("=" * 60)
+        safe_print(f"COMPREHENSIVE DOCUMENTATION UPDATE")
+        safe_print(f"Session: {session_title}")
+        safe_print(f"Description: {description}")
+        safe_print(f"Time: {self.timestamp}")
+        safe_print("=" * 60)
         
         # Use smart update system that reads and analyzes all files
         results = self.smart_update_all_docs(session_title, description)
         
         # Summary
-        print("\n" + "=" * 60)
-        print(f"COMPREHENSIVE UPDATE SUMMARY:")
-        print(f"Files updated: {len(self.files_updated)}")
-        print(f"Files analyzed: {len(self.doc_files)}")
-        print(f"Errors: {len(self.errors)}")
+        safe_print("\n" + "=" * 60)
+        safe_print(f"COMPREHENSIVE UPDATE SUMMARY:")
+        safe_print(f"Files updated: {len(self.files_updated)}")
+        safe_print(f"Files analyzed: {len(self.doc_files)}")
+        safe_print(f"Errors: {len(self.errors)}")
         
         if self.files_updated:
             files_str = ', '.join([f.encode('ascii', 'replace').decode('ascii') for f in self.files_updated])
-            print(f"Successfully updated: {files_str}")
+            safe_print(f"Successfully updated: {files_str}")
             
         if self.errors:
             error_str = '; '.join([e.encode('ascii', 'replace').decode('ascii') for e in self.errors])
-            print(f"Errors encountered: {error_str}")
+            safe_print(f"Errors encountered: {error_str}")
         
         # Send Discord notifications
-        print("\n" + "-" * 40)
-        print("DISCORD NOTIFICATIONS:")
+        safe_print("\n" + "-" * 40)
+        safe_print("DISCORD NOTIFICATIONS:")
         discord_results = self.notify_discord_channels(session_title, description)
         
         if discord_results:
             for channel, success in discord_results.items():
                 status = "SUCCESS" if success else "FAILED"
-                print(f"#{channel}: {status}")
+                safe_print(f"#{channel}: {status}")
         else:
-            print("No Discord webhooks configured")
+            safe_print("No Discord webhooks configured")
         
         return results
 
@@ -533,8 +548,8 @@ def main():
     """Main function for command line usage"""
     
     if len(sys.argv) < 3:
-        print("Usage: python update_all_docs.py \"Session Title\" \"Description\"")
-        print("Example: python update_all_docs.py \"Safe File Editor\" \"Error prevention system\"")
+        safe_print("Usage: python update_all_docs.py \"Session Title\" \"Description\"")
+        safe_print("Example: python update_all_docs.py \"Safe File Editor\" \"Error prevention system\"")
         return
     
     session_title = sys.argv[1]

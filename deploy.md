@@ -3,7 +3,7 @@
 ## Overview
 TrenchCoat Pro is a sophisticated cryptocurrency trading platform with a comprehensive deployment pipeline designed for production-grade reliability. This document maps out the ENTIRE deployment system with all dependencies, gotchas, and operational procedures.
 
-## 🏗️ COMPLETE SYSTEM ARCHITECTURE
+## 🏗 COMPLETE SYSTEM ARCHITECTURE
 
 ### Core Infrastructure
 ```
@@ -167,7 +167,7 @@ python deployment_status_checker.py
 # □ Performance metrics within acceptable range
 ```
 
-## 🛠️ DEPLOYMENT AUTOMATION SCRIPTS
+## 🛠 DEPLOYMENT AUTOMATION SCRIPTS
 
 ### Force Deployment Script
 ```python
@@ -298,7 +298,7 @@ def comprehensive_status_check():
 
 #### 7. **Memory Usage with Elaborate Cards**
 - **Risk Level**: 🟡 MEDIUM
-- **Issue**: 6,173 char HTML per card × many cards = memory issues
+- **Issue**: 6,173 char HTML per card x many cards = memory issues
 - **Symptom**: Streamlit Cloud resource limits hit
 - **Detection**: Monitor memory usage in production
 - **Solution**: Pagination (10-50 cards per page), lazy loading
@@ -313,6 +313,22 @@ def comprehensive_status_check():
 - **Prevention**: Test in multiple browsers during development
 
 ### Configuration Gotchas
+#### 11. **Documentation Update Errors**
+- **Risk Level**: 🟡 MEDIUM
+- **Issue**: "String to replace not found" and "File has not been read yet" errors
+- **Symptom**: Credits wasted on failed documentation updates
+- **Detection**: Repeated error messages during MD file editing
+- **Solution**: Use SafeEditor class with error prevention and smart fallbacks  
+- **Prevention**: Implement `update_all_docs.py` for automated documentation management
+- **Added**: 2025-08-01 23:44
+#### 11. **Documentation Update Errors**
+- **Risk Level**: 🟡 MEDIUM
+- **Issue**: "String to replace not found" and "File has not been read yet" errors
+- **Symptom**: Credits wasted on failed documentation updates
+- **Detection**: Repeated error messages during MD file editing
+- **Solution**: Use SafeEditor class with error prevention and smart fallbacks  
+- **Prevention**: Implement `update_all_docs.py` for automated documentation management
+- **Added**: 2025-08-01 23:28
 
 #### 9. **Streamlit Cloud Environment Variables**
 - **Risk Level**: 🟠 HIGH

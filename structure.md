@@ -37,7 +37,7 @@ C:\trench\
 │
 ## DATA LAYER
 ├── data/
-│   ├── trench.db                          # 🗄️ MAIN DATABASE (1,733 coins, 319KB)
+│   ├── trench.db                          # 🗄 MAIN DATABASE (1,733 coins, 319KB)
 │   ├── coins.db                           # Alternative coin database
 │   ├── coin_images/
 │   │   └── image_metadata.json            # Coin image metadata
@@ -200,10 +200,20 @@ C:\trench\
 │   └── debug_streamlit_live.py         # Live Streamlit debugging
 │
 ## SCRIPTS & UTILITIES
+├── safe_file_editor.py                   # 🛡 ERROR PREVENTION SYSTEM
+├── update_all_docs.py                    # 📝 AUTOMATED DOCUMENTATION UPDATER  
+├── SAFE_EDITOR_GUIDE.md                  # 📖 Safe editing usage guide
+├── test_error_prevention.py              # 🧪 Error prevention testing
+├── demo_safe_editor.py                   # 🎯 Safe editor demonstration
+├── safe_file_editor.py                   # 🛡 ERROR PREVENTION SYSTEM
+├── update_all_docs.py                    # 📝 AUTOMATED DOCUMENTATION UPDATER  
+├── SAFE_EDITOR_GUIDE.md                  # 📖 Safe editing usage guide
+├── test_error_prevention.py              # 🧪 Error prevention testing
+├── demo_safe_editor.py                   # 🎯 Safe editor demonstration
 ├── scripts/                            # 📜 Utility Scripts
 │   └── enrich_coins.py                 # Coin enrichment script
 │
-├── safe_file_editor.py                 # 🛡️ ERROR PREVENTION SYSTEM
+├── safe_file_editor.py                 # 🛡 ERROR PREVENTION SYSTEM
 ├── update_all_docs.py                  # 📝 AUTOMATED DOCUMENTATION UPDATER  
 ├── run_doc_update_safe.py              # 📝 Safe wrapper for doc updates
 ├── update_session_docs.py              # 📝 Session documentation updater
@@ -367,7 +377,7 @@ C:\trench\
 - **`streamlit_safe_dashboard.py`** - Fallback dashboard with enhanced features
 - **`app.py`** - Alternative main application entry point
 
-### 🗄️ Critical Data Files
+### 🗄 Critical Data Files
 - **`data/trench.db`** - Main production database (1,733 coins, 319KB)
 - **`requirements.txt`** - Production dependencies for Streamlit deployment
 - **`runtime.txt`** - Python runtime specification
