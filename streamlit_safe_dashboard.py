@@ -38,6 +38,14 @@ except ImportError:
     database_available = False
     streamlit_db = None
 
+# Also try our cloud database as backup
+try:
+    from cloud_database import cloud_db
+    cloud_database_available = True
+except ImportError:
+    cloud_database_available = False
+    cloud_db = None
+
 # Custom CSS for ultra-premium design
 def apply_custom_css():
     """Apply custom CSS for ultra-premium design with Streamlit Cloud compatibility"""
@@ -567,8 +575,28 @@ class StreamlitSafeDashboard:
     
     def render_database_stats(self):
         """Render database statistics"""
-        if database_available and streamlit_db:
-            try:
+        # Try cloud database first, then fallback
+        try:
+            if cloud_database_available and cloud_db:
+                stats = cloud_db.get_coin_stats()
+                coins = cloud_db.get_all_coins()
+                
+                total_coins = stats.get('total_coins', 0)
+                total_liquidity = stats.get('total_liquidity', 0)
+                avg_smart_wallets = stats.get('avg_smart_wallets', 0)
+                
+                # Calculate volume from coin data
+                total_volume = sum(c.get('axiom_volume', 0) for c in coins) if coins else 0
+                
+                # Show connection status
+                if stats.get('status') == 'connected':
+                    st.success(f"✅ Connected to trench.db - Live data from {total_coins:,} coins")
+                elif stats.get('status') == 'demo_mode':
+                    st.info(f"📊 Demo mode - Sample data representing {total_coins:,} coins")
+                else:
+                    st.warning(f"⚠️ Database status: {stats.get('status', 'unknown')}")
+                    
+            elif database_available and streamlit_db:
                 coins = streamlit_db.get_all_coins()
                 
                 # Calculate stats
@@ -576,6 +604,13 @@ class StreamlitSafeDashboard:
                 total_liquidity = sum(c.get('liquidity', 0) for c in coins)
                 avg_smart_wallets = sum(c.get('smart_wallets', 0) for c in coins) / total_coins if total_coins > 0 else 0
                 total_volume = sum(c.get('axiom_volume', 0) for c in coins)
+            else:
+                # Fallback demo stats
+                total_coins = 1733
+                total_liquidity = 2847500
+                avg_smart_wallets = 156.7
+                total_volume = 45600000
+                st.info("📊 Using demo database statistics")
                 
                 # Display metrics
                 col1, col2, col3, col4 = st.columns(4)
@@ -635,7 +670,11 @@ class StreamlitSafeDashboard:
             key="coin_metric_sort"
         )
         
-        if database_available and streamlit_db:
+        # Try cloud database first
+        coins = []
+        if cloud_database_available and cloud_db:
+            coins = cloud_db.get_all_coins()
+        elif database_available and streamlit_db:
             try:
                 coins = streamlit_db.get_all_coins()
                 if not coins:
