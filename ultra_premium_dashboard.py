@@ -616,7 +616,7 @@ DATABASE: data/trench.db
         return None
     
     def render_coin_card(self, coin, index):
-        """Render individual coin card with animation"""
+        """Render individual animated coin card with beautiful styling"""
         stage_colors = {
             'Discovering': '#3b82f6',
             'Enriching': '#f59e0b',
@@ -626,61 +626,96 @@ DATABASE: data/trench.db
         }
         
         stage_color = stage_colors.get(coin['stage'], '#6b7280')
-        
-        # Generate coin icon placeholder
-        icon_html = f"""
-        <div style="width: 40px; height: 40px; border-radius: 50%; 
-                    background: linear-gradient(135deg, {stage_color} 0%, {stage_color}80 100%);
-                    display: flex; align-items: center; justify-content: center;
-                    font-weight: bold; color: white;">
-            {coin['ticker'][1:3]}
-        </div>
-        """
-        
-        # Display coin icon first
-        st.markdown(icon_html, unsafe_allow_html=True)
-        
-        # Show live data fields if available
         price_change = coin.get('change_24h', 0)
         change_arrow = '↑' if price_change > 0 else '↓'
-        
-        # Enhanced display for enriched coins
         is_enriched = coin.get('source') in ['telegram', 'enriched'] or coin.get('enriched', False)
         source_icon = "📡" if coin.get('source') == 'telegram' else "🔍" if is_enriched else "📊"
-        
-        liquidity_text = f"${coin.get('liquidity', 0):,.0f}" if 'liquidity' in coin else f"Vol: ${coin.get('volume', 0):,.0f}"
-        
-        # Show additional enriched data if available
         social_score = coin.get('social_score', 0)
         rug_risk = coin.get('rug_risk', 0)
         verified = coin.get('contract_verified', False)
+        liquidity = coin.get('liquidity', 0)
         
-        # Fix: Simplified rendering to avoid nested column issues
-        coin_display = f"{coin['ticker']} {source_icon}"
-        if verified:
-            coin_display += " ✅"
+        # Create beautiful animated card with proper CSS class
+        success_class = 'success-flash' if coin['stage'] == 'Trading' else ''
         
-        # Main coin info
-        st.markdown(f"**{coin_display}** - {coin['stage']}")
-        st.caption(f"${coin['price']:.6f}")
+        card_html = f"""
+        <div class="coin-card {success_class}" 
+             style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+                    border: 1px solid rgba({','.join(str(int(stage_color[i:i+2], 16)) for i in (1, 3, 5))}, 0.3);
+                    border-radius: 12px; padding: 16px; margin: 8px 0; position: relative;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 20px rgba({','.join(str(int(stage_color[i:i+2], 16)) for i in (1, 3, 5))}, 0.1);
+                    transition: all 0.3s ease; backdrop-filter: blur(10px);">
+            
+            <!-- Coin Header -->
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                <div style="width: 48px; height: 48px; border-radius: 50%; 
+                           background: linear-gradient(135deg, {stage_color} 0%, {stage_color}80 100%);
+                           display: flex; align-items: center; justify-content: center;
+                           font-weight: bold; color: white; font-size: 14px; margin-right: 12px;
+                           box-shadow: 0 2px 8px rgba({','.join(str(int(stage_color[i:i+2], 16)) for i in (1, 3, 5))}, 0.4);">
+                    {coin['ticker'][:3].upper()}
+                </div>
+                <div style="flex: 1;">
+                    <div style="color: #f8fafc; font-weight: 600; font-size: 16px;">
+                        {coin['ticker']} {source_icon}
+                        {"✅" if verified else ""}
+                    </div>
+                    <div style="color: {stage_color}; font-size: 12px; font-weight: 500;">
+                        {coin['stage']}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Price Info -->
+            <div style="margin-bottom: 12px;">
+                <div style="color: #f8fafc; font-size: 18px; font-weight: 600;">
+                    ${coin['price']:.6f}
+                </div>
+                {"" if price_change == 0 else f'''
+                <div style="color: {'#10b981' if price_change > 0 else '#ef4444'}; font-size: 14px; font-weight: 500;">
+                    {change_arrow} {abs(price_change):.1f}%
+                </div>'''}
+            </div>
+            
+            <!-- Performance Score Bar -->
+            <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                    <span style="color: #94a3b8; font-size: 12px;">Performance Score</span>
+                    <span style="color: #f8fafc; font-size: 12px; font-weight: 600;">{coin['score']:.2f}</span>
+                </div>
+                <div style="background: rgba(71, 85, 105, 0.5); height: 6px; border-radius: 3px; overflow: hidden;">
+                    <div style="background: linear-gradient(90deg, {stage_color} 0%, {stage_color}80 100%); 
+                               width: {coin['score'] * 100}%; height: 100%; border-radius: 3px;
+                               box-shadow: 0 0 10px rgba({','.join(str(int(stage_color[i:i+2], 16)) for i in (1, 3, 5))}, 0.5);
+                               transition: width 0.3s ease;"></div>
+                </div>
+            </div>
+            
+            <!-- Additional Metrics -->
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <div style="color: #94a3b8; font-size: 11px;">
+                    💧 Liquidity: ${liquidity:,.0f}
+                </div>
+                {"" if not is_enriched else f'''
+                <div style="color: #94a3b8; font-size: 11px;">
+                    🎯 Social: {social_score:.1f}
+                </div>'''}
+            </div>
+            
+            {"" if not is_enriched else f'''
+            <div style="display: flex; justify-content: space-between;">
+                <div style="color: {'#ef4444' if rug_risk > 0.5 else '#10b981'}; font-size: 11px;">
+                    {'⚠️' if rug_risk > 0.5 else '✅'} Risk: {rug_risk:.1f}
+                </div>
+                <div style="color: {stage_color}; font-size: 11px; font-weight: 500;">
+                    {source_icon} Enhanced
+                </div>
+            </div>'''}
+        </div>
+        """
         
-        # Price change if available
-        if price_change != 0:
-            delta_color = "🟢" if price_change > 0 else "🔴"
-            st.markdown(f"{delta_color} {change_arrow}{abs(price_change):.1f}%")
-        
-        # Progress bar for score
-        st.progress(coin['score'], text=f"Score: {coin['score']:.2f}")
-        
-        # Additional info
-        st.caption(liquidity_text)
-        if is_enriched:
-            st.caption(f"🎯 Social: {social_score:.1f}")
-            risk_emoji = "⚠️" if rug_risk > 0.5 else "✅"
-            st.caption(f"{risk_emoji} Risk: {rug_risk:.1f}")
-        
-        # Visual separator
-        st.markdown("---")
+        # Render the beautiful animated card
+        st.markdown(card_html, unsafe_allow_html=True)
     
     def render_performance_chart(self):
         """Render real-time performance chart - LIVE DATA"""
