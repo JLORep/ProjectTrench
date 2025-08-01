@@ -8,7 +8,7 @@ import subprocess
 import requests
 import json
 from datetime import datetime
-from auto_overview_updater import AutoOverviewUpdater
+# from auto_overview_updater import AutoOverviewUpdater  # Removed for security
 
 def get_recent_commits():
     """Get recent commits for summary"""
@@ -181,17 +181,8 @@ def send_dev_update():
     response = requests.post(webhook_url, json=non_tech_payload)
     print(f"Non-tech message sent: {response.status_code}")
     
-    # Update overview
-    print("\nUpdating project overview...")
-    updater = AutoOverviewUpdater()
-    # Add the Solana wallet feature
-    updater.add_new_feature(
-        "Solana Wallet Integration",
-        "Real-time portfolio tracking with live USD values",
-        "wallet"
-    )
-    updater.send_feature_update()
-    print("✅ Overview updated!")
+    # Update overview (disabled for security)
+    print("\n📝 Project overview update skipped (security mode)")
     
     # Update CLAUDE.md
     print("\nUpdating CLAUDE.md with latest session info...")
