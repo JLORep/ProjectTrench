@@ -481,20 +481,27 @@ with col4:
 
 st.markdown("---")
 
-# TRY ADVANCED DASHBOARD FIRST - RESTORE ALL FEATURES
-st.success("🎯 Loading TrenchCoat Pro Advanced Dashboard...")
+# TRY ADVANCED DASHBOARD FIRST, THEN ADD LIVE DATA TAB
+st.success("🎯 Loading TrenchCoat Pro with Live Coin Data...")
 
-# Try to load advanced dashboard with all 7 tabs
+# Try to load the advanced dashboard first
 try:
-    from ultra_premium_dashboard import UltraPremiumDashboard
-    dashboard = UltraPremiumDashboard()
-    dashboard.render()
-    st.success("✅ Advanced Dashboard Loaded Successfully - All 7 Tabs Available")
+    # Force cache clear for deployment
+    st.cache_data.clear()
+    
+    from streamlit_safe_dashboard import StreamlitSafeDashboard
+    # The StreamlitSafeDashboard constructor automatically renders the full interface
+    dashboard = StreamlitSafeDashboard()
+    # Dashboard is now fully rendered with all tabs including Coin Data
+    st.stop()  # Stop here since streamlit safe dashboard handles everything
+    
+except ImportError as e:
+    st.warning(f"⚠️ Advanced dashboard unavailable: {e}")
+    st.info("🔧 Loading simplified live data interface...")
     
 except Exception as e:
-    st.warning(f"⚠️ Advanced dashboard failed to load ({e}), using enhanced fallback with live data...")
-    
-    # Enhanced fallback with all tabs restored
+    st.warning(f"⚠️ Dashboard loading issue: {e}")
+    st.info("🔧 Loading simplified live data interface...")
 
 # SIMPLE LIVE DATA FUNCTION FOR FALLBACK
 @st.cache_data(ttl=60)  # Cache for 1 minute
@@ -559,8 +566,8 @@ def get_live_coins_simple():
     except Exception as e:
         return [], f"Database error: {e}"
 
-    # Enhanced fallback with ALL 7 TABS (no features lost)
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📡 Telegram Signals", "📝 Dev Blog", "🗄️ Datasets"])
+# Premium Content Tabs with Icons (enhanced with live data)
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 Live Dashboard", "🧠 AI Analytics", "🤖 Trading Bot", "📈 Performance", "🪙 LIVE COINS"])
 
 with tab1:
     # Premium Market Signals Section
@@ -779,84 +786,11 @@ with tab4:
         st.metric("🎯 Best Month", "December", "$31,200")
 
 with tab5:
-    # TELEGRAM SIGNALS TAB - Real-time monitoring
+    # LIVE COINS TAB - Direct database connection
     st.markdown("""
     <div style="text-align: center; margin-bottom: 2rem;">
-        <h2 style="color: #8b5cf6; margin: 0; font-size: 2rem; text-shadow: 0 0 20px rgba(139, 92, 246, 0.3);">📡 TELEGRAM SIGNALS</h2>
-        <p style="color: rgba(255, 255, 255, 0.7); margin: 0.5rem 0; font-size: 1.1rem;">Real-time Telegram Signal Monitoring & Analysis</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Load live signals (using database for now)
-    with st.spinner("Loading live telegram signals..."):
-        coins, status = get_live_coins_simple()
-
-    # Display as telegram signals format
-    if coins:
-        st.markdown("### 📡 Recent Telegram Signals")
-        
-        for i, coin in enumerate(coins[:10]):  # Show first 10 as signals
-            signal_type = ["🚀 STRONG BUY", "📈 BUY", "💎 HOLD"][i % 3]
-            confidence = ["94%", "87%", "82%", "89%", "76%"][i % 5]
-            channel = ["@CryptoAlerts", "@MoonSignals", "@GemFinds", "@PumpSignals"][i % 4]
-            
-            signal_col1, signal_col2, signal_col3 = st.columns([2, 1, 1])
-            with signal_col1:
-                st.markdown(f"**{coin['Ticker']}** - {signal_type}")
-                st.caption(f"Channel: {channel}")
-            with signal_col2:
-                st.metric("Confidence", confidence)
-            with signal_col3:
-                st.metric("Expected", coin['Price Gain %'])
-            
-            st.markdown("---")
-    else:
-        st.warning("⚠️ No telegram signals available")
-
-with tab6:
-    # DEV BLOG TAB - Development updates
-    st.markdown("""
-    <div style="text-align: center; margin-bottom: 2rem;">
-        <h2 style="color: #f59e0b; margin: 0; font-size: 2rem; text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);">📝 DEVELOPMENT BLOG</h2>
-        <p style="color: rgba(255, 255, 255, 0.7); margin: 0.5rem 0; font-size: 1.1rem;">Latest Development Updates & Feature Releases</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Development blog entries
-    st.markdown("### 🚀 Recent Updates")
-    
-    blog_entries = [
-        {
-            "title": "🎯 Live Database Integration Complete",
-            "date": "2025-08-01",
-            "content": "Successfully connected dashboard to live trench.db with 1,733 real coins. Fixed 12-hour deployment issue.",
-            "status": "✅ COMPLETED"
-        },
-        {
-            "title": "📡 Telegram Signal Integration",
-            "date": "2025-07-31", 
-            "content": "Added comprehensive telegram monitoring with pattern matching and confidence scoring.",
-            "status": "✅ COMPLETED"
-        },
-        {
-            "title": "🚀 Fast Deployment System",
-            "date": "2025-07-30",
-            "content": "Reduced deployment time from 5+ minutes to 3 seconds with new async system.",
-            "status": "✅ COMPLETED"
-        }
-    ]
-    
-    for entry in blog_entries:
-        with st.expander(f"{entry['title']} - {entry['date']}"):
-            st.markdown(f"**Status:** {entry['status']}")
-            st.markdown(entry['content'])
-
-with tab7:
-    # DATASETS TAB - Live database data
-    st.markdown("""
-    <div style="text-align: center; margin-bottom: 2rem;">
-        <h2 style="color: #10b981; margin: 0; font-size: 2rem; text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);">🗄️ LIVE DATASETS</h2>
-        <p style="color: rgba(255, 255, 255, 0.7); margin: 0.5rem 0; font-size: 1.1rem;">Direct Access to TrenchCoat Database (1,733 Real Coins)</p>
+        <h2 style="color: #10b981; margin: 0; font-size: 2rem; text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);">🪙 LIVE COIN DATA</h2>
+        <p style="color: rgba(255, 255, 255, 0.7); margin: 0.5rem 0; font-size: 1.1rem;">Direct Connection to TrenchCoat Database (1,733 Real Coins)</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -872,7 +806,7 @@ with tab7:
 
     # Display live coin data
     if coins:
-        st.markdown("### 🚀 Complete Database Access")
+        st.markdown("### 🚀 Real Coins from TrenchCoat Database")
         
         # Convert to DataFrame for better display
         import pandas as pd
@@ -896,28 +830,28 @@ with tab7:
         # Live data metrics
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.metric("📊 Total Coins", "1,733")
+            st.metric("📊 Coins Displayed", len(coins))
         with col2:
-            st.metric("📈 Displayed", len(coins))
+            avg_gain = sum(float(c['Price Gain %'].replace('+', '').replace('%', '')) for c in coins) / len(coins)
+            st.metric("💰 Average Gain", f"+{avg_gain:.1f}%")
         with col3:
-            st.metric("💾 Database Size", "319 KB")
+            total_wallets = sum(int(c['Smart Wallets'].replace(',', '')) for c in coins)
+            st.metric("🧠 Total Wallets", f"{total_wallets:,}")
         with col4:
-            st.metric("🗄️ Status", "✅ Live")
+            st.metric("🗄️ Data Source", "✅ Live DB")
 
         # Success messages
-        st.success("🎉 COMPLETE: Full access to TrenchCoat Pro database with all 1,733 coins!")
-        st.info("💡 This tab shows raw database access - perfect for data analysis and research")
+        st.success("🎉 SUCCESS: You are viewing LIVE coin data from the trench.db database!")
+        st.info("🔄 Refresh to see different random coins from our 1,733 coin database")
         
-        # Database schema info
-        with st.expander("📋 Database Schema & Technical Details"):
+        # Debug info for transparency
+        with st.expander("🔍 Technical Details"):
             st.code(f"""
-DATABASE: data/trench.db (Production Database)
-├── Total Records: 1,733 real cryptocurrency coins
-├── Columns: ticker, ca, discovery_price, axiom_price, axiom_mc, axiom_volume
-├── Query: SELECT ... FROM coins WHERE ticker IS NOT NULL ORDER BY RANDOM() LIMIT 30
-├── Enhancement: Realistic metrics generated for zero/null database fields
-├── Status: {status}
-└── Last Updated: Live connection
+Database: data/trench.db (Live Production Database)
+Total Coins Available: 1,733
+Query: SELECT ... FROM coins WHERE ticker IS NOT NULL ORDER BY RANDOM() LIMIT 30
+Enhancement: Realistic metrics generated for zero/null database fields
+Status: {status}
             """)
         
     else:
