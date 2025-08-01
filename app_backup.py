@@ -102,48 +102,93 @@ with tab1:
 
 with tab2:
     st.header("🗄️ Coin Data Analytics")
-    st.success("✅ Connected to trench.db - 1,733+ coins available")
     
-    # Try to load real database
+    # Use cloud database
     try:
-        import sqlite3
-        import os
+        from cloud_database import cloud_db
         
-        db_path = "data/trench.db"
-        if os.path.exists(db_path):
-            conn = sqlite3.connect(db_path)
-            df = pd.read_sql_query("SELECT * FROM coins LIMIT 10", conn)
-            conn.close()
-            
-            st.write("**Live Database Sample:**")
-            st.dataframe(df)
-            
-            # Calculate percentage gains if we have the data
-            if 'axiom_price' in df.columns and 'discovery_price' in df.columns:
-                df['price_gain_pct'] = ((df['axiom_price'] - df['discovery_price']) / df['discovery_price'] * 100).round(2)
-                
-                # Top gainers
-                top_gainers = df.nlargest(5, 'price_gain_pct')[['ticker', 'price_gain_pct', 'smart_wallets']]
-                st.write("**Top Performers:**")
-                st.dataframe(top_gainers)
-                
+        # Get database stats
+        stats = cloud_db.get_coin_stats()
+        
+        if stats['status'] == 'connected':
+            st.success(f"✅ Connected to trench.db - {stats['total_coins']} coins available")
+        elif stats['status'] == 'demo_mode':
+            st.info(f"📊 Demo mode - Showing sample of {stats['total_coins']} coins")
         else:
-            st.warning("Database file not found, using demo data")
-            raise FileNotFoundError("Demo mode")
-            
-    except Exception as e:
-        st.info("Using demo coin data for display")
+            st.warning(f"⚠️ Database status: {stats['status']}")
         
-        # Demo coin data
+        # Display key metrics
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Total Coins", f"{stats['total_coins']:,}")
+        with col2:
+            st.metric("Avg Smart Wallets", f"{stats['avg_smart_wallets']:.1f}")
+        with col3:
+            st.metric("Total Liquidity", f"${stats['total_liquidity']:,.0f}")
+        
+        # Get coin data
+        coins = cloud_db.get_all_coins()
+        
+        if coins:
+            # Convert to DataFrame for display
+            df = pd.DataFrame(coins)
+            
+            st.write("**📈 Top Performing Coins by Price Gain:**")
+            
+            # Create display DataFrame with formatted columns
+            display_df = df.copy()
+            if 'price_gain_pct' in display_df.columns:
+                display_df = display_df.sort_values('price_gain_pct', ascending=False)
+            
+            # Format columns for display
+            display_cols = ['ticker', 'price_gain_pct', 'smart_wallets', 'liquidity', 'axiom_mc']
+            if all(col in display_df.columns for col in display_cols):
+                formatted_df = display_df[display_cols].head(20).copy()
+                formatted_df.columns = ['Ticker', 'Price Gain %', 'Smart Wallets', 'Liquidity', 'Market Cap']
+                
+                # Format numbers
+                if 'Price Gain %' in formatted_df.columns:
+                    formatted_df['Price Gain %'] = formatted_df['Price Gain %'].apply(lambda x: f"{x:.1f}%" if pd.notnull(x) else "N/A")
+                if 'Liquidity' in formatted_df.columns:
+                    formatted_df['Liquidity'] = formatted_df['Liquidity'].apply(lambda x: f"${x:,.0f}" if pd.notnull(x) and x > 0 else "N/A")
+                if 'Market Cap' in formatted_df.columns:
+                    formatted_df['Market Cap'] = formatted_df['Market Cap'].apply(lambda x: f"${x:,.0f}" if pd.notnull(x) and x > 0 else "N/A")
+                
+                st.dataframe(formatted_df, use_container_width=True)
+            else:
+                # Fallback display
+                st.dataframe(df.head(10), use_container_width=True)
+            
+            # Show distribution chart if we have price gain data
+            if 'price_gain_pct' in df.columns:
+                st.write("**📊 Price Gain Distribution:**")
+                fig = px.histogram(df, x='price_gain_pct', nbins=30, 
+                                 title="Distribution of Price Gains (%)")
+                fig.update_layout(
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='white')
+                )
+                st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.error("❌ No coin data available")
+            
+    except ImportError:
+        st.error("❌ Cloud database module not available")
+    except Exception as e:
+        st.error(f"❌ Database error: {e}")
+        
+        # Fallback to demo data
+        st.info("📊 Using fallback demo data:")
         demo_coins = {
             'Ticker': ['PEPE', 'SHIB', 'DOGE', 'FLOKI', 'BONK'],
-            'Price Gain %': [245.6, 156.8, 89.3, 178.2, 67.9],
+            'Price Gain %': ['270.1%', '152.3%', '90.5%', '180.1%', '57.0%'],
             'Smart Wallets': [1250, 890, 2100, 670, 450],
             'Liquidity': ['$2.1M', '$5.6M', '$12.3M', '$1.8M', '$890K'],
             'Market Cap': ['$8.2B', '$15.1B', '$28.7B', '$3.4B', '$1.2B']
         }
         df_demo = pd.DataFrame(demo_coins)
-        st.dataframe(df_demo)
+        st.dataframe(df_demo, use_container_width=True)
 
 with tab3:
     st.header("📡 Telegram Signals")
