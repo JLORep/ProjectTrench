@@ -32,24 +32,24 @@ class CompleteAsyncDeployer:
         except Exception as e:
             safe_print(f"Logging error: {e}")
     
-    def should_send_dev_update(self) -> bool:
-        """Check if commit warrants a dev blog update"""
+    def should_send_notifications(self) -> bool:
+        """Check if commit warrants Discord notifications"""
         msg_lower = self.commit_msg.lower()
         
-        # Significant keywords that warrant dev updates
-        significant_keywords = [
-            'major:', 'feature:', 'fix:', 'integrate', 'add', 'implement',
-            'complete', 'activate', 'deploy', 'release', 'enhancement'
+        # Only send notifications for truly significant changes
+        major_keywords = [
+            'major:', 'feature:', 'critical:', 'fix:', 'complete', 'release',
+            'beautiful', 'card', 'display', 'runners'  # Our current work
         ]
         
-        # Skip keywords
-        skip_keywords = ['wip', 'temp', 'minor:', 'typo', 'comment']
+        # Always skip these
+        skip_keywords = ['wip', 'temp', 'minor:', 'typo', 'comment', 'auto-commit', 'sync']
         
-        # Check for significance
-        is_significant = any(keyword in msg_lower for keyword in significant_keywords)
+        # Check for major significance only
+        is_major = any(keyword in msg_lower for keyword in major_keywords)
         should_skip = any(keyword in msg_lower for keyword in skip_keywords)
         
-        return is_significant and not should_skip
+        return is_major and not should_skip
     
     def run_dev_update(self):
         """Run the dev update script"""
