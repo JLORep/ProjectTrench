@@ -484,24 +484,8 @@ st.markdown("---")
 # TRY ADVANCED DASHBOARD FIRST, THEN ADD LIVE DATA TAB
 st.success("🎯 Loading TrenchCoat Pro with Live Coin Data...")
 
-# Try to load the advanced dashboard first
-try:
-    # Force cache clear for deployment
-    st.cache_data.clear()
-    
-    from streamlit_safe_dashboard import StreamlitSafeDashboard
-    # The StreamlitSafeDashboard constructor automatically renders the full interface
-    dashboard = StreamlitSafeDashboard()
-    # Dashboard is now fully rendered with all tabs including Coin Data
-    st.stop()  # Stop here since streamlit safe dashboard handles everything
-    
-except ImportError as e:
-    st.warning(f"⚠️ Advanced dashboard unavailable: {e}")
-    st.info("🔧 Loading simplified live data interface...")
-    
-except Exception as e:
-    st.warning(f"⚠️ Dashboard loading issue: {e}")
-    st.info("🔧 Loading simplified live data interface...")
+# SKIP ADVANCED DASHBOARD - GO DIRECTLY TO SIMPLE VERSION
+st.info("🔧 Using simplified interface with live database connection")
 
 # SIMPLE LIVE DATA FUNCTION FOR FALLBACK
 @st.cache_data(ttl=60)  # Cache for 1 minute
