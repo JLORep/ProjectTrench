@@ -1,12 +1,92 @@
 # TrenchCoat Pro - Comprehensive Codebase Logic Documentation
 
-**Last Updated:** 2025-08-01
-**Total Python Files:** 80+ files
-**Project Scale:** Ultra-premium cryptocurrency trading intelligence platform
+**Last Updated:** 2025-08-01 
+**Total Python Files:** 80+ files (including Super Claude integration)
+**Project Scale:** Ultra-premium cryptocurrency trading intelligence platform with AI command system
 
 ## 🎯 Executive Summary
 
-TrenchCoat Pro is a sophisticated cryptocurrency trading intelligence platform that combines real-time market analysis, AI-powered predictions, automated trading capabilities, and Telegram signal monitoring. The system is built with a modular architecture centered around live data processing, rug detection, and automated profit extraction.
+TrenchCoat Pro is a sophisticated cryptocurrency trading intelligence platform that combines real-time market analysis, AI-powered predictions, automated trading capabilities, Telegram signal monitoring, and the revolutionary Super Claude AI command system. The system features 18 specialized AI commands, 9 expert personas, and MCP server integration for professional-grade trading intelligence.
+
+---
+
+---
+
+## 🎮 Super Claude AI Command System
+
+### Core Components
+
+#### 1. **super_claude_commands.py** - Command System Engine
+- **Location:** `C:\trench\super_claude_commands.py:1-450`
+- **Purpose:** Official 18-command Super Claude implementation
+- **Key Features:**
+  - 18 specialized commands across 5 categories (Analysis, Development, Quality, Operations, Management)
+  - Universal flag system with MCP integration
+  - Evidence-based response generation
+  - UltraCompressed mode for efficiency
+
+**Key Classes:**
+- `SuperClaudeCommandSystem()` - Main command processor
+- `CommandCategory(Enum)` - Command categorization system
+- `ThinkingMode(Enum)` - Thinking depth control (standard, think, think-hard, ultrathink)
+- `SuperClaudeCommand` - Command definition structure
+
+**Core Commands:**
+- `/analyze --code --performance --seq` - Comprehensive codebase analysis
+- `/troubleshoot --investigate --seq --evidence` - Systematic problem investigation  
+- `/scan --security --owasp --deps` - Security vulnerability scanning
+- `/build --feature --react --magic --tdd` - Feature implementation
+- `/design --api --seq --ultrathink` - Architectural design
+- `/test --coverage --e2e --pup` - Comprehensive testing
+- `/improve --performance --iterate` - Code optimization
+- `/deploy --env prod --validate --monitor` - Production deployment
+
+#### 2. **super_claude_personas.py** - AI Expert Personas
+- **Location:** `C:\trench\super_claude_personas.py:1-320`
+- **Purpose:** 9 specialized AI personalities for targeted expertise
+- **Key Features:**
+  - Persona-specific communication styles
+  - Domain expertise specialization
+  - Interactive persona selector UI
+  - Evidence-based response generation
+
+**Available Personas:**
+- **Alex Chen (Frontend)** - UI/UX, React components, accessibility
+- **Sarah Johnson (Backend)** - APIs, databases, performance optimization
+- **Dr. Marcus Webb (Architect)** - System design, scalability planning
+- **Detective Rivera (Analyzer)** - Root cause analysis, debugging
+- **Agent Kumar (Security)** - Threat modeling, vulnerability assessment
+- **Quinn Taylor (QA)** - Testing, edge cases, automation
+- **Speed Gonzalez (Performance)** - Optimization, profiling, metrics
+- **Marie Kondo (Refactorer)** - Code quality, technical debt cleanup
+- **Professor Williams (Mentor)** - Documentation, teaching, best practices
+
+#### 3. **Dashboard Integration** - `streamlit_app.py`
+- **Super Claude Command Tab** - Lines 1213-1236: Full command system interface
+- **AI Personas Tab** - Lines 1242-1276: Interactive persona selector
+- **Dynamic Tab System** - Lines 902-925: Conditional tab loading based on availability
+
+### MCP Server Architecture
+
+#### Planned MCP Integrations
+1. **Context7** - Library documentation and examples
+2. **Sequential** - Multi-step problem solving and architectural thinking
+3. **Magic** - UI component generation and design system integration
+4. **Puppeteer** - E2E testing, performance validation, browser automation
+
+### Evidence-Based Development Standards
+
+#### Required Language Patterns
+- "Analysis indicates potential opportunity"
+- "Historical data suggests correlation"  
+- "Backtesting confirms profitability"
+- "Risk metrics show acceptable levels"
+
+#### Prohibited Language Patterns
+- "This coin will definitely moon"
+- "Guaranteed profits"
+- "Best trading strategy"
+- "Always profitable"
 
 ---
 

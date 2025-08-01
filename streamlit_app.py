@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-TrenchCoat Pro - Ultimate version with all features restored
+TrenchCoat Pro - Ultimate version with Super Claude AI + MCP Integration
+Updated: 2025-08-01 12:35
 """
 import streamlit as st
 import pandas as pd
@@ -24,9 +25,31 @@ except ImportError:
 
 # Try to import Super Claude
 SUPER_CLAUDE_AVAILABLE = False
+SUPER_CLAUDE_COMMANDS_AVAILABLE = False
+SUPER_CLAUDE_PERSONAS_AVAILABLE = False
 try:
     from super_claude_system import SuperClaudeSystem, integrate_super_claude_with_dashboard, analyze_coins_with_super_claude
     SUPER_CLAUDE_AVAILABLE = True
+except ImportError:
+    pass
+
+try:
+    from super_claude_commands import SuperClaudeCommandSystem, integrate_super_claude_commands
+    SUPER_CLAUDE_COMMANDS_AVAILABLE = True
+except ImportError:
+    pass
+
+try:
+    from super_claude_personas import SuperClaudePersonas, integrate_super_claude_personas
+    SUPER_CLAUDE_PERSONAS_AVAILABLE = True
+except ImportError:
+    pass
+
+# Try to import MCP servers
+MCP_AVAILABLE = False
+try:
+    from mcp_server_integration import MCPServerManager, integrate_mcp_servers
+    MCP_AVAILABLE = True
 except ImportError:
     pass
 
@@ -852,7 +875,7 @@ def show_coin_detail(coin_data):
             st.markdown("</div>", unsafe_allow_html=True)
 
 # Main app header
-st.markdown("### 🎯 TrenchCoat Pro | Ultra-Premium Crypto Trading Intelligence")
+st.markdown("### 🎯 TrenchCoat Pro | Ultra-Premium Crypto Trading Intelligence with Super Claude AI")
 
 # Feature indicators with glassmorphism
 col1, col2, col3 = st.columns(3)
@@ -871,9 +894,11 @@ with col2:
     </div>
     """, unsafe_allow_html=True)
 with col3:
-    st.markdown("""
+    super_claude_status = "✅ Super Claude Active" if (SUPER_CLAUDE_COMMANDS_AVAILABLE or SUPER_CLAUDE_PERSONAS_AVAILABLE) else "⚠️ Super Claude Loading"
+    super_claude_color = "#8b5cf6" if (SUPER_CLAUDE_COMMANDS_AVAILABLE or SUPER_CLAUDE_PERSONAS_AVAILABLE) else "#f59e0b"
+    st.markdown(f"""
     <div style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.3);">
-        <p style="margin: 0; color: #8b5cf6; font-weight: 600;">✅ Stunning Visuals</p>
+        <p style="margin: 0; color: {super_claude_color}; font-weight: 600;">{super_claude_status}</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -884,19 +909,45 @@ else:
     # Reset invalid session state
     if st.session_state.show_coin_detail and not isinstance(st.session_state.show_coin_detail, dict):
         st.session_state.show_coin_detail = False
-    # Tab interface
-    tabs = st.tabs([
+    # Tab interface with Super Claude integration
+    base_tabs = [
         "🗄️ Coin Data",
-        "📊 Live Dashboard",
+        "📊 Live Dashboard", 
         "🧠 Analytics",
         "🤖 Models",
         "⚙️ Trading",
-        "📡 Signals",
+        "📡 Signals"
+    ]
+    
+    # Add Super Claude tabs if available
+    if SUPER_CLAUDE_COMMANDS_AVAILABLE or SUPER_CLAUDE_PERSONAS_AVAILABLE:
+        base_tabs.extend([
+            "🎮 Super Claude",
+            "🎭 AI Personas"
+        ])
+    
+    base_tabs.extend([
         "📝 Blog",
         "💎 Wallet",
         "🗃️ Database",
         "🔔 Incoming"
     ])
+    
+    tabs = st.tabs(base_tabs)
+    
+    # Debug information for Super Claude integration
+    if st.checkbox("🔍 Show Super Claude Debug Info", key="debug_super_claude"):
+        st.write("**Super Claude Availability Status:**")
+        st.write(f"- SUPER_CLAUDE_AVAILABLE: {SUPER_CLAUDE_AVAILABLE}")
+        st.write(f"- SUPER_CLAUDE_COMMANDS_AVAILABLE: {SUPER_CLAUDE_COMMANDS_AVAILABLE}")
+        st.write(f"- SUPER_CLAUDE_PERSONAS_AVAILABLE: {SUPER_CLAUDE_PERSONAS_AVAILABLE}")
+        st.write(f"- MCP_AVAILABLE: {MCP_AVAILABLE}")
+        st.write(f"- Total tabs: {len(base_tabs)}")
+        st.write(f"- Tab list: {base_tabs}")
+        if SUPER_CLAUDE_COMMANDS_AVAILABLE or SUPER_CLAUDE_PERSONAS_AVAILABLE:
+            st.success("✅ Super Claude tabs should be visible!")
+        else:
+            st.error("❌ Super Claude tabs will not appear - check imports")
     
     with tabs[0]:
         # Breadcrumb
@@ -1177,7 +1228,82 @@ else:
                 st.progress(signal["confidence"] / 100)
             st.divider()
     
-    with tabs[6]:
+    # Dynamic tab indexing based on Super Claude availability
+    current_tab_index = 6
+    
+    # Add Super Claude tabs if available
+    if SUPER_CLAUDE_COMMANDS_AVAILABLE or SUPER_CLAUDE_PERSONAS_AVAILABLE:
+        # Super Claude Commands tab
+        if SUPER_CLAUDE_COMMANDS_AVAILABLE:
+            with tabs[current_tab_index]:
+                render_breadcrumb([("Home", None), ("Super Claude", None)])
+                st.header("🎮 Super Claude Command System")
+                
+                # Initialize command system
+                command_system = integrate_super_claude_commands()
+                
+                # Show system overview
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Available Commands", "18")
+                with col2:
+                    st.metric("MCP Servers", "4")
+                with col3:
+                    st.metric("System Status", "Active ✅")
+                
+                st.markdown("---")
+                
+                # Render command interface
+                command_system.render_command_interface()
+                
+                # Show recent activity
+                st.markdown("### 📊 Recent Command Activity")
+                st.info("No commands executed yet. Try the quick commands above!")
+            
+            current_tab_index += 1
+        
+        # AI Personas tab
+        if SUPER_CLAUDE_PERSONAS_AVAILABLE:
+            with tabs[current_tab_index]:
+                render_breadcrumb([("Home", None), ("AI Personas", None)])
+                st.header("🎭 AI Expert Personas")
+                
+                # Initialize personas system
+                personas_system = integrate_super_claude_personas()
+                
+                # Show system overview
+                st.markdown("""
+                ### 🧠 Meet Your AI Expert Team
+                Choose from 9 specialized AI personas, each with unique expertise and communication style.
+                Perfect for getting targeted advice on specific aspects of your crypto trading platform.
+                """)
+                
+                # Render persona selector
+                personas_system.render_persona_selector()
+                
+                # Show persona capabilities
+                with st.expander("🔧 Persona Capabilities Overview", expanded=False):
+                    st.markdown("""
+                    **Development Team:**
+                    - 👨‍💻 **Alex Chen (Frontend)**: UI/UX, React components, accessibility
+                    - 👩‍💻 **Sarah Johnson (Backend)**: APIs, databases, performance optimization
+                    - 🏗️ **Dr. Marcus Webb (Architect)**: System design, scalability planning
+                    
+                    **Quality Assurance:**
+                    - 🔍 **Detective Rivera (Analyzer)**: Root cause analysis, debugging
+                    - 🔒 **Agent Kumar (Security)**: Threat modeling, vulnerability assessment
+                    - 🧪 **Quinn Taylor (QA)**: Testing, edge cases, automation
+                    
+                    **Optimization:**
+                    - ⚡ **Speed Gonzalez (Performance)**: Optimization, profiling, metrics
+                    - ✨ **Marie Kondo (Refactorer)**: Code quality, technical debt cleanup
+                    - 📚 **Professor Williams (Mentor)**: Documentation, teaching, best practices
+                    """)
+            
+            current_tab_index += 1
+    
+    # Continue with remaining tabs (Blog, Wallet, Database, Incoming)
+    with tabs[current_tab_index]:
         render_breadcrumb([("Home", None), ("Dev Blog", None)])
         st.header("📝 Development Updates")
         
@@ -1199,7 +1325,8 @@ else:
                     st.write("- Chunky tab navigation")
                     st.write("- Complete feature set restored")
     
-    with tabs[7]:
+    current_tab_index += 1
+    with tabs[current_tab_index]:
         render_breadcrumb([("Home", None), ("Solana Wallet", None)])
         st.header("💎 Solana Wallet Integration")
         
@@ -1216,7 +1343,8 @@ else:
         st.markdown("### 💼 Portfolio Overview")
         st.info("Connect your wallet to view real-time portfolio analytics and execute trades directly")
     
-    with tabs[8]:
+    current_tab_index += 1
+    with tabs[current_tab_index]:
         render_breadcrumb([("Home", None), ("Database", None)])
         st.header("🗃️ Database Management")
         
@@ -1275,7 +1403,8 @@ else:
         else:
             st.error("Database not found")
     
-    with tabs[9]:
+    current_tab_index += 1
+    with tabs[current_tab_index]:
         render_breadcrumb([("Home", None), ("Incoming Coins", None)])
         st.header("🔔 Real-time Coin Discovery")
         

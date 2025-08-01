@@ -123,6 +123,9 @@ C:\trench\
 ├── enhanced_charts_system.py             # 📈 Enhanced auto-scaling charts
 ├── breadcrumb_navigation.py              # 🧭 Breadcrumb navigation system
 ├── super_claude_system.py                # 🤖 AI-powered trading intelligence system
+├── super_claude_commands.py              # 🎮 Official 18-command Super Claude system  
+├── super_claude_personas.py              # 🎭 9 specialized AI expert personas
+├── mcp_server_integration.py             # 🔌 Complete MCP server architecture (Context7, Sequential, Magic, Puppeteer)
 │
 ## TELEGRAM & SOCIAL INTEGRATION
 ├── telegram_bot.py                       # Main Telegram bot

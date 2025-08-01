@@ -1,7 +1,7 @@
 # TrenchCoat Pro - Dashboard Architecture & Dependencies
 
 ## Overview
-TrenchCoat Pro features a unified ultra-premium dashboard with elaborate full-page coin cards, live database integration, and comprehensive cryptocurrency trading intelligence across 10 functional tabs.
+TrenchCoat Pro features a unified ultra-premium dashboard with elaborate full-page coin cards, live database integration, Super Claude AI command system, and comprehensive cryptocurrency trading intelligence across 12 functional tabs (10 base + 2 Super Claude tabs).
 
 ## 🏗️ Dashboard Architecture
 
@@ -24,7 +24,7 @@ expected_tabs = ["📊 Live Dashboard", "🧠 Advanced Analytics", ...]
 st.success(f"✅ Premium Dashboard - {len(expected_tabs)} Tabs Loaded")
 ```
 
-## 📊 Tab Structure (All 10 Tabs)
+## 📊 Tab Structure (12 Tabs Total: 10 Base + 2 Super Claude)
 
 ### Tab 1: 📊 Live Dashboard
 - **Function**: Real-time market signals from live database
@@ -90,6 +90,47 @@ st.success(f"✅ Premium Dashboard - {len(expected_tabs)} Tabs Loaded")
 - **Features**: Source monitoring, scan frequency display
 - **Status**: Interface ready, monitoring implementation pending
 - **Future**: Integration with live coin discovery APIs
+
+### Tab 11: 🎮 Super Claude Command System ⭐
+- **Function**: Official 18-command AI system interface
+- **Features**: 
+  - Command execution with 18 specialized commands
+  - Universal flag system (--think, --ultrathink, --uc, --seq, etc.)
+  - MCP server integration (Context7, Sequential, Magic, Puppeteer)
+  - Evidence-based response generation
+  - Quick command buttons for common operations
+- **Dependencies**: `super_claude_commands.py`, `SuperClaudeCommandSystem`
+- **Commands Available**:
+  - `/analyze --code --performance --seq` - Codebase analysis
+  - `/troubleshoot --investigate --evidence` - Problem investigation
+  - `/scan --security --owasp --deps` - Security scanning
+  - `/build --feature --tdd --magic` - Feature development
+  - `/design --api --ultrathink` - Architecture design
+  - `/test --coverage --e2e --pup` - Comprehensive testing
+  - `/improve --performance --iterate` - Code optimization
+  - `/deploy --env prod --validate` - Production deployment
+- **Status**: ✅ Fully integrated with command interface
+
+### Tab 12: 🎭 AI Expert Personas ⭐
+- **Function**: 9 specialized AI personalities for targeted expertise
+- **Features**:
+  - Interactive persona selector with visual cards
+  - Persona-specific communication styles and expertise
+  - Evidence-based responses with confidence scoring
+  - Real-time chat interface with chosen persona
+  - Capability overview and best use cases
+- **Dependencies**: `super_claude_personas.py`, `SuperClaudePersonas`
+- **Available Personas**:
+  - **Alex Chen (Frontend)** 👨‍💻 - UI/UX, React, accessibility
+  - **Sarah Johnson (Backend)** 👩‍💻 - APIs, databases, performance
+  - **Dr. Marcus Webb (Architect)** 🏗️ - System design, scalability
+  - **Detective Rivera (Analyzer)** 🔍 - Root cause analysis, debugging
+  - **Agent Kumar (Security)** 🔒 - Security, vulnerability assessment
+  - **Quinn Taylor (QA)** 🧪 - Testing, quality assurance, edge cases
+  - **Speed Gonzalez (Performance)** ⚡ - Optimization, profiling
+  - **Marie Kondo (Refactorer)** ✨ - Code quality, technical debt
+  - **Professor Williams (Mentor)** 📚 - Documentation, teaching
+- **Status**: ✅ Fully integrated with persona chat interface
 
 ## 🎨 Elaborate Cards System **[CORE FEATURE]**
 
