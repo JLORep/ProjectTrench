@@ -14,8 +14,8 @@ def should_deploy(commit_msg: str) -> bool:
     """Check if commit should trigger deployment"""
     msg_lower = commit_msg.lower()
     
-    # Keywords that trigger deployment
-    deploy_keywords = ['fix', 'bug', 'feature', 'add', 'implement', 'enhance', 'major', 'update', 'redesign', 'complete', 'deploy', 'deployment', 'coin', 'card', 'display', 'beautiful', 'runners']
+    # Keywords that trigger deployment (more restrictive)
+    deploy_keywords = ['fix:', 'bug:', 'feature:', 'major:', 'critical:', 'implement', 'complete', 'deploy:', 'deployment', 'beautiful', 'card', 'display', 'runners']
     
     # Skip keywords  
     skip_keywords = ['wip', 'temp', 'draft', 'test:']

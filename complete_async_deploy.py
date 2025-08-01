@@ -12,6 +12,7 @@ import requests
 from datetime import datetime, timezone
 from pathlib import Path
 from unicode_handler import safe_print
+from notification_rate_limiter import rate_limiter
 
 class CompleteAsyncDeployer:
     """Complete async deployment with full pipeline"""
@@ -118,7 +119,12 @@ class CompleteAsyncDeployer:
             )
     
     def send_discord_notification(self, title: str, description: str, color: int = 0x10b981):
-        """Send Discord notification"""
+        """Send Discord notification with rate limiting"""
+        # Check rate limit first
+        if not rate_limiter.can_send_notification(self.commit_hash, title):
+            self.log_message(f"DISCORD: Rate limited - skipping notification: {title}")
+            return False
+            
         try:
             embed = {
                 "title": title,
@@ -152,6 +158,8 @@ class CompleteAsyncDeployer:
             
             if response.status_code == 204:
                 self.log_message(f"DISCORD: Notification sent successfully - {title}")
+                # Record the notification
+                rate_limiter.record_notification(self.commit_hash, title)
                 return True
             else:
                 self.log_message(f"DISCORD: Failed to send notification - {response.status_code}")
@@ -191,21 +199,24 @@ class CompleteAsyncDeployer:
                 self.log_message(f"DEPLOY SUCCESS: Fast deployment completed successfully")
                 self.log_message(f"STDOUT: {result.stdout[-1000:] if result.stdout else 'No output'}")
                 
-                # Send success notification
-                self.send_discord_notification(
-                    "✅ Async Deployment Success",
-                    f"Deployment completed successfully!\n\n**Status:** Live on Streamlit\n**Response Time:** Fast\n**Validation:** Passed",
-                    0x22c55e  # Green
-                )
+                # Send success notification (only for major changes)
+                if send_notifications:
+                    self.send_discord_notification(
+                        "✅ Async Deployment Success",
+                        f"Deployment completed successfully!\n\n**Status:** Live on Streamlit\n**Response Time:** Fast\n**Validation:** Passed",
+                        0x22c55e  # Green
+                    )
                 
                 # Step 4: Send dev blog update if significant commit
-                if self.should_send_dev_update():
+                if send_notifications:
                     self.log_message("DEV UPDATE: Triggering dev blog update")
                     self.run_dev_update()
                 
-                # Step 5: Check if Streamlit app needs reboot
-                self.log_message("STREAMLIT: Checking app health and rebooting if needed")
-                self.check_and_reboot_streamlit()
+                # Step 5: Always check Streamlit health, but don't always notify
+                self.log_message("STREAMLIT: Checking app health silently")
+                # Only do health check for major changes to avoid spam
+                if send_notifications:
+                    self.check_and_reboot_streamlit()
                 
                 return True
                 
