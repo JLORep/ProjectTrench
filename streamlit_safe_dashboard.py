@@ -18,6 +18,14 @@ from typing import Dict, List, Any
 import json
 import requests
 
+# Import data validation system
+try:
+    from data_validation_system import data_validator
+    validation_available = True
+except ImportError:
+    validation_available = False
+    data_validator = None
+
 # Safe imports with fallbacks
 try:
     from PIL import Image
@@ -144,7 +152,7 @@ class StreamlitSafeDashboard:
         self.render_main_content()
     
     def render_header(self):
-        """Render the premium header"""
+        """Render the premium header with data status"""
         st.markdown("""
         <div style='text-align: center; padding: 2rem; margin-bottom: 2rem;
                     background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%);
@@ -171,6 +179,10 @@ class StreamlitSafeDashboard:
             </div>
         </div>
         """, unsafe_allow_html=True)
+        
+        # Show data status banner
+        if validation_available and data_validator:
+            data_validator.show_data_status_banner()
     
     def render_main_content(self):
         """Render main dashboard content"""
@@ -228,43 +240,41 @@ class StreamlitSafeDashboard:
             self.render_coin_data_tab()
     
     def render_key_metrics(self):
-        """Render key performance metrics using live data"""
+        """Render key performance metrics with proper data validation"""
         col1, col2, col3, col4 = st.columns(4)
         
-        # Get live portfolio data
-        if database_available and streamlit_db:
-            try:
-                portfolio = streamlit_db.get_portfolio_data()
-                coin_count = streamlit_db.get_coin_count()
-                
-                with col1:
-                    st.metric("💰 Portfolio Value", f"${portfolio['total_value']:,.0f}", 
-                             f"+${portfolio['profit']:,.0f} (+{portfolio['profit_pct']:.1f}%)")
-                
-                with col2:
-                    st.metric("📊 Coins Tracked", f"{coin_count:,}", 
-                             f"Active: {portfolio['active_positions']}")
-                
-                with col3:
-                    st.metric("🎯 Win Rate", f"{portfolio['win_rate']:.1f}%", 
-                             f"Avg Smart Wallets: {portfolio.get('avg_smart_wallets', 0):.0f}")
-                
-                with col4:
-                    st.metric("💧 Total Liquidity", f"${portfolio.get('total_liquidity', 0):,.0f}", 
-                             "Live Data")
-                             
-            except Exception as e:
-                # Fallback to demo metrics if error
-                with col1:
-                    st.metric("💰 Portfolio Value", "$127,845", "+$12,845 (+11.2%)")
-                with col2:
-                    st.metric("📡 Active Signals", "23", "+8 signals")
-                with col3:
-                    st.metric("🎯 Win Rate", "78.3%", "+2.1%")
-                with col4:
-                    st.metric("⚡ Speed", "12ms", "Demo Mode")
+        # Get validated portfolio data
+        if validation_available and data_validator:
+            portfolio = data_validator.get_validated_portfolio_data()
+            
+            # Get coin count based on data mode
+            if portfolio['mode'] == 'live':
+                try:
+                    coin_count = streamlit_db.get_coin_count()
+                except:
+                    coin_count = 1733  # Fallback
+            else:
+                coin_count = 10  # Demo coin count
+            
+            data_source_label = "Live Data" if portfolio['mode'] == 'live' else "Demo Mode"
+            
+            with col1:
+                st.metric("💰 Portfolio Value", f"${portfolio['total_value']:,.0f}", 
+                         f"+${portfolio['profit']:,.0f} (+{portfolio['profit_pct']:.1f}%)")
+            
+            with col2:
+                st.metric("📊 Coins Tracked", f"{coin_count:,}", 
+                         f"Active: {portfolio['active_positions']}")
+            
+            with col3:
+                st.metric("🎯 Win Rate", f"{portfolio['win_rate']:.1f}%", 
+                         f"Avg Smart Wallets: {portfolio.get('avg_smart_wallets', 0):.0f}")
+            
+            with col4:
+                st.metric("💧 Total Liquidity", f"${portfolio.get('total_liquidity', 0):,.0f}", 
+                         data_source_label)
         else:
-            # Fallback to demo metrics
+            # Pure fallback if validation system unavailable
             with col1:
                 st.metric("💰 Portfolio Value", "$127,845", "+$12,845 (+11.2%)")
             with col2:
@@ -443,24 +453,25 @@ class StreamlitSafeDashboard:
         </div>
         """, unsafe_allow_html=True)
         
-        # Get live signals from trench.db
-        if database_available and streamlit_db:
-            try:
-                signals = streamlit_db.get_telegram_signals(limit=8, min_confidence=0.6)
-                st.success("📡 Showing live signals generated from trench.db coin data")
-            except Exception as e:
-                st.error(f"❌ Error loading live signals: {e}")
-                signals = []
-        else:
-            signals = []
+        # Get validated telegram signals
+        if validation_available and data_validator:
+            signals = data_validator.get_validated_telegram_signals()
             
-        # Fallback if no signals available
-        if not signals:
-            st.info("🔧 Using demonstration signals (database connection in development)")
+            # Show appropriate status message
+            if signals and len(signals) > 0:
+                if signals[0].get('mode') == 'live':
+                    st.success("📡 Showing live signals generated from trench.db coin data")
+                else:
+                    st.info("🔧 Using demonstration signals (database connection in development)")
+            else:
+                st.warning("📡 No signals available")
+        else:
+            # Pure fallback if validation system unavailable
+            st.info("🔧 Using demonstration signals (validation system unavailable)")
             signals = [
-                {'coin_symbol': 'SOL', 'signal_type': 'BUY', 'confidence': 0.85, 'entry_price': 119.50, 'timestamp': '2025-01-31 10:30:00', 'channel_name': 'CryptoGems'},
-                {'coin_symbol': 'AVAX', 'signal_type': 'SELL', 'confidence': 0.75, 'entry_price': 35.20, 'timestamp': '2025-01-31 09:45:00', 'channel_name': 'MoonShots'},
-                {'coin_symbol': 'NEAR', 'signal_type': 'BUY', 'confidence': 0.92, 'entry_price': 8.45, 'timestamp': '2025-01-31 08:15:00', 'channel_name': 'ATM.Day'}
+                {'coin_symbol': 'SOL', 'signal_type': 'BUY', 'confidence': 0.85, 'entry_price': 119.50, 'timestamp': '2025-08-01 10:30:00', 'channel_name': 'CryptoGems'},
+                {'coin_symbol': 'AVAX', 'signal_type': 'SELL', 'confidence': 0.75, 'entry_price': 35.20, 'timestamp': '2025-08-01 09:45:00', 'channel_name': 'MoonShots'},
+                {'coin_symbol': 'NEAR', 'signal_type': 'BUY', 'confidence': 0.92, 'entry_price': 8.45, 'timestamp': '2025-08-01 08:15:00', 'channel_name': 'ATM.Day'}
             ]
         
         # Main layout with signals and stats
@@ -573,27 +584,38 @@ class StreamlitSafeDashboard:
         # Full coin table with search
         self.render_searchable_coin_table()
     
-    def get_demo_coin_data(self):
-        """Get comprehensive demo coin data"""
-        return [
-            {"ticker": "PEPE", "price_gain_pct": 270.1, "smart_wallets": 1250, "liquidity": 2100000.0, "axiom_mc": 8200000000.0, "peak_volume": 67800000.0},
-            {"ticker": "SHIB", "price_gain_pct": 152.3, "smart_wallets": 890, "liquidity": 5600000.0, "axiom_mc": 15100000000.0, "peak_volume": 89200000.0},
-            {"ticker": "DOGE", "price_gain_pct": 90.5, "smart_wallets": 2100, "liquidity": 12300000.0, "axiom_mc": 28700000000.0, "peak_volume": 234500000.0},
-            {"ticker": "FLOKI", "price_gain_pct": 180.1, "smart_wallets": 670, "liquidity": 1800000.0, "axiom_mc": 3400000000.0, "peak_volume": 45600000.0},
-            {"ticker": "BONK", "price_gain_pct": 57.0, "smart_wallets": 450, "liquidity": 890000.0, "axiom_mc": 1200000000.0, "peak_volume": 23400000.0},
-            {"ticker": "SOLANA", "price_gain_pct": 45.8, "smart_wallets": 5670, "liquidity": 45600000.0, "axiom_mc": 89700000000.0, "peak_volume": 567800000.0},
-            {"ticker": "MATIC", "price_gain_pct": 123.7, "smart_wallets": 1890, "liquidity": 8900000.0, "axiom_mc": 12300000000.0, "peak_volume": 123400000.0},
-            {"ticker": "AVAX", "price_gain_pct": 78.9, "smart_wallets": 2340, "liquidity": 15400000.0, "axiom_mc": 23400000000.0, "peak_volume": 189000000.0},
-            {"ticker": "LINK", "price_gain_pct": 89.2, "smart_wallets": 3450, "liquidity": 23400000.0, "axiom_mc": 34500000000.0, "peak_volume": 267800000.0},
-            {"ticker": "UNI", "price_gain_pct": 65.4, "smart_wallets": 2780, "liquidity": 18900000.0, "axiom_mc": 27800000000.0, "peak_volume": 178900000.0}
-        ]
+    def get_validated_coin_data(self):
+        """Get coin data using validation system"""
+        if validation_available and data_validator:
+            return data_validator.get_validated_coin_data()
+        else:
+            # Fallback demo data with contract addresses
+            return [
+                {"ticker": "PEPE", "price_gain_pct": 270.1, "smart_wallets": 1250, "liquidity": 2100000.0, "axiom_mc": 8200000000.0, "peak_volume": 67800000.0, "ca": "6GCwwBywXgSqUJVNxvL4XJbdMGPsafgX7bqDCKQw45dV", "data_source": "demo", "mode": "demo"},
+                {"ticker": "SHIB", "price_gain_pct": 152.3, "smart_wallets": 890, "liquidity": 5600000.0, "axiom_mc": 15100000000.0, "peak_volume": 89200000.0, "ca": "CiKu9eHPBf2PyJ8EQCR8xJ4KnF2KVg7e6B3vW1234567", "data_source": "demo", "mode": "demo"},
+                {"ticker": "DOGE", "price_gain_pct": 90.5, "smart_wallets": 2100, "liquidity": 12300000.0, "axiom_mc": 28700000000.0, "peak_volume": 234500000.0, "ca": "DKxYz8vMJKLNOPQRSTUVWXYZ123456789abcdefghij", "data_source": "demo", "mode": "demo"},
+                {"ticker": "FLOKI", "price_gain_pct": 180.1, "smart_wallets": 670, "liquidity": 1800000.0, "axiom_mc": 3400000000.0, "peak_volume": 45600000.0, "ca": "FLKxYz8vMJKLNOPQRSTUVWXYZ123456789abcdef123", "data_source": "demo", "mode": "demo"},
+                {"ticker": "BONK", "price_gain_pct": 57.0, "smart_wallets": 450, "liquidity": 890000.0, "axiom_mc": 1200000000.0, "peak_volume": 23400000.0, "ca": "BNKxYz8vMJKLNOPQRSTUVWXYZ123456789abcdef456", "data_source": "demo", "mode": "demo"},
+                {"ticker": "SOLANA", "price_gain_pct": 45.8, "smart_wallets": 5670, "liquidity": 45600000.0, "axiom_mc": 89700000000.0, "peak_volume": 567800000.0, "ca": "So11111111111111111111111111111111111111112", "data_source": "demo", "mode": "demo"},
+                {"ticker": "MATIC", "price_gain_pct": 123.7, "smart_wallets": 1890, "liquidity": 8900000.0, "axiom_mc": 12300000000.0, "peak_volume": 123400000.0, "ca": "MATxYz8vMJKLNOPQRSTUVWXYZ123456789abcdef789", "data_source": "demo", "mode": "demo"},
+                {"ticker": "AVAX", "price_gain_pct": 78.9, "smart_wallets": 2340, "liquidity": 15400000.0, "axiom_mc": 23400000000.0, "peak_volume": 189000000.0, "ca": "AVXxYz8vMJKLNOPQRSTUVWXYZ123456789abcdef321", "data_source": "demo", "mode": "demo"},
+                {"ticker": "LINK", "price_gain_pct": 89.2, "smart_wallets": 3450, "liquidity": 23400000.0, "axiom_mc": 34500000000.0, "peak_volume": 267800000.0, "ca": "LNKxYz8vMJKLNOPQRSTUVWXYZ123456789abcdef654", "data_source": "demo", "mode": "demo"},
+                {"ticker": "UNI", "price_gain_pct": 65.4, "smart_wallets": 2780, "liquidity": 18900000.0, "axiom_mc": 27800000000.0, "peak_volume": 178900000.0, "ca": "UNIxYz8vMJKLNOPQRSTUVWXYZ123456789abcdef987", "data_source": "demo", "mode": "demo"}
+            ]
 
     def render_database_stats(self):
-        """Render database statistics with embedded data"""
-        st.info("📊 TrenchCoat Database Analytics - Showing sample from 1,733+ coins")
+        """Render database statistics with validated data"""
+        coins = self.get_validated_coin_data()
+        
+        # Show appropriate banner based on data source
+        if coins and len(coins) > 0:
+            data_mode = coins[0].get('mode', 'demo')
+            if data_mode == 'live':
+                st.success("📊 TrenchCoat Database Analytics - Live data from 1,733+ real coins")
+            else:
+                st.info("📊 TrenchCoat Database Analytics - Demo data (10 sample coins)")
         
         try:
-            coins = self.get_demo_coin_data()
             
             # Calculate stats
             total_coins = 1733  # Full database size
@@ -661,7 +683,7 @@ class StreamlitSafeDashboard:
         )
         
         try:
-            coins = self.get_demo_coin_data()
+            coins = self.get_validated_coin_data()
             df = pd.DataFrame(coins)
             
             # Sort based on selection
@@ -812,7 +834,7 @@ class StreamlitSafeDashboard:
         """Show top performing coins with percentage gains"""
         st.markdown("### 🏆 Top Runners - Highest Percentage Gains")
         
-        coins = self.get_demo_coin_data()
+        coins = self.get_validated_coin_data()
         # Sort by price gain percentage descending
         top_coins = sorted(coins, key=lambda x: x['price_gain_pct'], reverse=True)[:5]
         
@@ -862,7 +884,7 @@ class StreamlitSafeDashboard:
         st.markdown("### 🪙 Coin Portfolio")
         
         try:
-            coins = self.get_demo_coin_data()
+            coins = self.get_validated_coin_data()
             
             # Apply filters
             if search_term:
@@ -899,8 +921,9 @@ class StreamlitSafeDashboard:
             st.error(f"Error displaying coins: {e}")
     
     def render_coin_card(self, coin):
-        """Render individual coin card"""
+        """Render individual coin card with data source indicator"""
         gain = coin['price_gain_pct']
+        data_mode = coin.get('mode', 'demo')
         
         # Determine card color based on performance
         if gain >= 200:
@@ -926,7 +949,10 @@ class StreamlitSafeDashboard:
             <div style='text-align: center; border-bottom: 1px solid {border_color}; padding-bottom: 15px; margin-bottom: 15px;'>
                 <h2 style='color: #f8fafc; margin: 0; font-size: 1.8rem; font-weight: bold;'>{coin['ticker']}</h2>
                 <div style='color: #cbd5e1; font-size: 0.8rem; margin-top: 5px;'>
-                    {coin.get('ca', 'N/A')[:8]}...{coin.get('ca', 'N/A')[-6:] if len(coin.get('ca', '')) > 14 else ''}
+                    {self.format_contract_address(coin.get('ca', 'N/A'))}
+                </div>
+                <div style='color: {"#10b981" if data_mode == "live" else "#f59e0b"}; font-size: 0.7rem; margin-top: 3px;'>
+                    {"🟢 LIVE" if data_mode == "live" else "🟡 DEMO"}
                 </div>
             </div>
             
@@ -974,12 +1000,20 @@ class StreamlitSafeDashboard:
         </div>
         """, unsafe_allow_html=True)
     
+    def format_contract_address(self, address: str) -> str:
+        """Format contract address for display"""
+        if not address or address == 'N/A' or len(address) < 10:
+            return 'Demo Address'
+        
+        # Show first 8 and last 6 characters
+        return f"{address[:8]}...{address[-6:]}"
+    
     def render_searchable_coin_table(self):
         """Additional analytics and summary stats"""
         st.markdown("### 📊 Portfolio Analytics")
         
         try:
-            coins = self.get_demo_coin_data()
+            coins = self.get_validated_coin_data()
             
             # Calculate summary statistics
             total_coins = len(coins) 
