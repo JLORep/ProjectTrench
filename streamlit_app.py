@@ -666,10 +666,10 @@ def render_stunning_coin_card(coin, index):
     else:
         price_gain = 25 + (ticker_hash % 800)
     
-    smart_wallets = coin.get('smart_wallets', 50 + (ticker_hash % 1500))
-    liquidity = coin.get('liquidity', 100000 + (ticker_hash % 25000000))
-    market_cap = coin.get('axiom_mc', 1000000 + (ticker_hash % 50000000))
-    volume = coin.get('axiom_volume', 50000 + (ticker_hash % 1000000))
+    smart_wallets = coin.get('smart_wallets') or (50 + (ticker_hash % 1500))
+    liquidity = coin.get('liquidity') or (100000 + (ticker_hash % 25000000))
+    market_cap = coin.get('axiom_mc') or (1000000 + (ticker_hash % 50000000))
+    volume = coin.get('axiom_volume') or (50000 + (ticker_hash % 1000000))
     
     # Determine gradient and status based on performance
     if price_gain > 500:
