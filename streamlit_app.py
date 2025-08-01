@@ -574,16 +574,7 @@ def get_live_coins_simple():
     except Exception as e:
         return [], f"Database error: {e}"
 
-# SINGLE UNIFIED DASHBOARD - All features consolidated
-st.info("🎯 TrenchCoat Pro - Ultra Premium Dashboard Loaded")
-    
-# ALL 10 TABS - Complete premium dashboard with all features
-expected_tabs = ["📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📡 Telegram Signals", "📝 Dev Blog", "💎 Solana Wallet", "🗄️ Coin Data", "🗃️ Database", "🔔 Incoming Coins"]
-
-# Premium dashboard status
-st.success(f"✅ Premium Dashboard - {len(expected_tabs)} Tabs Loaded")
-    
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(expected_tabs)
+# Main dashboard content starts here with restructured tabs
 
 with tab1:
     st.header("🗄️ Coin Data")
