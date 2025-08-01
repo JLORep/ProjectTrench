@@ -1,0 +1,36 @@
+{
+  "discord_webhooks": {
+    "development": "https://discord.com/api/webhooks/YOUR_DEV_WEBHOOK_ID/YOUR_DEV_WEBHOOK_TOKEN",
+    "documentation": "https://discord.com/api/webhooks/YOUR_DOC_WEBHOOK_ID/YOUR_DOC_WEBHOOK_TOKEN",
+    "general": "https://discord.com/api/webhooks/YOUR_GENERAL_WEBHOOK_ID/YOUR_GENERAL_WEBHOOK_TOKEN",
+    "alerts": "https://discord.com/api/webhooks/YOUR_ALERTS_WEBHOOK_ID/YOUR_ALERTS_WEBHOOK_TOKEN"
+  },
+  "channel_mappings": {
+    "development": {
+      "name": "trench-development",
+      "description": "Development updates and code changes",
+      "color": 0x00ff00
+    },
+    "documentation": {
+      "name": "trench-docs", 
+      "description": "Documentation updates and guides",
+      "color": 0x0099ff
+    },
+    "general": {
+      "name": "trench-general",
+      "description": "General project updates",
+      "color": 0xffff00
+    },
+    "alerts": {
+      "name": "trench-alerts",
+      "description": "Error alerts and urgent notifications", 
+      "color": 0xff0000
+    }
+  },
+  "notification_settings": {
+    "enable_discord": true,
+    "max_files_in_embed": 10,
+    "timeout_seconds": 10,
+    "retry_attempts": 2
+  }
+}
