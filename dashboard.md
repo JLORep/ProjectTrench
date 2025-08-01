@@ -254,6 +254,35 @@ if 'show_coin_detail' not in st.session_state:
 st.markdown(card_html, unsafe_allow_html=True)
 ```
 
+### 2b. **HTML Parsing Errors - CRITICAL FIX**
+**Issue**: Multi-line HTML with complex nesting causes div parsing errors
+**Symptoms**: Cards show "loads of div errors", HTML fragments displayed as text
+**Root Cause**: Streamlit's HTML parser struggles with formatted multi-line HTML
+**Solution**: Convert ALL multi-line HTML to single-line format
+
+**BEFORE (BROKEN)**:
+```python
+card_html = f"""
+<div style="background: {bg_gradient}; 
+           padding: 16px;">
+    <div style="display: flex;">
+        <h4>{ticker}</h4>
+    </div>
+</div>
+"""
+```
+
+**AFTER (FIXED)**:
+```python
+card_html = f"""<div style="background: {bg_gradient}; padding: 16px;"><div style="display: flex;"><h4>{ticker}</h4></div></div>"""
+```
+
+**Key Rules**:
+- Remove ALL line breaks within HTML tags
+- Remove ALL indentation and comments
+- Keep entire HTML structure on single line
+- This prevents Streamlit's parser from breaking complex structures
+
 ### 3. **Import Failures in Production**
 **Issue**: Imports work locally but fail on Streamlit Cloud
 **Gotcha**: Different Python environments, missing files
