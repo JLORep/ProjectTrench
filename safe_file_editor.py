@@ -28,7 +28,13 @@ class SafeEditor:
     """Safe file editing with error prevention and validation"""
     
     def __init__(self, file_path: str):
-        self.file_path = file_path
+        # Parameter validation
+        if not isinstance(file_path, str):
+            raise ValueError(f"file_path must be string, got {type(file_path)}")
+        if not file_path or not file_path.strip():
+            raise ValueError("file_path cannot be empty")
+        
+        self.file_path = file_path.strip()
         self.content = None
         self.last_read = None
         self.backup_created = False
@@ -215,6 +221,14 @@ class SafeEditor:
     def safe_replace(self, old_string: str, new_string: str, confirm_exists: bool = True) -> bool:
         """Safely replace string with existence confirmation"""
         
+        # Parameter validation
+        if not isinstance(old_string, str):
+            raise ValueError(f"old_string must be string, got {type(old_string)}")
+        if not isinstance(new_string, str):
+            raise ValueError(f"new_string must be string, got {type(new_string)}")
+        if not isinstance(confirm_exists, bool):
+            raise ValueError(f"confirm_exists must be boolean, got {type(confirm_exists)}")
+        
         # Step 1: ALWAYS read file first (force refresh to ensure current content)
         if not self.read_file(force_refresh=True):
             print(f"[ERROR] Could not read file: {self.file_path}")
@@ -259,6 +273,12 @@ class SafeEditor:
     
     def append_to_end(self, new_content: str, separator: str = "\n\n") -> bool:
         """Safely append content to end of file"""
+        
+        # Parameter validation
+        if not isinstance(new_content, str):
+            raise ValueError(f"new_content must be string, got {type(new_content)}")
+        if not isinstance(separator, str):
+            raise ValueError(f"separator must be string, got {type(separator)}")
         
         # Step 1: ALWAYS read file first (force refresh to ensure current content)
         if not self.read_file(force_refresh=True):

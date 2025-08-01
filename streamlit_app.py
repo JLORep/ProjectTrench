@@ -27,6 +27,29 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# Simple tab styling (complex CSS removed due to loading issues)
+st.markdown("""
+<style>
+    .stTabs [data-baseweb="tab-list"] {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #1a1a1a;
+        border-radius: 8px;
+        padding: 4px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        height: 40px;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+    .stTabs [aria-selected="true"] {
+        background: #10b981 !important;
+        color: white !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Header
 st.markdown("# 🎯 TrenchCoat Pro")
 st.markdown("**Ultra-Premium Cryptocurrency Trading Intelligence Platform**")
