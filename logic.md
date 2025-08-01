@@ -113,6 +113,53 @@ print(f'Available keys: {list(sample_coin.keys())}')
 4. **Specific Error Messages**: Generic errors mask issues - specific errors reveal root causes
 5. **Graceful Degradation**: Advanced features should fail gracefully to simpler alternatives
 
+## 🔧 MANDATORY CONSULTATION PROTOCOL - ESTABLISHED 2025-08-01
+
+### **CRITICAL RULE: Documentation-First Development**
+**User Requirement**: "make sure to read in logic.md and claude.md when making decisions write to them when changing things. preserve all functionality!"
+
+### **Technical Implementation Protocol:**
+
+#### **Pre-Change Documentation Review:**
+```python
+# REQUIRED STEPS BEFORE ANY CODE CHANGE:
+# 1. Read CLAUDE.md - understand session history, user requirements, critical fixes
+# 2. Read logic.md - understand architecture patterns, data flows, technical constraints  
+# 3. Verify current system state: 10-tab dashboard, trench.db (1,733 coins), dual architecture
+```
+
+#### **Architecture Preservation Requirements:**
+- **File Structure**: `streamlit_app.py` (main), `ultra_premium_dashboard.py` (advanced), `streamlit_safe_dashboard.py` (fallback)
+- **Tab Count**: Always maintain 10 tabs in both advanced and fallback dashboards
+- **Database**: Preserve `trench.db` connection with live coin data (1,733 coins)
+- **Data Functions**: Keep working methods like `get_live_coins_simple()` 
+- **Import Patterns**: Maintain UTF-8 encoding headers, safe import fallbacks
+
+#### **Critical System Components (NEVER REMOVE):**
+1. **Dual Dashboard Pattern**: Advanced loading first, fallback on failure
+2. **Live Database Integration**: Direct SQLite3 connection to trench.db
+3. **Data Format Compatibility**: Enhanced mapping for different key formats
+4. **Error Handling**: Specific error messages with graceful degradation
+5. **All 10 Tabs**: Complete feature set preservation
+
+#### **Post-Change Documentation Updates:**
+```python
+# REQUIRED AFTER ANY CHANGE:
+# 1. Update CLAUDE.md with session details, root cause analysis, verification steps
+# 2. Update logic.md with technical changes, new patterns, architecture updates
+# 3. Include file locations, line numbers, and testing results
+# 4. Document lessons learned and prevent regression
+```
+
+### **Functionality Protection Matrix:**
+| Component | Current State | Protection Level | Change Protocol |
+|-----------|---------------|------------------|-----------------|
+| Dashboard Tabs | 10 tabs (both advanced/fallback) | CRITICAL | Must preserve all |
+| Database Connection | trench.db (1,733 coins) | CRITICAL | Must maintain connection |
+| Data Retrieval | `get_live_coins_simple()` working | HIGH | Keep function signature |
+| Import Chain | UTF-8 headers, safe fallbacks | HIGH | Preserve error handling |
+| User Features | All functionality active | CRITICAL | Never remove without request |
+
 #### 2. **ultra_premium_dashboard.py** - Advanced Dashboard
 - **Location:** `C:\trench\ultra_premium_dashboard.py:1-1300+`
 - **Purpose:** Ultra-premium dashboard with Apple/PayPal-level design
