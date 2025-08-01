@@ -801,20 +801,6 @@ DATABASE: data/trench.db
     else:
         st.error("❌ Database not found")
 
-with tab6:
-    st.header("📝 Dev Blog")
-    st.markdown("### 🚀 Recent Development Updates")
-    
-    updates = [
-        {"date": "2025-08-01", "title": "🎯 Complete Dashboard Restoration", "desc": "All 10 tabs working with live database"},
-        {"date": "2025-08-01", "title": "🗄️ Database Deployment Fixed", "desc": "trench.db (1,733 coins) successfully deployed"},
-        {"date": "2025-08-01", "title": "📡 Enhanced Live Data", "desc": "Realistic metrics for null/zero database values"},
-        {"date": "2025-08-01", "title": "🔧 Import Chain Fixed", "desc": "Resolved TelegramPatternMatcher import failures"}
-    ]
-    
-    for update in updates:
-        with st.expander(f"🗓️ {update['date']} | {update['title']}"):
-            st.write(update['desc'])
 
 with tab7:
     st.header("💎 Solana Wallet")
