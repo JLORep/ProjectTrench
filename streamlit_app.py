@@ -245,7 +245,7 @@ def render_stunning_coin_card(coin, index):
                         width: 64px;
                         height: 64px;
                         border-radius: 50%;
-                        background: rgba(255,255,255,0.15);
+                        background: linear-gradient(135deg, #10b981 0%, #10b98180 100%);
                         display: flex;
                         align-items: center;
                         justify-content: center;

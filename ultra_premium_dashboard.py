@@ -649,18 +649,18 @@ DATABASE: data/trench.db
             <!-- Coin Header -->
             <div style="display: flex; align-items: center; margin-bottom: 12px;">
                 <div style="width: 48px; height: 48px; border-radius: 50%; 
-                           background: linear-gradient(135deg, {stage_color} 0%, {stage_color}80 100%);
+                           background: linear-gradient(135deg, #10b981 0%, #10b98180 100%);
                            display: flex; align-items: center; justify-content: center;
                            font-weight: bold; color: white; font-size: 14px; margin-right: 12px;
-                           box-shadow: 0 2px 8px rgba({','.join(str(int(stage_color[i:i+2], 16)) for i in (1, 3, 5))}, 0.4);">
-                    {coin['ticker'][:3].upper()}
+                           box-shadow: 0 2px 8px rgba(16,185,129, 0.4);">
+                    ${coin['ticker'][:2].upper()}
                 </div>
                 <div style="flex: 1;">
                     <div style="color: #f8fafc; font-weight: 600; font-size: 16px;">
                         {coin['ticker']} {source_icon}
                         {"✅" if verified else ""}
                     </div>
-                    <div style="color: {stage_color}; font-size: 12px; font-weight: 500;">
+                    <div style="color: #10b981; font-size: 12px; font-weight: 500;">
                         {coin['stage']}
                     </div>
                 </div>
