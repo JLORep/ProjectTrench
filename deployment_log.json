@@ -1,0 +1,56 @@
+[
+  {
+    "timestamp": "2025-07-31 16:50:00 UTC",
+    "success": false,
+    "changes": {
+      "bug_fixes": [
+        "f639f99 Fix dashboard HTML/SVG rendering issues"
+      ],
+      "new_features": [],
+      "core_changes": [
+        "streamlit_app.py",
+        "ultra_premium_dashboard.py"
+      ],
+      "config_changes": []
+    },
+    "url": null
+  },
+  {
+    "timestamp": "2025-07-31T22:42:11.725430",
+    "deployment_info": {
+      "commit_message": "ec29d3e Auto-commit: Mandatory deployment - 2025-07-31 22:31 UTC",
+      "changed_files": [
+        "install_improved_hook.py",
+        "mandatory_deploy.py"
+      ],
+      "type": "release",
+      "description": "New release deployment",
+      "channel": "overview",
+      "priority": "high"
+    },
+    "success": false,
+    "streamlit_url": "https://trenchdemo.streamlit.app",
+    "version": "1.0.1",
+    "blog_updated": false,
+    "overview_updated": false
+  },
+  {
+    "timestamp": "2025-08-01T01:28:14.304998",
+    "deployment_info": {
+      "commit_message": "c599410 Auto-commit: Mandatory deployment - 2025-08-01 01:23 UTC",
+      "changed_files": [
+        "CLAUDE.md",
+        "streamlit_safe_dashboard.py"
+      ],
+      "type": "release",
+      "description": "New release deployment",
+      "channel": "overview",
+      "priority": "high"
+    },
+    "success": false,
+    "streamlit_url": "https://trenchdemo.streamlit.app",
+    "version": "1.0.2",
+    "blog_updated": false,
+    "overview_updated": false
+  }
+]

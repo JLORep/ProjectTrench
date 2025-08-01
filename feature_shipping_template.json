@@ -1,0 +1,4 @@
+{
+  "tech_template": "\n**TrenchCoat Pro Feature Shipped** \n\n**New Feature:** {feature_name}\n**Version:** {version}\n**Category:** {category}\n\n**Technical Details:**\n{technical_description}\n\n**Implementation:**\n\u2022 {implementation_details}\n\n**Performance Impact:**\n\u2022 {performance_metrics}\n\n**API Changes:**\n{api_changes}\n\nLive now: https://trenchdemo.streamlit.app\nDocs: https://github.com/JLORep/ProjectTrench\n\n#FeatureShipped #TrenchCoatPro #Development\n        ",
+  "non_tech_template": "\n**New TrenchCoat Pro Feature Live!**\n\n**What's New:** {feature_name}\n\n{user_friendly_description}\n\n**Benefits for You:**\n\u2022 {benefit_1}\n\u2022 {benefit_2} \n\u2022 {benefit_3}\n\n**How to Use:**\n{usage_instructions}\n\nTry it now: https://trenchdemo.streamlit.app\n\n#NewFeature #CryptoTrading #TrenchCoatPro\n        "
+}

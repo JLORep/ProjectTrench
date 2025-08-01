@@ -1,0 +1,39 @@
+{
+  "timestamp": "2025-07-31T22:40:17.710934",
+  "hook_status": {
+    "installed": true,
+    "executable": true,
+    "content_valid": false,
+    "backup_exists": true,
+    "issues": [
+      "Hook content is invalid or outdated"
+    ]
+  },
+  "git_performance": {
+    "timeouts_detected": false,
+    "test_commit_time": 0.3,
+    "issues": []
+  },
+  "background_deployment": {
+    "log_file_exists": true,
+    "recent_activity": true,
+    "background_processes": [],
+    "issues": []
+  },
+  "unicode_handling": {
+    "unicode_supported": true,
+    "emoji_fallbacks_working": true,
+    "issues": []
+  },
+  "deployment_validation": {
+    "validator_exists": true,
+    "validator_working": true,
+    "streamlit_accessible": false,
+    "issues": [
+      "Streamlit issue: error"
+    ]
+  },
+  "overall_status": "healthy",
+  "critical_issues": [],
+  "recommendations": []
+}

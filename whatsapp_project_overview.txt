@@ -1,0 +1,59 @@
+🎯 *TRENCHCOAT PRO - PROJECT OVERVIEW*
+
+*Hey! Here's what we've built - an amazing AI-powered crypto trading system! 🚀*
+
+*WHAT IT DOES:*
+Think of it as having a super-smart AI assistant that watches thousands of cryptocurrencies 24/7 and alerts you the moment it spots a "Runner" - a coin about to take off! 
+
+*THE MAGIC:*
+• AI analyzes price patterns, volume, momentum
+• Identifies coins before they pump 📈
+• Gives you confidence ratings (like 92% sure this will go up)
+• Sends instant alerts to your phone/computer
+
+*HOW YOU GET ALERTS:*
+📧 *Email* - Professional reports with charts
+📱 *Telegram* - Instant phone notifications  
+🎮 *Discord* - Community chat with other traders
+📱 *WhatsApp* - Group messages (you, Bravo, Spangle)
+
+*WHAT AN ALERT LOOKS LIKE:*
+"🚀 RUNNER IDENTIFIED! 
+Coin: PEPE
+Price: $0.00001234
+Change: +67% in 24 hours
+Confidence: 92%
+⚡ ACTION REQUIRED - Consider buying now!"
+
+*THE DASHBOARD:*
+Beautiful Apple-style interface showing:
+• Live coin discovery and analysis
+• Your portfolio performance 
+• Success rates and profits
+• AI suggestions for improvements
+
+*PROFESSIONAL SETUP:*
+• Custom domain: trenchcoat.pro
+• Business email: support@trenchcoat.pro  
+• Cloud hosting on Azure & Streamlit
+• Professional branding throughout
+
+*COMMUNITY FEATURES:*
+• Share signals with Bravo & Spangle instantly
+• Discord server for discussions
+• WhatsApp group for mobile alerts
+• Track everyone's performance
+
+*THE BOTTOM LINE:*
+You now have a professional-grade crypto trading system that:
+✅ Never sleeps - watches markets 24/7
+✅ Uses AI to spot opportunities before others
+✅ Alerts you instantly on all devices
+✅ Looks and feels like a $1M+ product
+✅ Costs almost nothing to run
+
+*It's like having a team of expert traders working for you around the clock, but it's just AI! 🤖*
+
+*Ready to catch the next big Runner? 🚀*
+
+_Powered by TrenchCoat Pro AI_
