@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 """
 TrenchCoat Pro - Ultimate version with Super Claude AI + MCP Integration
-Updated: 2025-08-02 00:04:05 - FORCE DEPLOY
+Updated: 2025-08-02 00:11:30 - HOTFIX: Add missing time import
 """
 import streamlit as st
 import pandas as pd
 import numpy as np
 import sqlite3
 import os
+import time
 from datetime import datetime, timedelta
 import hashlib
 import random
