@@ -25,7 +25,11 @@ TrenchCoat Pro is a sophisticated cryptocurrency trading intelligence platform t
 
 **Key Functions:**
 - `get_live_coins_simple()` (line 58): Direct database connection for live coin data
+  - **Returns**: `(coins_list, "SUCCESS: X live coins from trench.db")`
+  - **Data Format**: `{'Ticker': 'waf', 'Price Gain %': '+180.0%', 'Smart Wallets': '7'}`
 - Tab structure (line 137): 10 comprehensive tabs including coin data, database, Solana wallet
+- **Status check fix** (line 320): Changed from `== "success"` to `status.startswith("SUCCESS")`
+- **Data mapping fix** (lines 334-338): Enhanced format compatibility with fallback support
 
 #### 2. **ultra_premium_dashboard.py** - Advanced Dashboard
 - **Location:** `C:\trench\ultra_premium_dashboard.py:1-1300+`
@@ -53,10 +57,12 @@ TrenchCoat Pro is a sophisticated cryptocurrency trading intelligence platform t
 
 **Key Classes & Methods:**
 - `UltraPremiumDashboard` (line 203): Main dashboard controller
-- `apply_custom_css()` (line 55): Premium styling system
-- `render()` (line 306): Main render method with 10-tab interface
+- `apply_custom_css()` (line 55): Premium styling system  
+- `render()` (line 216): **FIXED** - Main render method calling header and content
+- `render_main_content()` (line 306): Main render method with 10-tab interface
 - `render_live_coin_feed()` (line 404): Live cryptocurrency processing feed
 - `render_performance_chart()` (line 540): Real-time performance visualization
+- `render_coin_card()` (line 700+): Individual coin card rendering with animations
 - `render_telegram_signals_section()` (line 1072): Telegram signals monitoring interface
 
 #### 3. **streamlit_safe_dashboard.py** - Safe Fallback
