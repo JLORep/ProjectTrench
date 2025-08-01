@@ -68,7 +68,8 @@
       "Bash(claude --version)",
       "Bash(git fsck:*)",
       "Bash(git gc:*)",
-      "WebFetch(domain:trenchcoat-pro.streamlit.app)"
+      "WebFetch(domain:trenchcoat-pro.streamlit.app)",
+      "Bash(git rm:*)"
     ],
     "deny": []
   }
