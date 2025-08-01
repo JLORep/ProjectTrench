@@ -14,8 +14,9 @@ venv/
 .env.local
 *.env
 
-# Databases
+# Databases (allow trench.db for production)
 *.db
+!data/trench.db
 data/coins.db
 trenchcoat_money.db
 
