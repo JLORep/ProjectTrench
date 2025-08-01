@@ -251,133 +251,303 @@ def get_all_coins_from_db(limit_per_page=20, page=1, search_filter="", sort_by="
     except Exception as e:
         return [], 0, f"Database error: {e}"
 
-def render_stunning_coin_card(coin, index):
-    """Render a clean, properly structured coin card"""
+def render_half_screen_coin_card(coin, index):
+    """Render half-screen coin card with key stats and coin picture/ticker"""
     ticker = coin['ticker']
     gain = coin['price_gain']
     completeness = coin['completeness_score']
+    contract_address = coin.get('contract_address', '')
     
-    # Determine card style based on performance
+    # Determine performance category and styling
     if gain > 500:
-        bg_color = "#10b981"
+        bg_gradient = "linear-gradient(135deg, #10b981 0%, #047857 100%)"
         status_text = "🚀 MOONSHOT"
+        border_color = "#10b981"
+        glow_color = "rgba(16, 185, 129, 0.4)"
     elif gain > 200:
-        bg_color = "#3b82f6"
+        bg_gradient = "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)"
         status_text = "📈 STRONG"
+        border_color = "#3b82f6"
+        glow_color = "rgba(59, 130, 246, 0.4)"
     elif gain > 50:
-        bg_color = "#8b5cf6"
+        bg_gradient = "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)"
         status_text = "💎 SOLID"
+        border_color = "#8b5cf6"
+        glow_color = "rgba(139, 92, 246, 0.4)"
     else:
-        bg_color = "#6b7280"
+        bg_gradient = "linear-gradient(135deg, #6b7280 0%, #374151 100%)"
         status_text = "⚡ ACTIVE"
+        border_color = "#6b7280"
+        glow_color = "rgba(107, 114, 128, 0.4)"
     
-    # Format display values safely
+    # Format display values
     smart_wallets = f"{coin['smart_wallets']:,}"
     liquidity = f"${coin['liquidity']:,.0f}"
     market_cap = f"${coin['market_cap']:,.0f}"
-    peak_volume = f"${coin['peak_volume']:,.0f}"
     
-    # Clean enhanced card HTML - simplified structure
-    card_html = f"""<div class="coin-card-enhanced" style="background: linear-gradient(135deg, {bg_color} 0%, {bg_color}CC 100%); border-radius: 16px; padding: 24px; margin: 16px 0; color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); transition: all 0.3s ease; cursor: pointer; position: relative;">
-<div style="position: absolute; top: -10px; right: -10px; width: 40px; height: 40px; background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 4px 4px; opacity: 0.3; pointer-events: none;"></div>
-<div style="position: relative; z-index: 2;">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-<div style="display: flex; align-items: center; gap: 16px;">
-<div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">{ticker[0] if ticker else 'C'}</div>
-<div>
-<h3 style="margin: 0; font-size: 24px; font-weight: 700;">{ticker}</h3>
-<div style="opacity: 0.9; font-size: 13px; margin-top: 2px; font-weight: 500;">{status_text}</div>
-</div>
-</div>
-<div style="text-align: right;">
-<div style="background: rgba(255,255,255,0.2); border-radius: 10px; padding: 8px 14px; font-size: 20px; font-weight: 700; border: 1px solid rgba(255,255,255,0.15);">+{gain:.1f}%</div>
-<div style="opacity: 0.8; font-size: 11px; margin-top: 3px;">Price Gain</div>
-</div>
-</div>
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-<div style="background: rgba(255,255,255,0.12); border-radius: 10px; padding: 14px;">
-<div style="opacity: 0.8; font-size: 10px; margin-bottom: 4px; font-weight: 500;">👥 Smart Wallets</div>
-<div style="font-size: 16px; font-weight: 600;">{smart_wallets}</div>
-</div>
-<div style="background: rgba(255,255,255,0.12); border-radius: 10px; padding: 14px;">
-<div style="opacity: 0.8; font-size: 10px; margin-bottom: 4px; font-weight: 500;">💧 Liquidity</div>
-<div style="font-size: 16px; font-weight: 600;">{liquidity}</div>
-</div>
-<div style="background: rgba(255,255,255,0.12); border-radius: 10px; padding: 14px;">
-<div style="opacity: 0.8; font-size: 10px; margin-bottom: 4px; font-weight: 500;">📊 Market Cap</div>
-<div style="font-size: 16px; font-weight: 600;">{market_cap}</div>
-</div>
-<div style="background: rgba(255,255,255,0.12); border-radius: 10px; padding: 14px;">
-<div style="opacity: 0.8; font-size: 10px; margin-bottom: 4px; font-weight: 500;">📈 Peak Volume</div>
-<div style="font-size: 16px; font-weight: 600;">{peak_volume}</div>
-</div>
-</div>
-<div>
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-<span style="opacity: 0.8; font-size: 11px; font-weight: 500;">Data Completeness</span>
-<span style="font-size: 11px; font-weight: 600;">{completeness:.0f}%</span>
-</div>
-<div style="width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden;">
-<div style="width: {completeness}%; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%); border-radius: 3px; transition: width 0.6s ease;"></div>
-</div>
-</div>
-</div>
-</div>"""
+    # Generate coin image/icon (using first letter as fallback)
+    coin_icon = ticker[0].upper() if ticker else '?'
+    
+    # Half-screen card HTML with enhanced layout
+    card_html = f"""
+    <div class="half-screen-coin-card" 
+         style="background: {bg_gradient}; 
+                border-radius: 12px; 
+                padding: 16px; 
+                margin: 8px; 
+                color: white; 
+                box-shadow: 0 6px 20px rgba(0,0,0,0.25); 
+                border: 2px solid {border_color}; 
+                transition: all 0.3s ease; 
+                cursor: pointer;
+                position: relative;
+                min-height: 140px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;">
+        
+        <!-- Header with coin icon and ticker -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; 
+                           height: 36px; 
+                           border-radius: 50%; 
+                           background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%); 
+                           display: flex; 
+                           align-items: center; 
+                           justify-content: center; 
+                           font-size: 14px; 
+                           font-weight: bold;
+                           box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+                    {coin_icon}
+                </div>
+                <div>
+                    <h4 style="margin: 0; font-size: 18px; font-weight: 700;">{ticker}</h4>
+                    <div style="opacity: 0.85; font-size: 10px; margin-top: 1px;">{status_text}</div>
+                </div>
+            </div>
+            
+            <!-- Price gain badge -->
+            <div style="background: rgba(255,255,255,0.2); 
+                        border-radius: 8px; 
+                        padding: 4px 8px; 
+                        font-size: 14px; 
+                        font-weight: 700;">
+                +{gain:.1f}%
+            </div>
+        </div>
+        
+        <!-- Key stats grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+            <div style="background: rgba(255,255,255,0.15); border-radius: 6px; padding: 8px; text-align: center;">
+                <div style="opacity: 0.8; font-size: 9px; margin-bottom: 2px;">👥 Wallets</div>
+                <div style="font-size: 12px; font-weight: 600;">{smart_wallets}</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.15); border-radius: 6px; padding: 8px; text-align: center;">
+                <div style="opacity: 0.8; font-size: 9px; margin-bottom: 2px;">💧 Liquidity</div>
+                <div style="font-size: 12px; font-weight: 600;">{liquidity}</div>
+            </div>
+        </div>
+        
+        <!-- Data completeness bar -->
+        <div style="margin-top: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="opacity: 0.8; font-size: 9px;">Data Complete</span>
+                <span style="font-size: 9px; font-weight: 600;">{completeness:.0f}%</span>
+            </div>
+            <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden;">
+                <div style="width: {completeness}%; 
+                           height: 100%; 
+                           background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%); 
+                           transition: width 0.6s ease;">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hover effect background -->
+        <div style="position: absolute; 
+                    top: 0; left: 0; right: 0; bottom: 0; 
+                    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%); 
+                    border-radius: 12px; 
+                    opacity: 0; 
+                    transition: opacity 0.3s ease;
+                    pointer-events: none;">
+        </div>
+    </div>
+    """
     
     return card_html
 
 def render_coin_detail_page(coin):
-    """Render detailed coin analysis page"""
+    """Render full-screen detailed coin analysis page with all database info"""
     ticker = coin['ticker']
+    contract_address = coin.get('contract_address', 'N/A')
     
-    st.markdown(f"# 🪙 {ticker} - Detailed Analysis")
+    # Full-screen header with coin info
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); 
+                padding: 24px; 
+                border-radius: 16px; 
+                margin-bottom: 24px;
+                border: 2px solid #10b981;">
+        <h1 style="color: #10b981; margin: 0; display: flex; align-items: center; gap: 16px;">
+            <span style="width: 50px; height: 50px; background: linear-gradient(135deg, #10b981, #047857); 
+                         border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+                         font-size: 24px; font-weight: bold;">
+                {ticker[0] if ticker else '?'}
+            </span>
+            {ticker} - Complete Database Analysis
+        </h1>
+        <p style="color: #94a3b8; margin: 8px 0 0 66px; font-size: 16px;">
+            Contract: {contract_address[:20]}{'...' if len(contract_address) > 20 else ''}
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Back button
-    if st.button("← Back to Coin Data"):
-        st.rerun()
+    col1, col2 = st.columns([1, 4])
+    with col1:
+        if st.button("← Back to Coin Data", use_container_width=True):
+            st.session_state.show_coin_detail = None
+            st.rerun()
     
-    # Overview metrics
+    # Key Performance Metrics
+    st.subheader("📊 Key Performance Metrics")
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("📈 Price Gain", f"{coin['price_gain']:.1f}%")
+        st.metric("📈 Price Gain", f"{coin['price_gain']:.1f}%", 
+                 help="Calculated or generated price performance")
     with col2:
-        st.metric("👥 Smart Wallets", f"{coin['smart_wallets']:,}")
+        st.metric("👥 Smart Wallets", f"{coin['smart_wallets']:,}",
+                 help="Number of intelligent wallets holding this token")
     with col3:
-        st.metric("💧 Liquidity", f"${coin['liquidity']:,.0f}")
+        st.metric("💧 Liquidity", f"${coin['liquidity']:,.0f}",
+                 help="Available trading liquidity in USD")
     with col4:
-        st.metric("📊 Completeness", f"{coin['completeness_score']:.0f}%")
+        st.metric("📊 Data Completeness", f"{coin['completeness_score']:.0f}%",
+                 help="Percentage of available database fields")
     
-    # Available Data Section
-    st.subheader("✅ Available Data")
-    if coin['available_fields']:
-        for field in coin['available_fields']:
-            st.success(f"✅ {field}")
-    else:
-        st.warning("No complete data fields found")
+    # Detailed Database Information
+    st.subheader("🗄️ Complete Database Record")
     
-    # Missing Data Section
-    st.subheader("❌ Missing Data")
-    if coin['missing_fields']:
-        for field in coin['missing_fields']:
-            st.error(f"❌ {field} - Not available")
-    else:
-        st.success("All data fields are complete!")
+    # Create tabs for different data categories
+    data_tab1, data_tab2, data_tab3, data_tab4 = st.tabs(["💰 Financial Data", "📊 Market Data", "📈 Volume Data", "🔍 Technical Data"])
     
-    # Raw Data Display
-    with st.expander("🔍 Raw Database Record"):
-        st.json({
-            "ticker": coin['ticker'],
-            "contract_address": coin['contract_address'],
-            "discovery_price": coin['discovery_price'],
-            "current_price": coin['current_price'],
-            "smart_wallets": coin['smart_wallets'],
-            "liquidity": coin['liquidity'],
-            "market_cap": coin['market_cap'],
-            "peak_volume": coin['peak_volume'],
-            "discovery_mc": coin['discovery_mc'],
-            "axiom_volume": coin['axiom_volume'],
-            "discovery_time": coin['discovery_time']
-        })
+    with data_tab1:
+        st.markdown("### 💰 Financial Metrics")
+        fin_col1, fin_col2 = st.columns(2)
+        
+        with fin_col1:
+            st.info(f"**Discovery Price**: ${coin.get('discovery_price', 0):.8f}" if coin.get('discovery_price') else "**Discovery Price**: Not Available")
+            st.info(f"**Current Price**: ${coin.get('current_price', 0):.8f}" if coin.get('current_price') else "**Current Price**: Not Available")
+            st.info(f"**Discovery Market Cap**: ${coin.get('discovery_mc', 0):,.0f}" if coin.get('discovery_mc') else "**Discovery Market Cap**: Not Available")
+        
+        with fin_col2:
+            st.info(f"**Market Cap**: ${coin.get('market_cap', 0):,.0f}" if coin.get('market_cap') else "**Market Cap**: Enhanced Value")
+            st.info(f"**Liquidity**: ${coin.get('liquidity', 0):,.0f}" if coin.get('liquidity') else "**Liquidity**: Enhanced Value")
+            if coin.get('discovery_price') and coin.get('current_price') and coin.get('discovery_price') > 0:
+                gain = ((coin['current_price'] - coin['discovery_price']) / coin['discovery_price']) * 100
+                st.success(f"**Calculated Gain**: {gain:.2f}%")
+            else:
+                st.warning("**Price Gain**: Enhanced Calculation")
+    
+    with data_tab2:
+        st.markdown("### 📊 Market Intelligence")
+        market_col1, market_col2 = st.columns(2)
+        
+        with market_col1:
+            st.info(f"**Smart Wallets**: {coin.get('smart_wallets', 0):,}" if coin.get('smart_wallets') else "**Smart Wallets**: Enhanced Count")
+            st.info(f"**Discovery Time**: {coin.get('discovery_time', 'Unknown')}")
+        
+        with market_col2:
+            # Show potential API metrics that could be added
+            st.error("**24h Volume Change**: API Metric Available")
+            st.error("**Holder Count**: API Metric Available")
+            st.error("**DEX Listings**: API Metric Available")
+    
+    with data_tab3:
+        st.markdown("### 📈 Volume Analysis")
+        vol_col1, vol_col2 = st.columns(2)
+        
+        with vol_col1:
+            st.info(f"**Peak Volume**: ${coin.get('peak_volume', 0):,.0f}" if coin.get('peak_volume') else "**Peak Volume**: Enhanced Value")
+            st.info(f"**Axiom Volume**: ${coin.get('axiom_volume', 0):,.0f}" if coin.get('axiom_volume') else "**Axiom Volume**: Enhanced Value")
+        
+        with vol_col2:
+            st.error("**24h Volume**: API Metric Available")
+            st.error("**Volume Trend**: API Metric Available")
+            st.error("**Trading Pairs**: API Metric Available")
+    
+    with data_tab4:
+        st.markdown("### 🔍 Technical Details")
+        tech_col1, tech_col2 = st.columns(2)
+        
+        with tech_col1:
+            st.info(f"**Contract Address**: {contract_address}")
+            st.info(f"**Ticker Hash**: {coin.get('ticker_hash', 'N/A')}")
+        
+        with tech_col2:
+            st.error("**Token Standard**: API Metric Available")
+            st.error("**Decimals**: API Metric Available")
+            st.error("**Total Supply**: API Metric Available")
+    
+    # Data Quality Analysis
+    st.subheader("📋 Data Quality Analysis")
+    
+    quality_col1, quality_col2 = st.columns(2)
+    
+    with quality_col1:
+        st.markdown("### ✅ Available Database Fields")
+        if coin['available_fields']:
+            for field in coin['available_fields']:
+                st.success(f"✅ {field}")
+        else:
+            st.warning("No complete data fields found")
+    
+    with quality_col2:
+        st.markdown("### ❌ Missing Database Fields")
+        if coin['missing_fields']:
+            for field in coin['missing_fields']:
+                st.error(f"❌ {field}")
+        else:
+            st.success("All database fields are complete!")
+    
+    # Potential API Enhancements
+    st.subheader("🚀 Potential API Enhancements")
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); 
+                padding: 16px; border-radius: 12px; color: white;">
+        <h4 style="margin: 0 0 12px 0;">🔗 Additional metrics available via API integration:</h4>
+        <ul style="margin: 0; padding-left: 20px;">
+            <li><strong>Real-time Price Data</strong> - Live price feeds from DEX</li>
+            <li><strong>Social Metrics</strong> - Twitter mentions, Telegram activity</li>
+            <li><strong>Holder Analytics</strong> - Distribution, whale movements</li>
+            <li><strong>Trading Metrics</strong> - Depth, spread, volatility</li>
+            <li><strong>Security Scores</strong> - Rug pull risk, audit status</li>
+            <li><strong>Cross-chain Data</strong> - Multi-blockchain presence</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Raw JSON Data
+    with st.expander("🔍 Raw Database JSON"):
+        raw_data = {
+            "ticker": coin.get('ticker'),
+            "contract_address": coin.get('contract_address'),
+            "discovery_price": coin.get('discovery_price'),
+            "current_price": coin.get('current_price'),
+            "smart_wallets": coin.get('smart_wallets'),
+            "liquidity": coin.get('liquidity'),
+            "market_cap": coin.get('market_cap'),
+            "peak_volume": coin.get('peak_volume'),
+            "discovery_mc": coin.get('discovery_mc'),
+            "axiom_volume": coin.get('axiom_volume'),
+            "discovery_time": coin.get('discovery_time'),
+            "completeness_score": coin.get('completeness_score'),
+            "available_fields": coin.get('available_fields'),
+            "missing_fields": coin.get('missing_fields')
+        }
+        st.json(raw_data)
 
 def render_enhanced_coin_data_tab():
     """Render the enhanced coin data tab with stunning cards"""
@@ -421,7 +591,7 @@ def render_enhanced_coin_data_tab():
             st.session_state.coin_order = sort_order
     
     with col4:
-        coins_per_page = st.selectbox("Per page", [10, 20, 50], index=1)
+        coins_per_page = st.selectbox("Per page", [20, 50, 100], index=0)  # Default to 20 as requested
     
     # Load coins with current filters
     coins, total_coins, status = get_all_coins_from_db(
@@ -498,18 +668,55 @@ def render_enhanced_coin_data_tab():
         </style>
         """, unsafe_allow_html=True)
         
-        # Render stunning coin cards
+        # Enhanced CSS for half-screen cards
+        st.markdown("""
+        <style>
+        .half-screen-coin-card:hover {
+            transform: translateY(-4px) scale(1.02) !important;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4) !important;
+        }
+        
+        .half-screen-coin-card:hover .hover-effect {
+            opacity: 1 !important;
+        }
+        
+        @keyframes cardSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .half-screen-coin-card {
+            animation: cardSlideIn 0.4s ease-out forwards;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        # Render half-screen coin cards in 2-column grid
+        st.subheader(f"🗄️ All Database Coins ({len(coins)} of {total_coins:,} total)")
+        
+        # Create 2-column layout for half-screen cards
+        cols = st.columns(2)
+        
         for i, coin in enumerate(coins):
-            card_html = render_stunning_coin_card(coin, i)
+            card_html = render_half_screen_coin_card(coin, i)
             
-            # Create clickable container
-            with st.container():
-                st.markdown(card_html, unsafe_allow_html=True)
-                
-                # Add invisible button for click detection
-                col1, col2, col3 = st.columns([1, 2, 1])
-                with col2:
-                    if st.button(f"View {coin['ticker']} Details", key=f"detail_{coin['ticker']}_{i}"):
+            # Alternate between columns
+            col_index = i % 2
+            
+            with cols[col_index]:
+                # Create clickable container
+                with st.container():
+                    st.markdown(card_html, unsafe_allow_html=True)
+                    
+                    # Click button to view full details
+                    if st.button(f"📊 View Full Details", key=f"detail_{coin['ticker']}_{i}", 
+                                use_container_width=True):
                         st.session_state.show_coin_detail = coin
                         st.rerun()
     
