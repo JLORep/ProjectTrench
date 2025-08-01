@@ -57,7 +57,7 @@ class StreamlitDatabase:
             return []
     
     def get_live_coins(self, limit: int = 20) -> List[Dict[str, Any]]:
-        """Get live coins from trench.db (1733 real coins)"""
+        """Get live coins from trench.db (1733 real coins) - RAW FORMAT for dashboard compatibility"""
         try:
             if not os.path.exists(self.trench_db_path):
                 return []
@@ -70,6 +70,7 @@ class StreamlitDatabase:
                 SELECT ticker, ca, discovery_price, axiom_price, axiom_mc, axiom_volume, 
                        liquidity, peak_volume, smart_wallets, discovery_time
                 FROM coins 
+                WHERE ticker IS NOT NULL AND ticker != ''
                 ORDER BY RANDOM() 
                 LIMIT ?
             """, (limit,))
@@ -77,26 +78,20 @@ class StreamlitDatabase:
             rows = cursor.fetchall()
             conn.close()
             
-            # Convert to dashboard format
+            # Convert to RAW format that dashboard expects (with discovery_price and axiom_price fields)
             coins = []
             for row in rows:
-                # Use axiom_price if available, fallback to discovery_price
-                price = row['axiom_price'] if row['axiom_price'] else (row['discovery_price'] if row['discovery_price'] else 0.000001)
-                
                 coin = {
-                    'ticker': f"${row['ticker'] if row['ticker'] else 'UNKNOWN'}",
-                    'stage': self._get_processing_stage_by_price(price),
-                    'price': price,
-                    'volume': row['axiom_volume'] if row['axiom_volume'] else (row['peak_volume'] if row['peak_volume'] else 0),
-                    'score': self._calculate_confidence_score(row),
-                    'timestamp': row['discovery_time'] if row['discovery_time'] else datetime.now().isoformat(),
-                    'change_24h': 0,  # Not available in trench.db
+                    'ticker': row['ticker'] if row['ticker'] else 'UNKNOWN',
+                    'ca': row['ca'] if row['ca'] else '',
+                    'discovery_price': row['discovery_price'] if row['discovery_price'] else 0,
+                    'axiom_price': row['axiom_price'] if row['axiom_price'] else 0,
+                    'axiom_mc': row['axiom_mc'] if row['axiom_mc'] else 0,
+                    'axiom_volume': row['axiom_volume'] if row['axiom_volume'] else 0,
                     'liquidity': row['liquidity'] if row['liquidity'] else 0,
-                    'source': 'trench_db',
-                    'enriched': True,
-                    'market_cap': row['axiom_mc'] if row['axiom_mc'] else 0,
+                    'peak_volume': row['peak_volume'] if row['peak_volume'] else 0,
                     'smart_wallets': row['smart_wallets'] if row['smart_wallets'] else 0,
-                    'contract_address': row['ca'] if row['ca'] else ''
+                    'discovery_time': row['discovery_time'] if row['discovery_time'] else ''
                 }
                 coins.append(coin)
             
