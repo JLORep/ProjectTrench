@@ -4,6 +4,14 @@ TrenchCoat Pro - Ultra Premium Dashboard
 Apple/PayPal-level design with live updates and animations
 """
 import streamlit as st
+
+# Import safe Unicode handlers
+try:
+    from unicode_handler import safe_print
+except ImportError:
+    def safe_print(text, **kwargs):
+        """Fallback safe print"""
+        print(text, **kwargs)
 import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
@@ -412,7 +420,7 @@ class UltraPremiumDashboard:
             live_coins = connector.get_live_coins(10)
             
             if live_coins:
-                print(f"Dashboard: Retrieved {len(live_coins)} live coins from database")
+                safe_print(f"Dashboard: Retrieved {len(live_coins)} live coins from database")
                 
                 # Convert to display format and store in session
                 st.session_state.processed_coins = live_coins
