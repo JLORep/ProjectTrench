@@ -536,7 +536,7 @@ DATABASE: data/trench.db
             live_coins = connector.get_live_coins(10)
             
             if live_coins:
-                safe_print(f"Dashboard: Retrieved {len(live_coins)} live coins from database")
+                print(f"Dashboard: Retrieved {len(live_coins)} live coins from database")
                 
                 # Convert to display format and store in session
                 st.session_state.processed_coins = live_coins
@@ -1059,8 +1059,12 @@ DATABASE: data/trench.db
                 builder.render_model_builder()
             
             with subtab2:
-                manager = HistoricDataManager()
-                manager.render_historic_data_tab()
+                try:
+                    manager = HistoricDataManager()
+                    manager.render_historic_data_tab()
+                except Exception as e:
+                    st.error(f"Historic data manager error: {str(e)}")
+                    st.info("📊 Historic data manager not available")
                 
         except ImportError as e:
             st.error(f"Model Builder components not available: {e}")
@@ -1149,31 +1153,36 @@ DATABASE: data/trench.db
         """Start the complete fresh database pipeline"""
         try:
             # Import dataset manager
-            from src.data.historic_dataset_manager import HistoricDatasetManager
-            
-            manager = HistoricDatasetManager()
-            
-            # Update status
-            st.session_state.dataset_operation_status = "Starting fresh pipeline..."
-            
-            # Start the pipeline in background
-            if hasattr(manager, 'start_fresh_pipeline'):
-                manager.start_fresh_pipeline()
-                st.session_state.dataset_operation_status = "Fresh pipeline started! Check progress above."
-            else:
-                st.error("Fresh pipeline method not available")
+            try:
+                from src.data.historic_dataset_manager import HistoricDatasetManager
+                manager = HistoricDatasetManager()
                 
-        except ImportError:
-            st.error("Dataset manager not available. Creating basic version...")
+                # Update status
+                st.session_state.dataset_operation_status = "Starting fresh pipeline..."
+                
+                # Start the pipeline in background
+                if hasattr(manager, 'start_fresh_pipeline'):
+                    manager.start_fresh_pipeline()
+                    st.session_state.dataset_operation_status = "Fresh pipeline started! Check progress above."
+                else:
+                    st.error("Fresh pipeline method not available")
+            except ImportError:
+                st.info("📊 Dataset manager not available - using basic display")
+                self.create_basic_dataset_manager()
+                
+        except Exception as e:
+            st.error(f"Dataset error: {str(e)}")
             self.create_basic_dataset_manager()
     
     def start_enrichment_only(self):
         """Start enrichment process only"""
         try:
-            from src.data.master_enricher import MasterEnricher
-            
-            enricher = MasterEnricher()
-            st.session_state.dataset_operation_status = "Starting enrichment process..."
+            try:
+                from src.data.master_enricher import MasterEnricher
+                enricher = MasterEnricher()
+                st.session_state.dataset_operation_status = "Starting enrichment process..."
+            except ImportError:
+                st.info("📊 Master enricher not available - using basic display")
             
             # Simulate enrichment progress
             st.session_state.enrichment_progress = {
