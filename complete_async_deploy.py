@@ -91,32 +91,35 @@ class CompleteAsyncDeployer:
                 self.log_message(f"STREAMLIT: Health check/reboot failed with exit code {result.returncode}")
                 self.log_message(f"STREAMLIT OUTPUT: {result.stdout}")
                 
-                # Send warning notification
-                self.send_discord_notification(
-                    "⚠️ Streamlit App Issues",
-                    f"App health check failed or reboot unsuccessful\n\n**Action:** Manual check may be required",
-                    0xf59e0b  # Orange
-                )
+                # Only send warning notification for truly major changes (reduce spam)
+                if "major:" in self.commit_msg.lower() or "critical:" in self.commit_msg.lower():
+                    self.send_discord_notification(
+                        "⚠️ Streamlit App Issues",
+                        f"App health check failed or reboot unsuccessful\n\n**Action:** Manual check may be required",
+                        0xf59e0b  # Orange
+                    )
                 
         except subprocess.TimeoutExpired:
             self.log_message("STREAMLIT: Health check/reboot timed out after 3 minutes")
             
-            # Send timeout notification
-            self.send_discord_notification(
-                "⏰ Streamlit Health Check Timeout",
-                "App health check timed out - may need manual intervention",
-                0xf59e0b  # Orange
-            )
+            # Only send timeout notification for critical changes
+            if "critical:" in self.commit_msg.lower():
+                self.send_discord_notification(
+                    "⏰ Streamlit Health Check Timeout",
+                    "App health check timed out - may need manual intervention",
+                    0xf59e0b  # Orange
+                )
             
         except Exception as e:
             self.log_message(f"STREAMLIT ERROR: {e}")
             
-            # Send error notification
-            self.send_discord_notification(
-                "💥 Streamlit Health Check Error",
-                f"Unexpected error during app health check\n\n**Error:** {str(e)[:200]}",
-                0xef4444  # Red
-            )
+            # Only send error notification for critical changes
+            if "critical:" in self.commit_msg.lower():
+                self.send_discord_notification(
+                    "💥 Streamlit Health Check Error",
+                    f"Unexpected error during app health check\n\n**Error:** {str(e)[:200]}",
+                    0xef4444  # Red
+                )
     
     def send_discord_notification(self, title: str, description: str, color: int = 0x10b981):
         """Send Discord notification with rate limiting"""

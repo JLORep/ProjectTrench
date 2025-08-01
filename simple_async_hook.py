@@ -18,7 +18,7 @@ def should_deploy(commit_msg: str) -> bool:
     deploy_keywords = ['fix:', 'bug:', 'feature:', 'major:', 'critical:', 'implement', 'complete', 'deploy:', 'deployment', 'beautiful', 'card', 'display', 'runners']
     
     # Skip keywords  
-    skip_keywords = ['wip', 'temp', 'draft', 'test:']
+    skip_keywords = ['wip', 'temp', 'draft', 'test:', 'trigger:', 'reboot', 'auto-commit', 'sync']
     
     # Check if should deploy
     should = any(keyword in msg_lower for keyword in deploy_keywords)

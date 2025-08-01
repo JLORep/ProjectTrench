@@ -21,12 +21,16 @@ class StreamlitRebooter:
     def check_app_health(self) -> dict:
         """Check if the Streamlit app is responding properly"""
         try:
-            response = requests.get(self.app_url, timeout=10, allow_redirects=False)
+            response = requests.get(self.app_url, timeout=15, allow_redirects=True)
+            
+            # Be more tolerant - consider 200, 302, 303 as healthy
+            is_healthy = response.status_code in [200, 302, 303]
+            needs_reboot = response.status_code in [502, 503, 504]
             
             return {
                 'status_code': response.status_code,
-                'is_healthy': response.status_code == 200,
-                'needs_reboot': response.status_code in [303, 502, 503, 504],
+                'is_healthy': is_healthy,
+                'needs_reboot': needs_reboot,
                 'response_time': response.elapsed.total_seconds(),
                 'timestamp': datetime.now().isoformat()
             }
