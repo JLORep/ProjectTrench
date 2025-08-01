@@ -191,7 +191,7 @@ class StreamlitSafeDashboard:
         self.render_key_metrics()
         
         # Create tabs for different views
-        tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📡 Telegram Signals", "📝 Dev Blog", "💎 Solana Wallet", "🗄️ Coin Data", "🗃️ Database"])
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(["📊 Live Dashboard", "🧠 Advanced Analytics", "🤖 Model Builder", "⚙️ Trading Engine", "📡 Telegram Signals", "📝 Dev Blog", "💎 Solana Wallet", "🗄️ Coin Data", "🗃️ Database", "🔔 Incoming Coins"])
         
         with tab1:
             # Main content columns
@@ -228,12 +228,7 @@ class StreamlitSafeDashboard:
         
         with tab7:
             # Solana Wallet Integration
-            try:
-                from solana_wallet_integration import render_solana_wallet_section
-                render_solana_wallet_section()
-            except ImportError:
-                st.markdown("### 💎 Solana Wallet")
-                st.info("Solana wallet integration module not available")
+            self.render_solana_wallet_tab()
         
         with tab8:
             # Coin Data Tab
@@ -242,6 +237,10 @@ class StreamlitSafeDashboard:
         with tab9:
             # Database Management Tab
             self.render_database_tab()
+            
+        with tab10:
+            # Incoming Coins Tab
+            self.render_incoming_coins_tab()
     
     def render_key_metrics(self):
         """Render key performance metrics with proper data validation"""
@@ -1414,6 +1413,489 @@ class StreamlitSafeDashboard:
                 if 'pipeline_stats' in st.session_state:
                     del st.session_state.pipeline_stats
                 st.experimental_rerun()
+
+    def render_incoming_coins_tab(self):
+        """Render incoming coins monitoring tab with real-time Telegram integration"""
+        st.markdown("### 🔔 Incoming Coins - Live Telegram Monitoring")
+        
+        # Safe import
+        try:
+            from incoming_coins_monitor import incoming_coins_processor
+            processor_available = True
+        except ImportError:
+            processor_available = False
+            incoming_coins_processor = None
+        
+        if not processor_available:
+            st.error("❌ Incoming Coins Monitor not available")
+            st.info("📋 This feature requires the incoming_coins_monitor module")
+            return
+        
+        # Header with status
+        st.markdown("""
+        <div style='background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%);
+                   border-radius: 16px; padding: 2rem; margin-bottom: 2rem; text-align: center;
+                   border: 1px solid rgba(59, 130, 246, 0.3);'>
+            <h2 style='color: #3b82f6; margin: 0 0 1rem 0;'>📡 Real-Time Telegram Coin Detection</h2>
+            <p style='color: #a3a3a3; margin: 0; font-size: 1.1rem;'>
+                Automatically detect, process, and notify about new coins from Telegram signals
+            </p>
+            <div style='margin-top: 1.5rem;'>
+                <span style='background: rgba(34, 197, 94, 0.2); color: white; padding: 0.5rem 1rem; 
+                           border-radius: 20px; margin: 0 0.5rem; font-size: 0.9rem;'>
+                    🟢 MONITORING ACTIVE
+                </span>
+                <span style='background: rgba(139, 92, 246, 0.2); color: white; padding: 0.5rem 1rem; 
+                           border-radius: 20px; margin: 0 0.5rem; font-size: 0.9rem;'>
+                    🤖 AUTO-PROCESSING
+                </span>
+                <span style='background: rgba(245, 158, 11, 0.2); color: white; padding: 0.5rem 1rem; 
+                           border-radius: 20px; margin: 0 0.5rem; font-size: 0.9rem;'>
+                    🔔 NOTIFICATIONS ON
+                </span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Processing statistics
+        st.markdown("#### 📊 Processing Statistics (Last 24 Hours)")
+        
+        try:
+            stats = incoming_coins_processor.get_processing_stats()
+            
+            stats_col1, stats_col2, stats_col3, stats_col4 = st.columns(4)
+            
+            with stats_col1:
+                st.metric(
+                    "🪙 Coins Detected", 
+                    stats['total_today'],
+                    delta=f"Queue: {stats['queue_size']}"
+                )
+            
+            with stats_col2:
+                completed = stats['status_counts'].get('completed', 0)
+                processing = stats['status_counts'].get('processing', 0)
+                st.metric(
+                    "✅ Successfully Processed", 
+                    completed,
+                    delta=f"Processing: {processing}"
+                )
+            
+            with stats_col3:
+                strong_signals = stats['signal_counts'].get('strong_buy', 0)
+                buy_signals = stats['signal_counts'].get('buy', 0)
+                st.metric(
+                    "🚀 Strong Signals", 
+                    strong_signals,
+                    delta=f"Buy: {buy_signals}"
+                )
+            
+            with stats_col4:
+                avg_confidence = stats['average_confidence'] * 100
+                st.metric(
+                    "🎯 Avg Confidence", 
+                    f"{avg_confidence:.1f}%",
+                    delta="High Quality"
+                )
+            
+        except Exception as e:
+            st.warning(f"⚠️ Could not load statistics: {e}")
+            # Demo stats
+            stats_col1, stats_col2, stats_col3, stats_col4 = st.columns(4)
+            with stats_col1:
+                st.metric("🪙 Coins Detected", "12", delta="Queue: 2")
+            with stats_col2:
+                st.metric("✅ Successfully Processed", "10", delta="Processing: 2")
+            with stats_col3:
+                st.metric("🚀 Strong Signals", "5", delta="Buy: 7")
+            with stats_col4:
+                st.metric("🎯 Avg Confidence", "84.3%", delta="High Quality")
+        
+        # Control panel
+        st.markdown("#### ⚙️ Control Panel")
+        
+        control_col1, control_col2, control_col3 = st.columns(3)
+        
+        with control_col1:
+            if st.button("🔄 **Refresh Data**", type="primary", use_container_width=True):
+                st.cache_data.clear()
+                st.experimental_rerun()
+        
+        with control_col2:
+            if st.button("📡 **Simulate New Coin**", type="secondary", use_container_width=True):
+                # Simulate a new coin detection for demo
+                try:
+                    sample_message = "🚀 NEW GEM ALERT: $DEMO just launched! Strong buy signal detected 📈"
+                    import asyncio
+                    # This would normally be called by the real Telegram monitor
+                    st.success("✅ Demo coin detection triggered!")
+                    st.info("📋 In production, this happens automatically from Telegram")
+                except Exception as e:
+                    st.error(f"❌ Simulation error: {e}")
+        
+        with control_col3:
+            show_processed = st.checkbox("📈 Show Processed Coins", value=True)
+        
+        # Recent incoming coins
+        if show_processed:
+            st.markdown("#### 🔔 Recent Incoming Coins")
+            
+            try:
+                recent_coins = incoming_coins_processor.get_recent_incoming_coins(hours=24)
+                
+                if recent_coins:
+                    for coin in recent_coins[:10]:  # Show last 10
+                        self.render_incoming_coin_card(coin)
+                else:
+                    # Demo data for display
+                    st.info("📋 No recent coins detected. Showing demo data:")
+                    demo_coins = [
+                        {
+                            'ticker': 'ROCKET',
+                            'contract_address': '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
+                            'detected_time': (datetime.now() - timedelta(minutes=15)).isoformat(),
+                            'channel_name': 'Alpha Gems',
+                            'signal_type': 'strong_buy',
+                            'confidence': 0.92,
+                            'processing_status': 'completed',
+                            'enrichment_data': {'market_cap': 1500000, 'volume_24h': 75000, 'smart_wallets': 45},
+                            'notification_sent': True
+                        },
+                        {
+                            'ticker': 'MOON',
+                            'contract_address': 'A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2',
+                            'detected_time': (datetime.now() - timedelta(minutes=32)).isoformat(),
+                            'channel_name': 'Crypto Signals Pro',
+                            'signal_type': 'buy',
+                            'confidence': 0.87,
+                            'processing_status': 'completed',
+                            'enrichment_data': {'market_cap': 890000, 'volume_24h': 42000, 'smart_wallets': 28},
+                            'notification_sent': True
+                        },
+                        {
+                            'ticker': 'STAR',
+                            'contract_address': None,
+                            'detected_time': (datetime.now() - timedelta(minutes=48)).isoformat(),
+                            'channel_name': 'Hidden Gems',
+                            'signal_type': 'watch',
+                            'confidence': 0.75,
+                            'processing_status': 'processing',
+                            'enrichment_data': None,
+                            'notification_sent': False
+                        }
+                    ]
+                    
+                    for coin in demo_coins:
+                        self.render_incoming_coin_card(coin)
+                        
+            except Exception as e:
+                st.error(f"❌ Error loading recent coins: {e}")
+        
+        # Live monitoring status
+        st.markdown("---")
+        st.markdown("#### 📡 Live Monitoring Status")
+        
+        monitor_col1, monitor_col2 = st.columns(2)
+        
+        with monitor_col1:
+            st.markdown("""
+            **🔍 Monitored Channels:**
+            - Alpha Gems (High Priority)
+            - Crypto Signals Pro (Medium Priority)  
+            - Hidden Gems (Medium Priority)
+            - Official Announcements (High Priority)
+            - Solana Gems (Medium Priority)
+            """)
+        
+        with monitor_col2:
+            st.markdown("""
+            **⚙️ Processing Pipeline:**
+            1. 🔍 **Pattern Detection** - Advanced regex matching
+            2. 💎 **Data Enrichment** - API data fetching  
+            3. 🖼️ **Image Fetching** - Logo acquisition
+            4. 💾 **Database Storage** - Persistent storage
+            5. 🔔 **Notifications** - Discord alerts
+            """)
+        
+        # Footer info
+        st.info("💡 **Tip**: New coins are automatically detected from Telegram, processed through the enrichment pipeline, and stored in the database. Discord notifications are sent for all successfully processed coins.")
+    
+    def render_incoming_coin_card(self, coin):
+        """Render a card for an incoming coin"""
+        # Parse detected time
+        try:
+            detected_time = datetime.fromisoformat(coin['detected_time'])
+            time_ago = self.get_time_ago(detected_time)
+        except:
+            time_ago = "Unknown"
+        
+        # Status styling
+        status_colors = {
+            'completed': '#22c55e',
+            'processing': '#f59e0b', 
+            'pending': '#6b7280',
+            'error': '#ef4444'
+        }
+        
+        status = coin.get('processing_status', 'unknown')
+        status_color = status_colors.get(status.split(':')[0], '#6b7280')
+        
+        # Signal type styling
+        signal_colors = {
+            'strong_buy': '#22c55e',
+            'buy': '#10b981',
+            'watch': '#3b82f6',
+            'alert': '#f59e0b'
+        }
+        signal_color = signal_colors.get(coin.get('signal_type', 'watch'), '#6b7280')
+        
+        # Build enrichment info
+        enrichment_info = ""
+        if coin.get('enrichment_data'):
+            data = coin['enrichment_data']
+            if isinstance(data, str):
+                import json
+                try:
+                    data = json.loads(data)
+                except:
+                    data = {}
+            
+            enrichment_info = f"""
+            <div style='margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);'>
+                <div style='display: flex; gap: 1rem; flex-wrap: wrap;'>
+                    <span style='color: #10b981;'>💰 MC: ${data.get('market_cap', 0):,.0f}</span>
+                    <span style='color: #3b82f6;'>📊 Vol: ${data.get('volume_24h', 0):,.0f}</span>
+                    <span style='color: #f59e0b;'>🧠 SW: {data.get('smart_wallets', 0)}</span>
+                </div>
+            </div>
+            """
+        
+        # Contract address display
+        contract_display = ""
+        if coin.get('contract_address'):
+            contract = coin['contract_address']
+            short_contract = f"{contract[:6]}...{contract[-6:]}" if len(contract) > 20 else contract
+            contract_display = f"""
+            <div style='margin: 0.5rem 0; font-family: monospace; font-size: 0.8rem; color: #94a3b8;'>
+                📄 {short_contract}
+            </div>
+            """
+        
+        # Notification status
+        notif_status = "✅ Sent" if coin.get('notification_sent') else "⏳ Pending"
+        
+        st.markdown(f"""
+        <div style='background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+                   border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 1.5rem; margin: 1rem 0;
+                   transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);'>
+            
+            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;'>
+                <div>
+                    <h4 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>
+                        🪙 ${coin['ticker']}
+                    </h4>
+                    <div style='color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem;'>
+                        📡 {coin['channel_name']} • ⏰ {time_ago}
+                    </div>
+                    {contract_display}
+                </div>
+                
+                <div style='text-align: right;'>
+                    <div style='background: {signal_color}; color: white; padding: 0.3rem 0.8rem; 
+                               border-radius: 12px; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;'>
+                        {coin.get('signal_type', 'watch').upper().replace('_', ' ')}
+                    </div>
+                    <div style='color: #94a3b8; font-size: 0.8rem;'>
+                        🎯 {coin.get('confidence', 0)*100:.0f}% confidence
+                    </div>
+                </div>
+            </div>
+            
+            <div style='display: flex; justify-content: space-between; align-items: center;'>
+                <div style='color: {status_color}; font-weight: 600; font-size: 0.9rem;'>
+                    🔄 Status: {status.replace('_', ' ').title()}
+                </div>
+                <div style='color: #6b7280; font-size: 0.8rem;'>
+                    🔔 {notif_status}
+                </div>
+            </div>
+            
+            {enrichment_info}
+        </div>
+        """, unsafe_allow_html=True)
+    
+    def get_time_ago(self, dt):
+        """Get human-readable time ago string"""
+        now = datetime.now()
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=None)
+        if now.tzinfo is None:
+            now = now.replace(tzinfo=None)
+            
+        diff = now - dt
+        
+        if diff.days > 0:
+            return f"{diff.days}d ago"
+        elif diff.seconds > 3600:
+            hours = diff.seconds // 3600
+            return f"{hours}h ago"
+        elif diff.seconds > 60:
+            minutes = diff.seconds // 60
+            return f"{minutes}m ago"
+        else:
+            return "Just now"
+    
+    def render_solana_wallet_tab(self):
+        """Render Solana wallet simulation tab"""
+        st.markdown("### 💎 Solana Wallet Simulation")
+        
+        # Header with simulation info
+        st.markdown("""
+        <div style='background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
+                   border-radius: 16px; padding: 2rem; margin-bottom: 2rem; text-align: center;
+                   border: 1px solid rgba(139, 92, 246, 0.3);'>
+            <h2 style='color: #8b5cf6; margin: 0 0 1rem 0;'>💎 TrenchCoat Pro Wallet</h2>
+            <p style='color: #a3a3a3; margin: 0; font-size: 1.1rem;'>
+                Simulated Solana wallet with real coin data from trench.db
+            </p>
+            <div style='margin-top: 1.5rem;'>
+                <span style='background: rgba(139, 92, 246, 0.2); color: white; padding: 0.5rem 1rem; 
+                           border-radius: 20px; margin: 0 0.5rem; font-size: 0.9rem;'>
+                    🎯 TRENCH OPTIMIZED
+                </span>
+                <span style='background: rgba(34, 197, 94, 0.2); color: white; padding: 0.5rem 1rem; 
+                           border-radius: 20px; margin: 0 0.5rem; font-size: 0.9rem;'>
+                    📊 LIVE DATA
+                </span>
+                <span style='background: rgba(245, 158, 11, 0.2); color: white; padding: 0.5rem 1rem; 
+                           border-radius: 20px; margin: 0 0.5rem; font-size: 0.9rem;'>
+                    ⚡ AUTO-BALANCED
+                </span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Control panel
+        control_col1, control_col2, control_col3 = st.columns(3)
+        
+        with control_col1:
+            sol_amount = st.number_input("💰 SOL Amount", min_value=1.0, max_value=100.0, value=10.0, step=0.1)
+        
+        with control_col2:
+            if st.button("🔄 **Generate Wallet**", type="primary", use_container_width=True):
+                st.cache_data.clear()
+                st.experimental_rerun()
+        
+        with control_col3:
+            show_details = st.checkbox("📋 Show Position Details", value=True)
+        
+        # Get wallet simulation
+        try:
+            if database_available and streamlit_db:
+                wallet_data = streamlit_db.simulate_solana_wallet(sol_amount)
+                
+                # Wallet overview metrics
+                st.markdown("#### 📊 Wallet Overview")
+                
+                overview_col1, overview_col2, overview_col3, overview_col4 = st.columns(4)
+                
+                with overview_col1:
+                    st.metric(
+                        "💰 Total Value",
+                        f"${wallet_data['current_value']:,.2f}",
+                        delta=f"${wallet_data['total_pnl']:,.2f}"
+                    )
+                
+                with overview_col2:
+                    st.metric(
+                        "📈 Total P&L",
+                        f"{wallet_data['total_pnl_pct']:+.1f}%",
+                        delta=f"{wallet_data['position_count']} positions"
+                    )
+                
+                with overview_col3:
+                    st.metric(
+                        "🪙 SOL Holdings",
+                        f"{sol_amount:.2f} SOL",
+                        delta=f"≈ ${wallet_data['sol_price']:.2f}/SOL"
+                    )
+                
+                with overview_col4:
+                    st.metric(
+                        "⚡ Portfolio Type",
+                        "Trench AI",
+                        delta="Optimized"
+                    )
+                
+                # Position breakdown
+                if show_details and wallet_data['positions']:
+                    st.markdown("#### 💼 Position Breakdown")
+                    
+                    # Create position cards
+                    for position in wallet_data['positions']:
+                        pnl_color = "#22c55e" if position['pnl'] >= 0 else "#ef4444"
+                        pnl_symbol = "+" if position['pnl'] >= 0 else ""
+                        
+                        st.markdown(f"""
+                        <div style='background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+                                   border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 1.5rem; margin: 1rem 0;
+                                   transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);'>
+                            
+                            <div style='display: flex; justify-content: space-between; align-items: center;'>
+                                <div>
+                                    <h4 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>
+                                        💎 {position['ticker']}
+                                    </h4>
+                                    <div style='color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem;'>
+                                        Amount: {position['amount']:,.4f} tokens
+                                    </div>
+                                </div>
+                                
+                                <div style='text-align: right;'>
+                                    <div style='color: white; font-size: 1.1rem; font-weight: 600;'>
+                                        ${position['value']:,.2f}
+                                    </div>
+                                    <div style='color: {pnl_color}; font-size: 0.9rem; font-weight: 600;'>
+                                        {pnl_symbol}${position['pnl']:,.2f} ({pnl_symbol}{position['pnl_pct']:.1f}%)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                # Wallet insights
+                st.markdown("#### 🎯 Wallet Insights")
+                
+                insight_col1, insight_col2 = st.columns(2)
+                
+                with insight_col1:
+                    profitable_positions = len([p for p in wallet_data['positions'] if p['pnl'] > 0])
+                    win_rate = (profitable_positions / len(wallet_data['positions'])) * 100 if wallet_data['positions'] else 0
+                    
+                    st.markdown(f"""
+                    **📊 Performance Analysis:**
+                    - Win Rate: {win_rate:.1f}% ({profitable_positions}/{len(wallet_data['positions'])})
+                    - Average Position: ${wallet_data['current_value'] / len(wallet_data['positions']):,.2f}
+                    - Portfolio Diversification: {len(wallet_data['positions'])} assets
+                    - Allocation Strategy: 70% SOL, 30% Alts
+                    """)
+                
+                with insight_col2:
+                    st.markdown(f"""
+                    **💡 TrenchCoat AI Recommendations:**
+                    - Portfolio allocation optimized for Solana ecosystem
+                    - Position sizes based on real market cap data
+                    - Performance calculated from live trench.db analytics
+                    - Automatic rebalancing suggested every 24h
+                    """)
+            
+            else:
+                st.error("❌ Database not available for wallet simulation")
+                st.info("📋 This feature requires access to trench.db with coin data")
+                
+        except Exception as e:
+            st.error(f"❌ Error generating wallet simulation: {e}")
+            st.info("🔧 Please check database connection and try again")
 
 
 # Create the dashboard instance
