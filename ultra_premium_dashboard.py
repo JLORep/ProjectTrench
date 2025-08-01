@@ -390,8 +390,199 @@ class UltraPremiumDashboard:
                     # Stunning full-page coin cards display  
                     st.subheader("🎯 Stunning Full-Page Coin Cards")
                     
-                    # Import the elaborate card rendering function
-                    from streamlit_app import render_stunning_coin_card
+                    # Add CSS animations for the cards
+                    st.markdown("""
+                    <style>
+                    @keyframes slideInUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                    
+                    @keyframes pulse {
+                        0%, 100% {
+                            transform: scale(1);
+                        }
+                        50% {
+                            transform: scale(1.05);
+                        }
+                    }
+                    
+                    @keyframes float {
+                        0% {
+                            transform: rotate(0deg);
+                        }
+                        100% {
+                            transform: rotate(360deg);
+                        }
+                    }
+                    
+                    .coin-card-full:hover {
+                        transform: translateY(-5px);
+                        box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 60px var(--glow-color, rgba(16, 185, 129, 0.4));
+                    }
+                    </style>
+                    """, unsafe_allow_html=True)
+                    
+                    # Define the elaborate card rendering function locally
+                    def render_stunning_coin_card_local(coin, index):
+                        """Render a stunning full-page coin card with animations"""
+                        ticker = coin['ticker']
+                        gain = coin['price_gain']
+                        completeness = coin['completeness_score']
+                        
+                        # Determine card gradient based on performance
+                        if gain > 500:
+                            gradient = "linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)"
+                            glow_color = "rgba(16, 185, 129, 0.4)"
+                            status_emoji = "🚀"
+                            status_text = "MOONSHOT"
+                        elif gain > 200:
+                            gradient = "linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)"
+                            glow_color = "rgba(59, 130, 246, 0.4)"
+                            status_emoji = "📈"
+                            status_text = "STRONG"
+                        elif gain > 50:
+                            gradient = "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%)"
+                            glow_color = "rgba(139, 92, 246, 0.4)"
+                            status_emoji = "💎"
+                            status_text = "SOLID"
+                        else:
+                            gradient = "linear-gradient(135deg, #6b7280 0%, #4b5563 50%, #374151 100%)"
+                            glow_color = "rgba(107, 114, 128, 0.3)"
+                            status_emoji = "⚡"
+                            status_text = "ACTIVE"
+                        
+                        # Calculate display values
+                        smart_wallets = f"{coin['smart_wallets']:,}"
+                        liquidity = f"${coin['liquidity']:,.0f}"
+                        market_cap = f"${coin['market_cap']:,.0f}"
+                        peak_volume = f"${coin['peak_volume']:,.0f}"
+                        
+                        card_html = f"""
+                        <div class="coin-card-full" style="
+                            background: {gradient};
+                            border-radius: 20px;
+                            padding: 24px;
+                            margin: 16px 0;
+                            box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 40px {glow_color};
+                            border: 1px solid rgba(255,255,255,0.1);
+                            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+                            cursor: pointer;
+                            position: relative;
+                            overflow: hidden;
+                            animation: slideInUp 0.6s ease-out {index * 0.1}s both;
+                        ">
+                            
+                            <!-- Animated background pattern -->
+                            <div style="
+                                position: absolute;
+                                top: -50%;
+                                right: -50%;
+                                width: 200%;
+                                height: 200%;
+                                background: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+                                background-size: 20px 20px;
+                                animation: float 20s infinite linear;
+                                pointer-events: none;
+                            "></div>
+                            
+                            <!-- Card content -->
+                            <div style="position: relative; z-index: 2;">
+                                <!-- Header -->
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                    <div style="display: flex; align-items: center; gap: 16px;">
+                                        <div style="
+                                            width: 64px;
+                                            height: 64px;
+                                            border-radius: 50%;
+                                            background: linear-gradient(135deg, #10b981 0%, #10b98180 100%);
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 24px;
+                                            font-weight: bold;
+                                            color: white;
+                                            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                                            animation: pulse 2s infinite;
+                                        ">${ticker[0] if ticker else 'C'}</div>
+                                        <div>
+                                            <h3 style="color: white; margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                                ${ticker}
+                                            </h3>
+                                            <div style="color: rgba(255,255,255,0.8); font-size: 14px; margin-top: 4px;">
+                                                {status_emoji} {status_text}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="
+                                            background: rgba(255,255,255,0.2);
+                                            border-radius: 12px;
+                                            padding: 8px 16px;
+                                            color: white;
+                                            font-weight: 600;
+                                            font-size: 18px;
+                                            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+                                        ">+{gain:.1f}%</div>
+                                        <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 4px;">
+                                            24h Change
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Metrics Grid -->
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                                    <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
+                                        <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 4px;">Smart Wallets</div>
+                                        <div style="color: white; font-size: 20px; font-weight: 600;">{smart_wallets}</div>
+                                    </div>
+                                    <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
+                                        <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 4px;">Liquidity</div>
+                                        <div style="color: white; font-size: 20px; font-weight: 600;">{liquidity}</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Progress Bar -->
+                                <div style="margin-bottom: 16px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span style="color: rgba(255,255,255,0.8); font-size: 14px;">Data Completeness</span>
+                                        <span style="color: white; font-weight: 600;">{completeness*100:.0f}%</span>
+                                    </div>
+                                    <div style="background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; overflow: hidden;">
+                                        <div style="
+                                            background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%);
+                                            width: {completeness*100}%;
+                                            height: 100%;
+                                            border-radius: 4px;
+                                            transition: width 0.3s ease;
+                                        "></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Footer Info -->
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+                                    <div style="color: rgba(255,255,255,0.6); font-size: 12px;">
+                                        Market Cap: {market_cap} • Volume: {peak_volume}
+                                    </div>
+                                    <div style="
+                                        background: rgba(255,255,255,0.2);
+                                        color: white;
+                                        padding: 4px 12px;
+                                        border-radius: 20px;
+                                        font-size: 12px;
+                                        font-weight: 500;
+                                    ">Live Data</div>
+                                </div>
+                            </div>
+                        </div>
+                        """
+                        return card_html
                     
                     # Display elaborate full-page cards
                     for i, coin in enumerate(coins[:5]):
@@ -414,7 +605,7 @@ class UltraPremiumDashboard:
                         }
                         
                         # Render the stunning full-page card
-                        card_html = render_stunning_coin_card(card_coin, i)
+                        card_html = render_stunning_coin_card_local(card_coin, i)
                         st.markdown(card_html, unsafe_allow_html=True)
                         
                         # Add detail button
