@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# DEPLOYMENT_TIMESTAMP: 2025-08-01 17:15:22 - Dev blog fix: moved coin data to proper section
+# DEPLOYMENT_TIMESTAMP: 2025-08-01 17:45:00 - HTML Fix: Cleaned broken HTML fragments in render_stunning_coin_card
 # -*- coding: utf-8 -*-
 """
 TrenchCoat Pro - FIXED VERSION
@@ -200,169 +200,74 @@ def get_all_coins_from_db(limit_per_page=20, page=1, search_filter="", sort_by="
         return [], 0, f"Database error: {e}"
 
 def render_stunning_coin_card(coin, index):
-    """Render a stunning full-page coin card with animations"""
+    """Render a clean, properly structured coin card"""
     ticker = coin['ticker']
     gain = coin['price_gain']
     completeness = coin['completeness_score']
     
-    # Determine card gradient based on performance
+    # Determine card style based on performance
     if gain > 500:
-        gradient = "linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)"
-        glow_color = "rgba(16, 185, 129, 0.4)"
-        status_emoji = "🚀"
-        status_text = "MOONSHOT"
+        bg_color = "#10b981"
+        status_text = "🚀 MOONSHOT"
     elif gain > 200:
-        gradient = "linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)"
-        glow_color = "rgba(59, 130, 246, 0.4)"
-        status_emoji = "📈"
-        status_text = "STRONG"
+        bg_color = "#3b82f6"
+        status_text = "📈 STRONG"
     elif gain > 50:
-        gradient = "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%)"
-        glow_color = "rgba(139, 92, 246, 0.4)"
-        status_emoji = "💎"
-        status_text = "SOLID"
+        bg_color = "#8b5cf6"
+        status_text = "💎 SOLID"
     else:
-        gradient = "linear-gradient(135deg, #6b7280 0%, #4b5563 50%, #374151 100%)"
-        glow_color = "rgba(107, 114, 128, 0.3)"
-        status_emoji = "⚡"
-        status_text = "ACTIVE"
+        bg_color = "#6b7280"
+        status_text = "⚡ ACTIVE"
     
-    # Calculate display values
+    # Format display values safely
     smart_wallets = f"{coin['smart_wallets']:,}"
     liquidity = f"${coin['liquidity']:,.0f}"
     market_cap = f"${coin['market_cap']:,.0f}"
     peak_volume = f"${coin['peak_volume']:,.0f}"
     
+    # Clean, properly structured card HTML
     card_html = f"""
-    <div class="coin-card-full" style="
-        background: {gradient};
-        border-radius: 20px;
-        padding: 24px;
-        margin: 16px 0;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 40px {glow_color};
+    <div style="
+        background: linear-gradient(135deg, {bg_color} 0%, {bg_color}CC 100%);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 12px 0;
+        color: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         border: 1px solid rgba(255,255,255,0.1);
-        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        animation: slideInUp 0.6s ease-out {index * 0.1}s both;
-    " onclick="document.getElementById('coin-detail-{ticker}').scrollIntoView();">
-        
-        <!-- Animated background pattern -->
-        <div style="
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
-            background-size: 20px 20px;
-            animation: float 20s infinite linear;
-            pointer-events: none;
-        "></div>
-        
-        <!-- Card content -->
-        <div style="position: relative; z-index: 2;">
-            <!-- Header -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <div style="
-                        width: 64px;
-                        height: 64px;
-                        border-radius: 50%;
-                        background: linear-gradient(135deg, #10b981 0%, #10b98180 100%);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 24px;
-                        font-weight: bold;
-                        color: white;
-                        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-                        animation: pulse 2s infinite;
-                    ">${ticker[0] if ticker else 'C'}</div>
-                    <div>
-                        <h3 style="color: white; margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                            ${ticker}
-                        </h3>
-                        <div style="color: rgba(255,255,255,0.8); font-size: 14px; margin-top: 4px;">
-                            {status_emoji} {status_text}
-                        </div>
-                    </div>
-                </div>
-                <div style="text-align: right;">
-                    <div style="
-                        background: rgba(255,255,255,0.2);
-                        border-radius: 12px;
-                        padding: 8px 16px;
-                        color: white;
-                        font-size: 24px;
-                        font-weight: 700;
-                        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-                    ">+{gain:.1f}%</div>
-                    <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 4px;">
-                        Price Gain
-                    </div>
-                </div>
+    ">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+                <h3 style="margin: 0; font-size: 24px; font-weight: 700;">{ticker}</h3>
+                <div style="opacity: 0.8; font-size: 14px;">{status_text}</div>
             </div>
-            
-            <!-- Metrics Grid -->
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px;">
-                <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
-                    <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 4px;">👥 Smart Wallets</div>
-                    <div style="color: white; font-size: 18px; font-weight: 600;">{smart_wallets}</div>
-                </div>
-                <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
-                    <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 4px;">💧 Liquidity</div>
-                    <div style="color: white; font-size: 18px; font-weight: 600;">{liquidity}</div>
-                </div>
-                <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
-                    <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 4px;">📊 Market Cap</div>
-                    <div style="color: white; font-size: 18px; font-weight: 600;">{market_cap}</div>
-                </div>
-                <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
-                    <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 4px;">📈 Peak Volume</div>
-                    <div style="color: white; font-size: 18px; font-weight: 600;">{peak_volume}</div>
-                </div>
-            </div>
-            
-            <!-- Data Completeness Bar -->
-            <div style="margin-bottom: 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <span style="color: rgba(255,255,255,0.8); font-size: 12px;">Data Completeness</span>
-                    <span style="color: white; font-size: 12px; font-weight: 600;">{completeness:.0f}%</span>
-                </div>
-                <div style="
-                    width: 100%;
-                    height: 8px;
-                    background: rgba(255,255,255,0.2);
-                    border-radius: 4px;
-                    overflow: hidden;
-                ">
-                    <div style="
-                        width: {completeness}%;
-                        height: 100%;
-                        background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
-                        border-radius: 4px;
-                        transition: width 1s ease-out;
-                    "></div>
-                </div>
-            </div>
-            
-            <!-- Click to view details -->
-            <div style="
-                text-align: center;
-                color: rgba(255,255,255,0.9);
-                font-size: 14px;
-                padding: 12px;
-                background: rgba(255,255,255,0.1);
-                border-radius: 8px;
-                transition: all 0.3s ease;
-            ">
-                🔍 Click to view detailed analysis
+            <div style="text-align: right;">
+                <div style="font-size: 20px; font-weight: 700;">+{gain:.1f}%</div>
+                <div style="opacity: 0.7; font-size: 12px;">Price Gain</div>
             </div>
         </div>
-    </div>
-    """
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px;">
+                <div style="opacity: 0.7; font-size: 11px;">👥 Smart Wallets</div>
+                <div style="font-size: 16px; font-weight: 600;">{smart_wallets}</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px;">
+                <div style="opacity: 0.7; font-size: 11px;">💧 Liquidity</div>
+                <div style="font-size: 16px; font-weight: 600;">{liquidity}</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px;">
+                <div style="opacity: 0.7; font-size: 11px;">📊 Market Cap</div>
+                <div style="font-size: 16px; font-weight: 600;">{market_cap}</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px;">
+                <div style="opacity: 0.7; font-size: 11px;">📈 Peak Volume</div>
+                <div style="font-size: 16px; font-weight: 600;">{peak_volume}</div>
+            </div>
+        </div>
+        <div style="margin-top: 12px; opacity: 0.7; font-size: 12px;">
+            Data Completeness: {completeness:.0f}%
+        </div>
+    </div>"""
     
     return card_html
 
