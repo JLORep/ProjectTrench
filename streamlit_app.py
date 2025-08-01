@@ -27,25 +27,97 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Simple tab styling (complex CSS removed due to loading issues)
+# Enhanced chunky tab styling - safe implementation
 st.markdown("""
 <style>
+    /* Chunky tab container */
     .stTabs [data-baseweb="tab-list"] {
         position: sticky;
         top: 0;
-        z-index: 100;
-        background: #1a1a1a;
-        border-radius: 8px;
-        padding: 4px;
+        z-index: 999;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border-radius: 15px;
+        padding: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
     }
+    
+    /* Individual chunky tabs */
     .stTabs [data-baseweb="tab"] {
-        height: 40px;
-        border-radius: 6px;
+        height: 55px;
+        min-width: 110px;
+        padding: 12px 18px;
+        margin: 0 3px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+        border: 2px solid transparent;
         font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
     }
+    
+    /* Hover effects */
+    .stTabs [data-baseweb="tab"]:hover {
+        background: linear-gradient(135deg, #3a3a3a 0%, #4a4a4a 100%);
+        border: 2px solid #10b981;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+    
+    /* Active tab styling */
     .stTabs [aria-selected="true"] {
-        background: #10b981 !important;
+        background: linear-gradient(135deg, #10b981 0%, #047857 100%) !important;
+        border: 2px solid #34d399 !important;
         color: white !important;
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px rgba(16, 185, 129, 0.4);
+        font-weight: 700;
+    }
+    
+    /* Active tab text color */
+    .stTabs [aria-selected="true"] p {
+        color: white !important;
+    }
+    
+    /* Tab content spacing */
+    .stTabs [data-baseweb="tab-panel"] {
+        padding-top: 20px;
+    }
+    
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+        .stTabs [data-baseweb="tab"] {
+            min-width: 85px;
+            padding: 10px 14px;
+            font-size: 11px;
+            height: 45px;
+        }
+    }
+    
+    /* Safe card animations */
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .coin-card-enhanced {
+        animation: slideInUp 0.6s ease-out forwards;
+    }
+    
+    /* Enhance card hover effects */
+    .coin-card-enhanced:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 30px rgba(16, 185, 129, 0.3) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -225,47 +297,125 @@ def render_stunning_coin_card(coin, index):
     market_cap = f"${coin['market_cap']:,.0f}"
     peak_volume = f"${coin['peak_volume']:,.0f}"
     
-    # Clean, properly structured card HTML
+    # Enhanced card HTML with safe visual effects
     card_html = f"""
-    <div style="
-        background: linear-gradient(135deg, {bg_color} 0%, {bg_color}CC 100%);
-        border-radius: 12px;
-        padding: 20px;
-        margin: 12px 0;
+    <div class="coin-card-enhanced" style="
+        background: linear-gradient(135deg, {bg_color} 0%, {bg_color}AA 50%, {bg_color}CC 100%);
+        border-radius: 16px;
+        padding: 24px;
+        margin: 16px 0;
         color: white;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        border: 1px solid rgba(255,255,255,0.1);
-    ">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <div>
-                <h3 style="margin: 0; font-size: 24px; font-weight: 700;">{ticker}</h3>
-                <div style="opacity: 0.8; font-size: 14px;">{status_text}</div>
+        box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 0 20px rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(255,255,255,0.15);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 32px rgba(0,0,0,0.4), 0 0 30px rgba(16, 185, 129, 0.3)'"
+       onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.3), 0 0 20px rgba(16, 185, 129, 0.2)'">
+        
+        <!-- Subtle background pattern -->
+        <div style="
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+            background-size: 8px 8px;
+            opacity: 0.4;
+            pointer-events: none;
+        "></div>
+        
+        <!-- Card content -->
+        <div style="position: relative; z-index: 2;">
+            <!-- Enhanced header with icon -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="
+                        width: 48px;
+                        height: 48px;
+                        border-radius: 50%;
+                        background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 18px;
+                        font-weight: bold;
+                        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                        backdrop-filter: blur(10px);
+                    ">${ticker[0] if ticker else 'C'}</div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 26px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                            {ticker}
+                        </h3>
+                        <div style="opacity: 0.9; font-size: 14px; margin-top: 2px; font-weight: 500;">
+                            {status_text}
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="
+                        background: rgba(255,255,255,0.25);
+                        border-radius: 12px;
+                        padding: 10px 16px;
+                        font-size: 22px;
+                        font-weight: 700;
+                        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                        backdrop-filter: blur(10px);
+                        border: 1px solid rgba(255,255,255,0.2);
+                    ">+{gain:.1f}%</div>
+                    <div style="opacity: 0.8; font-size: 12px; margin-top: 4px; font-weight: 500;">
+                        Price Gain
+                    </div>
+                </div>
             </div>
-            <div style="text-align: right;">
-                <div style="font-size: 20px; font-weight: 700;">+{gain:.1f}%</div>
-                <div style="opacity: 0.7; font-size: 12px;">Price Gain</div>
+            
+            <!-- Enhanced metrics grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
+                <div style="background: rgba(255,255,255,0.15); border-radius: 12px; padding: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="opacity: 0.8; font-size: 11px; margin-bottom: 6px; font-weight: 500;">👥 Smart Wallets</div>
+                    <div style="font-size: 17px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">{smart_wallets}</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.15); border-radius: 12px; padding: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="opacity: 0.8; font-size: 11px; margin-bottom: 6px; font-weight: 500;">💧 Liquidity</div>
+                    <div style="font-size: 17px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">{liquidity}</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.15); border-radius: 12px; padding: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="opacity: 0.8; font-size: 11px; margin-bottom: 6px; font-weight: 500;">📊 Market Cap</div>
+                    <div style="font-size: 17px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">{market_cap}</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.15); border-radius: 12px; padding: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="opacity: 0.8; font-size: 11px; margin-bottom: 6px; font-weight: 500;">📈 Peak Volume</div>
+                    <div style="font-size: 17px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">{peak_volume}</div>
+                </div>
             </div>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px;">
-                <div style="opacity: 0.7; font-size: 11px;">👥 Smart Wallets</div>
-                <div style="font-size: 16px; font-weight: 600;">{smart_wallets}</div>
+            
+            <!-- Enhanced data completeness bar -->
+            <div style="margin-bottom: 4px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="opacity: 0.85; font-size: 12px; font-weight: 500;">Data Completeness</span>
+                    <span style="font-size: 12px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">{completeness:.0f}%</span>
+                </div>
+                <div style="
+                    width: 100%;
+                    height: 8px;
+                    background: rgba(255,255,255,0.2);
+                    border-radius: 4px;
+                    overflow: hidden;
+                    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+                ">
+                    <div style="
+                        width: {completeness}%;
+                        height: 100%;
+                        background: linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+                        border-radius: 4px;
+                        transition: width 0.8s ease;
+                        box-shadow: 0 0 8px rgba(255,255,255,0.4);
+                    "></div>
+                </div>
             </div>
-            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px;">
-                <div style="opacity: 0.7; font-size: 11px;">💧 Liquidity</div>
-                <div style="font-size: 16px; font-weight: 600;">{liquidity}</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px;">
-                <div style="opacity: 0.7; font-size: 11px;">📊 Market Cap</div>
-                <div style="font-size: 16px; font-weight: 600;">{market_cap}</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px;">
-                <div style="opacity: 0.7; font-size: 11px;">📈 Peak Volume</div>
-                <div style="font-size: 16px; font-weight: 600;">{peak_volume}</div>
-            </div>
-        </div>
-        <div style="margin-top: 12px; opacity: 0.7; font-size: 12px;">
-            Data Completeness: {completeness:.0f}%
         </div>
     </div>"""
     
