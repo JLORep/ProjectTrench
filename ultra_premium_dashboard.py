@@ -412,7 +412,7 @@ class UltraPremiumDashboard:
             live_coins = connector.get_live_coins(10)
             
             if live_coins:
-                safe_print(f"Dashboard: Retrieved {len(live_coins)} live coins from database")
+                print(f"Dashboard: Retrieved {len(live_coins)} live coins from database")
                 
                 # Convert to display format and store in session
                 st.session_state.processed_coins = live_coins
@@ -431,78 +431,8 @@ class UltraPremiumDashboard:
         except Exception as e:
             st.error(f"❌ Error connecting to live coin data: {e}")
             st.session_state.processed_coins = []
-            # Fix: Handle async in sync context properly
-            try:
-                import nest_asyncio
-                nest_asyncio.apply()
-                live_coins = asyncio.run(manager.get_enriched_trending_coins(limit=5))
-            except ImportError:
-                # Fallback: use sync method if available
-                if hasattr(manager, 'get_enriched_trending_coins_sync'):
-                    live_coins = manager.get_enriched_trending_coins_sync(limit=5)
-                else:
-                    # Use demo data if async not working
-                    self.generate_demo_coins()
-                    return
-                
-                # Convert to display format
-                processed_coins = []
-                for coin in live_coins:
-                    # Handle different coin data formats (basic API vs enriched)
-                    if isinstance(coin, dict) and 'ticker' in coin:
-                        # Already in dashboard format (enriched coin)
-                        processed_coins.append(coin)
-                    else:
-                        # Convert from API format
-                        processed_coin = {
-                            'ticker': f"${coin.get('symbol', 'UNKNOWN')}",
-                            'stage': self.get_processing_stage(coin.get('confidence', 50)),
-                            'price': coin.get('price', 0),
-                            'volume': coin.get('volume_24h', 0),
-                            'score': coin.get('confidence', 50) / 100,
-                            'timestamp': coin.get('detected_at', datetime.now()),
-                            'change_24h': coin.get('price_change_24h', 0),
-                            'liquidity': coin.get('liquidity', 0),
-                            'source': coin.get('source', 'api'),
-                            'enriched': False
-                        }
-                        processed_coins.append(processed_coin)
-                
-                st.session_state.processed_coins = processed_coins
-                
-                # Trigger notifications for high-confidence coins
-                # Fix: Wrap in try-catch to prevent notification errors from crashing
-                try:
-                    self.check_and_notify_high_confidence_coins(live_coins)
-                except Exception as notify_error:
-                    # Silently log notification errors
-                    if 'error_log' not in st.session_state:
-                        st.session_state.error_log = []
-                    st.session_state.error_log.append({
-                        'time': datetime.now(),
-                        'error': str(notify_error),
-                        'component': 'notifications'
-                    })
-                
-            except Exception as e:
-                # Fix: Better error handling with more context
-                error_msg = f"Live data error: {str(e)[:100]}"
-                st.warning(error_msg)
-                # Log the full error for debugging
-                if 'error_log' not in st.session_state:
-                    st.session_state.error_log = []
-                st.session_state.error_log.append({
-                    'time': datetime.now(),
-                    'error': str(e),
-                    'component': 'live_coin_feed'
-                })
-                # Fallback to demo mode
-                self.generate_demo_coins()
-        else:
-            # NO DEMO MODE: Show message about connecting live data
-            st.info("🔗 Live mode disabled. Enable live monitoring to see real coin processing.")
-            if 'processed_coins' not in st.session_state:
-                st.session_state.processed_coins = []
+            # Fallback: Use demo data if live data fails  
+            self.generate_demo_coins()
         
         # Display coins only if we have real data
         if st.session_state.processed_coins:
