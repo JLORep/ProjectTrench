@@ -317,7 +317,7 @@ DATABASE: data/trench.db
         # Import and use existing coin data functionality
         try:
             coins, status = get_live_coins_simple()
-            if coins and status == "success":
+            if coins and status.startswith("SUCCESS"):
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
                     st.metric("📊 Total Coins", "1,733")
@@ -331,9 +331,11 @@ DATABASE: data/trench.db
                 # Enhanced coin display with analytics
                 st.subheader("🎯 Top Performing Coins")
                 for i, coin in enumerate(coins[:5]):
-                    ticker = coin.get('ticker', f'COIN_{i+1}')
-                    price_gain = coin.get('price_gain_pct', 0)
-                    smart_wallets = coin.get('smart_wallets', 0)
+                    ticker = coin.get('Ticker', coin.get('ticker', f'COIN_{i+1}'))
+                    price_gain_str = coin.get('Price Gain %', coin.get('price_gain_pct', '0%'))
+                    price_gain = float(price_gain_str.replace('%', '').replace('+', '')) if isinstance(price_gain_str, str) else price_gain_str
+                    smart_wallets_str = coin.get('Smart Wallets', coin.get('smart_wallets', '0'))
+                    smart_wallets = int(smart_wallets_str.replace(',', '')) if isinstance(smart_wallets_str, str) else smart_wallets_str
                     
                     col1, col2, col3 = st.columns([2, 1, 1])
                     with col1:

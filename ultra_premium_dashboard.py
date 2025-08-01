@@ -212,7 +212,14 @@ class UltraPremiumDashboard:
                 branding.apply_custom_css()
             except Exception:
                 pass
-        self.setup_page_layout()
+    
+    def render(self):
+        """Main render method for the dashboard"""
+        # Render header
+        self.render_header()
+        
+        # Render main content with tabs
+        self.render_main_content()
     
     def initialize_session_state(self):
         """Initialize session state variables"""
