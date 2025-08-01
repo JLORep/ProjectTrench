@@ -387,38 +387,42 @@ class UltraPremiumDashboard:
                     with col4:
                         st.metric("🪙 Status", "✅ Live")
                     
-                    # Stunning visual coin cards display
-                    st.subheader("🎯 Top Performing Coins")
+                    # Stunning full-page coin cards display  
+                    st.subheader("🎯 Stunning Full-Page Coin Cards")
                     
-                    # Create a grid layout for beautiful coin cards
-                    cols = st.columns(5)  # 5 columns for 5 coins
+                    # Import the elaborate card rendering function
+                    from streamlit_app import render_stunning_coin_card
                     
+                    # Display elaborate full-page cards
                     for i, coin in enumerate(coins[:5]):
-                        # Convert live database data to render_coin_card format
+                        # Convert database format to card format
                         ticker = coin.get('Ticker', coin.get('ticker', f'COIN_{i+1}'))
                         price_gain_str = coin.get('Price Gain %', coin.get('price_gain_pct', '0%'))
                         price_gain = float(price_gain_str.replace('%', '').replace('+', '')) if isinstance(price_gain_str, str) else price_gain_str
                         smart_wallets_str = coin.get('Smart Wallets', coin.get('smart_wallets', '0'))
                         smart_wallets = int(smart_wallets_str.replace(',', '')) if isinstance(smart_wallets_str, str) else smart_wallets_str
                         
-                        # Convert to stunning coin card format
+                        # Create elaborate card data structure
                         card_coin = {
                             'ticker': ticker,
-                            'stage': self.get_processing_stage(min(95, 50 + (price_gain * 0.5))),  # Dynamic stage based on performance
-                            'price': coin.get('Price', coin.get('discovery_price', 0.001)),
-                            'score': min(100, max(10, price_gain)) / 100,  # Convert percentage to 0-1 score
-                            'change_24h': price_gain,
-                            'liquidity': smart_wallets * 10000,  # Estimate liquidity from wallets
-                            'source': 'enriched',
-                            'enriched': True,
-                            'contract_verified': smart_wallets > 100,  # Assume verified if many wallets
-                            'social_score': min(10, smart_wallets / 50),  # Social score from wallet count
-                            'rug_risk': max(0, 50 - price_gain) / 100  # Lower rug risk for higher gains
+                            'price_gain': price_gain,
+                            'smart_wallets': smart_wallets,
+                            'liquidity': coin.get('liquidity', 1000000),
+                            'market_cap': coin.get('market_cap', 5000000),  
+                            'peak_volume': coin.get('peak_volume', 2000000),
+                            'completeness_score': coin.get('completeness_score', 0.8)
                         }
                         
-                        # Render stunning coin card in column
-                        with cols[i]:
-                            self.render_coin_card(card_coin, i)
+                        # Render the stunning full-page card
+                        card_html = render_stunning_coin_card(card_coin, i)
+                        st.markdown(card_html, unsafe_allow_html=True)
+                        
+                        # Add detail button
+                        col1, col2, col3 = st.columns([1, 2, 1])
+                        with col2:
+                            if st.button(f"View {ticker} Details", key=f"advanced_detail_{ticker}_{i}"):
+                                st.session_state.show_coin_detail = card_coin
+                                st.rerun()
                 else:
                     st.error(f"❌ Failed to load coin data: {status}")
             except Exception as e:
