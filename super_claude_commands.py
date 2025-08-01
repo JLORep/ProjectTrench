@@ -768,7 +768,10 @@ class SuperClaudeCommandSystem:
                 st.markdown(f"**{category}**")
                 for cmd, description in commands:
                     if st.button(f"{description}", key=f"trade_cmd_{cmd.replace(' ', '_').replace('/', '_')}", use_container_width=True):
-                        st.session_state.super_claude_command = cmd
+                        # Use session state callback instead of direct assignment
+                        if 'super_claude_command' not in st.session_state:
+                            st.session_state.super_claude_command = ""
+                        st.session_state.pending_command = cmd
                         st.success(f"✅ Command loaded: `{cmd}`")
                         st.rerun()
         
@@ -788,7 +791,10 @@ class SuperClaudeCommandSystem:
         for idx, (cmd, label) in enumerate(quick_dev_commands):
             with dev_cols[idx % 4]:
                 if st.button(label, key=f"dev_cmd_{idx}"):
-                    st.session_state.super_claude_command = cmd
+                    # Use session state callback instead of direct assignment
+                    if 'super_claude_command' not in st.session_state:
+                        st.session_state.super_claude_command = ""
+                    st.session_state.pending_command = cmd
                     st.rerun()
         
         # Execute command

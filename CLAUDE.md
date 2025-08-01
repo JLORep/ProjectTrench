@@ -1,0 +1,56 @@
+# TrenchCoat Pro - Main Project Context
+
+## Project Overview
+**TrenchCoat Pro** is an ultra-premium cryptocurrency trading intelligence platform designed for professional traders and institutional investors. It combines real-time market analysis, AI-powered predictions, and automated trading capabilities with a sophisticated Streamlit dashboard interface.
+
+- **GitHub Repository**: https://github.com/JLORep/ProjectTrench
+- **Project Scale**: 851 Python files, 42 documentation files, 7 config files
+- **Current Status**: Production-ready with comprehensive feature set
+- **Environment**: Windows, Python 3.11.9, Streamlit-based
+
+## Quick Reference Navigation
+
+This documentation is split into focused sections for easier maintenance:
+
+- **[CLAUDE_SESSIONS.md](CLAUDE_SESSIONS.md)** - Session history, critical fixes, and deployment chronicles
+- **[CLAUDE_ARCHITECTURE.md](CLAUDE_ARCHITECTURE.md)** - Technical architecture, dashboard patterns, and code structure
+- **[CLAUDE_PROTOCOLS.md](CLAUDE_PROTOCOLS.md)** - Development protocols, mandatory consultation rules, and best practices
+
+## Current System Status (2025-08-02)
+
+### ✅ **Production Ready**
+- **Live Database**: `data/trench.db` with 1,733 real coins (319KB)
+- **Active Deployment**: Streamlit Cloud with auto-deployment hooks
+- **Dashboard**: 10-tab interface with enrichment system
+- **API Integration**: 17 comprehensive data sources
+
+### 🚀 **Latest Deployment**
+- **Timestamp**: 2025-08-02 00:04:05 - FORCE DEPLOY
+- **Status**: Git corruption fixed, changes pushed successfully
+- **Features**: Enrichment tab with comprehensive API integration
+- **Expected**: New features visible within 5 minutes
+
+### 📊 **Key Features Active**
+- **Super Claude AI**: 18 specialized commands, 9 expert personas
+- **Enrichment Pipeline**: 17 API sources with historical tracking
+- **Live Dashboard**: Real-time coin data with enhanced metrics
+- **Automated Trading**: Rug detection, signal monitoring, portfolio optimization
+
+## Emergency Information
+
+### 🚨 **Critical Files**
+- **Main Entry**: `streamlit_app.py` (primary dashboard)
+- **Database**: `data/trench.db` (1,733 coins - DO NOT REMOVE)
+- **Config**: `requirements.txt` (production dependencies)
+
+### 🛠 **Quick Fixes**
+- **Git Issues**: See CLAUDE_SESSIONS.md for corruption solutions
+- **Deployment**: Force rebuild by updating timestamp in streamlit_app.py
+- **Database**: Run `python -c "import sqlite3; print(sqlite3.connect('data/trench.db').execute('SELECT COUNT(*) FROM coins').fetchone())"`
+
+## Next Steps
+
+For detailed information, continue to:
+👉 **[CLAUDE_SESSIONS.md](CLAUDE_SESSIONS.md)** - Complete session history and critical fixes
+
+*Last updated: 2025-08-02 00:20 - Solana wallet integration complete, dev blog triggered*

@@ -810,7 +810,8 @@ def show_coin_detail(coin_data):
     # Metrics with glassmorphism
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("Current Price", f"${coin_data.get('axiom_price', 0.001):.6f}")
+        axiom_price = coin_data.get('axiom_price') or 0.001
+        st.metric("Current Price", f"${axiom_price:.6f}")
     with col2:
         if coin_data.get('axiom_price') and coin_data.get('discovery_price'):
             price_gain = ((coin_data['axiom_price'] - coin_data['discovery_price']) / coin_data['discovery_price']) * 100
@@ -879,7 +880,8 @@ def show_coin_detail(coin_data):
             st.write(f"**Contract Address:** `{coin_data.get('ca', 'N/A')}`")
             st.write(f"**Discovery Time:** {coin_data.get('discovery_time', 'Unknown')}")
             st.write(f"**Discovery Price:** ${coin_data.get('discovery_price', 0):.8f}")
-            st.write(f"**Current Price:** ${coin_data.get('axiom_price', 0):.8f}")
+            current_price = coin_data.get('axiom_price') or 0
+            st.write(f"**Current Price:** ${current_price:.8f}")
             st.markdown("</div>", unsafe_allow_html=True)
         with col2:
             st.markdown("""
