@@ -1107,7 +1107,6 @@ div[data-testid="column"] button[data-testid="baseButton-primary"] {
 """, unsafe_allow_html=True)
 
 # Header space reserved for future logo - currently removed
-st.error("🔍 DEBUG: Deployment test - If you see this, changes ARE being deployed! Timestamp: 2025-08-02 17:05")
 
 # Sidebar with additional functionality
 with st.sidebar:
@@ -1572,27 +1571,16 @@ with tab2:
             st.info("Loading coin data...")
 # ===== TAB 3: HUNT HUB - MEMECOIN SNIPING =====
 with tab3:
-    st.error("🔍 DEBUG: You are in Hunt Hub tab - Changes ARE deploying!")
-    
-    # Direct HTML test
-    test_html = """
-    <div style="background: red; color: white; padding: 20px; font-size: 24px;">
-        🚨 TEST: If you see this RED BOX, HTML rendering IS working!
-    </div>
-    """
-    st.markdown(test_html, unsafe_allow_html=True)
-    
     # Try to import Hunt Hub UI
     hunt_hub_loaded = False
     try:
         from memecoin_hunt_hub_ui import render_hunt_hub_dashboard
-        st.success("✅ Hunt Hub module imported successfully!")
         render_hunt_hub_dashboard()
         hunt_hub_loaded = True
     except ImportError as e:
-        st.error(f"❌ Hunt Hub import error: {e}")
+        st.error(f"Hunt Hub import error: {e}")
     except Exception as e:
-        st.error(f"❌ Hunt Hub error: {e}")
+        st.error(f"Hunt Hub error: {e}")
     
     # Only show fallback if Hunt Hub didn't load
     if not hunt_hub_loaded:
