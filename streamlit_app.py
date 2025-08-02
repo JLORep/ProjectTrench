@@ -604,6 +604,9 @@ with tab2:
         
         for idx, coin in filtered_data.head(show_count).iterrows():
             with st.container():
+                # Prepare smart wallets display
+                smart_wallets_html = f'<div style="font-size: 12px; color: rgba(255,255,255,0.5);">Smart Wallets: {coin["smart_wallets"]}</div>' if coin['smart_wallets'] else ''
+                
                 st.markdown(f"""
                 <div class="coin-card">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -616,7 +619,7 @@ with tab2:
                             <div style="font-size: 14px; color: rgba(255,255,255,0.7);">
                                 MCap: ${coin['market_cap_usd']:,.0f if coin['market_cap_usd'] else coin['discovery_mc']:,.0f if coin['discovery_mc'] else 0}
                             </div>
-                            {f'<div style="font-size: 12px; color: rgba(255,255,255,0.5);">Smart Wallets: {coin["smart_wallets"]}</div>' if coin['smart_wallets'] else ''}
+                            {smart_wallets_html}
                         </div>
                     </div>
                 </div>
