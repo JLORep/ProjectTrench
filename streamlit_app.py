@@ -75,6 +75,14 @@ try:
 except ImportError:
     pass
 
+# Try to import Coin Image System
+COIN_IMAGES_AVAILABLE = False
+try:
+    from coin_image_system import coin_image_system
+    COIN_IMAGES_AVAILABLE = True
+except ImportError:
+    pass
+
 # Page config - optimized for wide layout
 st.set_page_config(
     page_title="TrenchCoat Pro | Premium Crypto Intelligence",
@@ -432,11 +440,12 @@ def load_coin_data():
     try:
         conn = sqlite3.connect(DATABASE_PATH)
         
-        # Get enriched coins with price data
+        # Get enriched coins with price data and images
         query = """
         SELECT ca, ticker, current_price_usd, current_volume_24h, market_cap_usd, 
                price_change_24h, enrichment_timestamp, data_quality_score,
-               discovery_price, discovery_mc, liquidity, peak_volume, smart_wallets
+               discovery_price, discovery_mc, liquidity, peak_volume, smart_wallets,
+               image_url, image_source, image_verified
         FROM coins 
         WHERE current_price_usd IS NOT NULL OR ticker IS NOT NULL
         ORDER BY market_cap_usd DESC NULLS LAST, discovery_mc DESC NULLS LAST
@@ -711,8 +720,20 @@ with tab2:
                         else:
                             mcap = "0"
                         
-                        # Logo placeholder - first 2 letters of ticker
-                        logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
+                        # Get coin image URL
+                        if coin['image_url'] and COIN_IMAGES_AVAILABLE:
+                            # Use real coin image
+                            image_url = coin['image_url']
+                            logo_html = f'<img src="{image_url}" alt="{ticker}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">'
+                        else:
+                            # Fallback to text logo or get image from system
+                            if COIN_IMAGES_AVAILABLE:
+                                fallback_url = coin_image_system.get_image_url(ticker, coin['ca'])
+                                logo_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot;>{ticker[:2].upper()}</div>\'">'
+                            else:
+                                # Pure fallback - text logo
+                                logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
+                                logo_html = f'<div class="coin-logo">{logo_text}</div>'
                         
                         # Price change styling
                         price_change_html = ""
@@ -746,8 +767,8 @@ with tab2:
                         st.markdown(f"""
                         <div class="coin-card" onclick="document.getElementById('fullscreen_{coin['ca']}').click();" style="cursor: pointer;">
                             <div style="display: flex; align-items: center; margin-bottom: 16px;">
-                                <div class="coin-logo">{logo_text}</div>
-                                <div class="coin-info">
+                                {logo_html}
+                                <div class="coin-info" style="margin-left: 16px;">
                                     <h2 class="coin-ticker">{ticker}</h2>
                                     <div class="coin-address">{ca_display}</div>
                                 </div>
@@ -784,13 +805,23 @@ with tab2:
         col1, col2 = st.columns([1, 2])
         
         with col1:
-            # Coin overview
+            # Coin overview with real image
             ticker = coin['ticker'] or 'Unknown'
-            logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
+            
+            # Get image for fullscreen view
+            if coin.get('image_url') and COIN_IMAGES_AVAILABLE:
+                large_image_html = f'<img src="{coin["image_url"]}" alt="{ticker}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(16, 185, 129, 0.3); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4); margin: 0 auto 20px auto; display: block;">'
+            else:
+                if COIN_IMAGES_AVAILABLE:
+                    fallback_url = coin_image_system.get_image_url(ticker, coin['ca'])
+                    large_image_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(16, 185, 129, 0.3); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4); margin: 0 auto 20px auto; display: block;" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 120px; height: 120px; font-size: 36px; margin: 0 auto 20px auto;&quot;>{ticker[:2].upper()}</div>\'">'
+                else:
+                    logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
+                    large_image_html = f'<div class="coin-logo" style="width: 120px; height: 120px; font-size: 36px; margin: 0 auto 20px auto;">{logo_text}</div>'
             
             st.markdown(f"""
             <div style="text-align: center; padding: 20px;">
-                <div class="coin-logo" style="width: 120px; height: 120px; font-size: 36px; margin: 0 auto 20px auto;">{logo_text}</div>
+                {large_image_html}
                 <h1 style="color: #10b981; margin: 0;">{ticker}</h1>
                 <p style="color: rgba(255,255,255,0.6); font-family: monospace;">{coin['ca']}</p>
             </div>
