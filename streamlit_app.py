@@ -953,19 +953,7 @@ def show_coin_detail(coin_data):
             st.markdown("</div>", unsafe_allow_html=True)
 
 # Main app header
-# Main app header with logo placeholder
-col1, col2 = st.columns([1, 10])
-with col1:
-    # Logo placeholder
-    st.markdown("""
-    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
-                border-radius: 12px; display: flex; align-items: center; justify-content: center; 
-                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
-        <span style="color: white; font-size: 28px; font-weight: bold;">T</span>
-    </div>
-    """, unsafe_allow_html=True)
-with col2:
-    st.markdown("### TrenchCoat Pro")
+st.markdown("### TrenchCoat Pro")
 
 # Status indicators moved to bottom fixed bar - see end of file
 
