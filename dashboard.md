@@ -1,7 +1,7 @@
 # TrenchCoat Pro - Dashboard Architecture & Dependencies
 
 ## Overview
-TrenchCoat Pro features a unified ultra-premium dashboard with elaborate full-page coin cards, live database integration, Super Claude AI command system, and comprehensive cryptocurrency trading intelligence across 12 functional tabs (10 base + 2 Super Claude tabs).
+TrenchCoat Pro features a unified ultra-premium dashboard with elaborate full-page coin cards, live database integration, Super Claude AI command system, Hunt Hub memecoin sniping, and Alpha Radar signal intelligence across 11 functional tabs with specialized trading tools.
 
 ## 🏗 Dashboard Architecture
 
@@ -19,128 +19,99 @@ TrenchCoat Pro features a unified ultra-premium dashboard with elaborate full-pa
 # SINGLE UNIFIED DASHBOARD - All features consolidated
 st.info("🎯 TrenchCoat Pro - Ultra Premium Dashboard Loaded")
 
-# ALL 10 TABS - Complete premium dashboard with all features
-expected_tabs = ["📊 Live Dashboard", "🧠 Advanced Analytics", ...]
+# ALL 11 TABS - Complete premium dashboard with Hunt Hub and Alpha Radar
+expected_tabs = ["🚀 Dashboard", "💎 Coins", "🎯 Hunt Hub", "📡 Alpha Radar", ...]
 st.success(f"✅ Premium Dashboard - {len(expected_tabs)} Tabs Loaded")
 ```
 
-## 📊 Tab Structure (12 Tabs Total: 10 Base + 2 Super Claude)
+## 📊 Tab Structure (11 Tabs Total with Specialized Trading Tools)
 
-### Tab 1: 📊 Live Dashboard
-- **Function**: Real-time market signals from live database
-- **Features**: Live coin signals based on actual database performance
+### Tab 1: 🚀 Dashboard
+- **Function**: Market intelligence overview with live metrics
+- **Features**: Real-time market statistics, coin analytics, performance tracking
 - **Dependencies**: `plotly.graph_objects`, `pandas`, `numpy`
 - **Data**: Real coins from trench.db with actual gain percentages
 - **Status**: ✅ Live data integration active
 
-### Tab 2: 🧠 Advanced Analytics  
-- **Function**: AI-powered analysis of live database coins
-- **Features**: Real metrics calculated from database (average gains, positive performers)
+### Tab 2: 💎 Coins
+- **Function**: ⭐ **MAIN FEATURE** - Stunning full-page cryptocurrency cards
+- **Features**: Pagination, filtering, sorting, detailed analysis with enhanced visuals
+- **Rendering**: `render_stunning_coin_card()` function with dynamic gradients
+- **Dependencies**: Live database, session state management
+- **Card Features**: Dynamic gradients, animations, glassmorphism
 - **Data**: Live analysis of 1,733 coins from database
-- **Dependencies**: Live database connection
-- **Status**: ✅ Real data analysis active
+- **Status**: ✅ Enhanced card system with professional styling
 
-### Tab 3: 🤖 Model Builder
-- **Function**: Custom ML model configuration interface
-- **Features**: Model type selection (LSTM, Random Forest, XGBoost)
-- **Inputs**: Feature selection, lookback period configuration
-- **Status**: Interface ready, training simulation
+### Tab 3: 🎯 Hunt Hub - **NEW MEMECOIN SNIPING DASHBOARD**
+- **Function**: Professional memecoin sniping command center with real-time launch detection
+- **Features**: 
+  - Sub-second launch detection on Pump.fun and Raydium
+  - AI scoring system (1-100 scale) for snipe potential rating
+  - Real-time profit tracking with gamification elements
+  - Auto-snipe integration with Jito bundling
+  - Win rate analytics and leaderboard integration
+- **Dependencies**: `memecoin_hunt_hub_ui.py`, `hunt_hub_scanner.py`
+- **Metrics**: Active scans (3,847), high score tracking, avg latency (0.3s)
+- **Status**: 🚀 Integration in progress with backend systems
 
-### Tab 4: ⚙ Trading Engine
-- **Function**: Trading engine development interface
-- **Features**: Wallet connection status, development controls
-- **Status**: 🛠 Development mode - no demo data
-- **Dependencies**: Future wallet integration
-- **Data**: Real $0.00 values, "coming soon" status
+### Tab 4: 📡 Alpha Radar - **NEW AI-POWERED SIGNAL INTELLIGENCE**
+- **Function**: AI-powered signal feed replacing traditional strategies
+- **Features**:
+  - Volume spike detection with instant alerts
+  - Whale movement monitoring and wallet analysis  
+  - Social buzz analysis and sentiment tracking
+  - Breakout pattern recognition with technical analysis
+  - Signal confidence scoring and reliability metrics
+- **Dependencies**: `alpha_radar_system.py`, `AlphaRadarSystem`
+- **Signal Types**: Volume Spike, Whale Buy, Breakout, Social Buzz
+- **Status**: 🛠 Advanced AI integration with signal processing engine
 
-### Tab 5: 📡 Telegram Signals
-- **Function**: Telegram signal monitoring interface
-- **Features**: Shows readiness status for monitoring live coins
-- **Data Source**: Real coin count from database for future monitoring
-- **Status**: 🛠 Coming soon - no fake signals
-- **Dependencies**: Live database connection for coin tracking
+### Tab 5: 🛡️ Security
+- **Function**: Comprehensive security monitoring and threat detection
+- **Features**: API key management, system monitoring, threat analysis
+- **Dependencies**: `enhanced_security_dashboard.py`, `security_dashboard.py`
+- **Status**: ✅ Active security monitoring and protection systems
 
-### Tab 6: 📝 Dev Blog
+### Tab 6: 🔧 Enrichment
+- **Function**: 17 API sources with comprehensive data processing
+- **Features**: Real-time API integration, rate limiting, data enhancement
+- **Console**: Live processing output with beautiful animations
+- **Progress**: Batch processing with completion tracking
+- **Dependencies**: Multiple API integrations (DexScreener, CoinGecko, Jupiter, etc.)
+- **Status**: ✅ Active enrichment pipeline with 1,733 coins
+
+### Tab 7: 🤖 Super Claude
+- **Function**: AI-powered trading intelligence and command system
+- **Features**: 18 specialized commands, 9 expert personas, MCP integration
+- **Dependencies**: `super_claude_system.py`, `super_claude_commands.py`
+- **Capabilities**: Market analysis, risk assessment, trading optimization
+- **Status**: ✅ Fully integrated AI system with trading expertise
+
+### Tab 8: 📱 Blog
 - **Function**: Development progress tracking and updates
 - **Features**: Chronological update display with expandable details
 - **Content**: Recent fixes, deployments, feature additions
 - **Update Frequency**: Real-time based on development sessions
+- **Status**: ✅ Active development blog with session tracking
 
-### Tab 7: 💎 Solana Wallet
-- **Function**: Solana trading integration interface
-- **Features**: Wallet balance, active trades, PnL tracking
-- **Status**: Interface ready, integration pending
-- **Dependencies**: Future Solana Web3 integration
+### Tab 9: 📊 Monitoring
+- **Function**: System health monitoring and performance analytics
+- **Features**: Real-time metrics, health checks, performance tracking
+- **Dependencies**: `comprehensive_monitoring.py`
+- **Status**: ✅ Active system monitoring with comprehensive dashboards
 
-### Tab 8: 🗄 Coin Data **[ELABORATE CARDS]**
-- **Function**: ⭐ **MAIN FEATURE** - Stunning full-page cryptocurrency cards
-- **Features**: Pagination, filtering, sorting, detailed analysis
-- **Rendering**: `render_stunning_coin_card()` function
-- **Dependencies**: Live database, session state management
-- **Card Features**: Dynamic gradients, animations, glassmorphism
-
-### Tab 9: 🗃 Database
-- **Function**: Database management and schema information
+### Tab 10: ⚙️ System
+- **Function**: Database management and system configuration
 - **Features**: Record counting, sample data display, schema visualization
 - **Dependencies**: `sqlite3` for direct database queries
 - **Database**: `data/trench.db` (319 KB, 1,733 coins)
+- **Status**: ✅ Active database management interface
 
-### Tab 10: 🔔 Incoming Coins
-- **Function**: Real-time coin discovery monitoring interface
-- **Features**: Source monitoring, scan frequency display
-- **Status**: Interface ready, monitoring implementation pending
-- **Future**: Integration with live coin discovery APIs
+### Tab 11: 🧪 Beta
+- **Function**: Experimental features and testing environment
+- **Features**: New feature previews, testing interfaces, beta functionality
+- **Status**: 🛠 Beta testing environment for future features
 
-### Tab 11: 🎮 Super Claude Command System ⭐
-- **Function**: Professional AI command system with 25+ specialized commands
-- **Features**: 
-  - Command execution with development + trading commands
-  - Universal flag system (--think, --ultrathink, --uc, --seq, etc.)
-  - MCP server integration (Context7, Sequential, Magic, Puppeteer)
-  - Evidence-based response generation
-  - Interactive trading command dropdown interface
-  - Quick command buttons organized by category
-- **Dependencies**: `super_claude_commands.py`, `SuperClaudeCommandSystem`
-- **Development Commands**:
-  - `/analyze --code --performance --seq` - Codebase analysis
-  - `/troubleshoot --investigate --evidence` - Problem investigation
-  - `/scan --security --owasp --deps` - Security scanning
-  - `/build --feature --tdd --magic` - Feature development
-  - `/design --api --ultrathink` - Architecture design
-  - `/test --coverage --e2e --pup` - Comprehensive testing
-  - `/improve --performance --iterate` - Code optimization
-  - `/deploy --env prod --validate` - Production deployment
-- **Trading Commands**:
-  - `/trade --analyze $COIN --entry --exit --seq` - Complete trading analysis
-  - `/signal --generate --timeframe 4h --seq` - Trading signal generation  
-  - `/portfolio --optimize --modern-theory --seq` - Portfolio optimization
-  - `/research --coin $BTC --fundamentals --c7` - Market research
-  - `/bot --create dca-strategy --test --pup` - Trading bot creation
-  - `/chart --coin $BTC --technical --magic` - Technical visualization
-  - `/validate --trades --risk-management --evidence` - Trade validation
-- **Interface**: 4-category dropdown system (Analysis, Trading, Automation, Visualization)
-- **Status**: ✅ Fully integrated with trading-specific command interface
-
-### Tab 12: 🎭 AI Expert Personas ⭐
-- **Function**: 9 specialized AI personalities for targeted expertise
-- **Features**:
-  - Interactive persona selector with visual cards
-  - Persona-specific communication styles and expertise
-  - Evidence-based responses with confidence scoring
-  - Real-time chat interface with chosen persona
-  - Capability overview and best use cases
-- **Dependencies**: `super_claude_personas.py`, `SuperClaudePersonas`
-- **Available Personas**:
-  - **Alex Chen (Frontend)** 👨💻 - UI/UX, React, accessibility
-  - **Sarah Johnson (Backend)** 👩💻 - APIs, databases, performance
-  - **Dr. Marcus Webb (Architect)** 🏗 - System design, scalability
-  - **Detective Rivera (Analyzer)** 🔍 - Root cause analysis, debugging
-  - **Agent Kumar (Security)** 🔒 - Security, vulnerability assessment
-  - **Quinn Taylor (QA)** 🧪 - Testing, quality assurance, edge cases
-  - **Speed Gonzalez (Performance)** ⚡ - Optimization, profiling
-  - **Marie Kondo (Refactorer)** ✨ - Code quality, technical debt
-  - **Professor Williams (Mentor)** 📚 - Documentation, teaching
-- **Status**: ✅ Fully integrated with persona chat interface
 
 ## 🎨 Elaborate Cards System **[CORE FEATURE]**
 

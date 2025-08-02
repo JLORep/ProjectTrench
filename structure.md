@@ -1,7 +1,7 @@
 # TrenchCoat Pro - Complete Project Structure
 
 ## Overview
-**TrenchCoat Pro** is an ultra-premium cryptocurrency trading intelligence platform with 860+ Python files, comprehensive AI integration, real-time monitoring, and advanced dashboard interfaces with interactive charts.
+**TrenchCoat Pro** is an ultra-premium cryptocurrency trading intelligence platform with 860+ Python files, Hunt Hub memecoin sniping, Alpha Radar signal intelligence, comprehensive AI integration, real-time monitoring, and advanced dashboard interfaces with interactive charts.
 
 ```
 C:\trench\
@@ -16,7 +16,7 @@ C:\trench\
 ├── .gitignore                              # Git ignore patterns
 │
 ## CORE APPLICATION FILES
-├── streamlit_app.py                        # 🎯 MAIN STREAMLIT APP (10-tab dashboard)
+├── streamlit_app.py                        # 🎯 MAIN STREAMLIT APP (11-tab dashboard)
 ├── ultra_premium_dashboard.py              # 🎯 ADVANCED DASHBOARD CLASS
 ├── streamlit_safe_dashboard.py             # 🎯 FALLBACK DASHBOARD (enhanced)
 ├── streamlit_database.py                   # Database integration layer
@@ -125,6 +125,9 @@ C:\trench\
 ├── super_claude_system.py                # 🤖 AI-powered trading intelligence system
 ├── super_claude_commands.py              # 🎮 Official 18-command Super Claude system  
 ├── super_claude_personas.py              # 🎭 9 specialized AI expert personas
+├── hunt_hub_scanner.py                   # 🎯 Hunt Hub memecoin launch detection system
+├── alpha_radar_system.py                 # 📡 Alpha Radar AI signal intelligence engine
+├── memecoin_hunt_hub_ui.py               # 🎯 Hunt Hub professional sniping dashboard UI
 ├── mcp_server_integration.py             # 🔌 Complete MCP server architecture (Context7, Sequential, Magic, Puppeteer)
 │
 ## TELEGRAM & SOCIAL INTEGRATION
@@ -344,6 +347,7 @@ C:\trench\
 ├── STREAMLIT_DEPLOY_FIX.md             # Streamlit deployment fixes
 ├── ULTIMATE_STRATEGY.md                # Ultimate strategy document
 ├── WEBHOOK_SETUP_GUIDE.md              # Webhook setup guide
+├── MEMECOIN_SNIPING_IMPLEMENTATION.md   # Hunt Hub and Alpha Radar implementation guide
 ├── WORKFLOW_INTEGRATION.md             # Workflow integration guide
 ├── azure_*.md                          # Azure deployment documentation
 ├── discord_*.md                        # Discord integration documentation
@@ -397,7 +401,7 @@ C:\trench\
 ## Key File Analysis
 
 ### 🎯 Main Application Entry Points
-- **`streamlit_app.py`** - Primary 10-tab Streamlit dashboard (production)
+- **`streamlit_app.py`** - Primary 11-tab Streamlit dashboard with Hunt Hub and Alpha Radar (production)
 - **`ultra_premium_dashboard.py`** - Advanced dashboard class with premium features
 - **`streamlit_safe_dashboard.py`** - Fallback dashboard with enhanced features
 - **`app.py`** - Alternative main application entry point

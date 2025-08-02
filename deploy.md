@@ -106,7 +106,7 @@ python -c "import sqlite3; print('Database:', sqlite3.connect('data/trench.db').
 # 3. Local Testing
 streamlit run streamlit_app.py
 # Verify: http://localhost:8501
-# Check: All 10 tabs load
+# Check: All 11 tabs load
 # Test: Database connection shows 1,733 coins
 # Validate: Elaborate cards render properly
 ```
@@ -160,7 +160,7 @@ python deployment_status_checker.py
 
 # Manual Verification Checklist:
 # □ App URL loads without errors
-# □ All 10 tabs visible and functional
+# □ All 11 tabs visible and functional
 # □ Database shows 1,733 coins
 # □ Elaborate cards render with animations
 # □ No import errors in logs
@@ -478,7 +478,7 @@ python deployment_status_checker.py
 ### Success Criteria Checklist
 ```
 □ App loads without errors
-□ All 10 tabs functional
+□ All 11 tabs functional
 □ Database shows 1,733+ coins
 □ Elaborate cards render properly
 □ No console errors
@@ -520,7 +520,7 @@ The deployment pipeline now includes comprehensive validation to ensure:
 - Confirms code is tracked in git
 
 #### 2. Dashboard Functionality Validation
-- **Tab Verification**: Ensures all 10 tabs are present
+- **Tab Verification**: Ensures all 11 tabs are present
 - **Module Testing**: Imports all critical modules
 - **Database Check**: Confirms trench.db is accessible
 - **Response Time**: Measures Streamlit app performance
