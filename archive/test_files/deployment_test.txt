@@ -1,0 +1,3 @@
+Test file to verify deployment hook fix
+Created: 2025-07-31
+Issue: Fixed auto-deployment loop causing git commit timeouts

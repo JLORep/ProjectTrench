@@ -168,8 +168,10 @@ def main():
     
     # Run HTML/CSS validation
     print("\nRunning HTML/CSS validation...")
+    # Try smart validator first, fall back to original if not found
+    validator_script = 'validate_html_css_smart.py' if Path('validate_html_css_smart.py').exists() else 'validate_html_css.py'
     html_result = subprocess.run(
-        [sys.executable, 'validate_html_css.py'],
+        [sys.executable, validator_script],
         capture_output=True,
         text=True
     )
