@@ -942,29 +942,26 @@ with tab2:
     with st.container():
         st.header("💎 Live Coin Database")
         
-        # Container to isolate tab content
-        with st.container():
-    
-    if not coin_data.empty:
-        # Enhanced search and filter
-        col1, col2, col3 = st.columns([2, 1, 1])
-        with col1:
-            search_term = st.text_input("🔍 Search coins", placeholder="Enter ticker symbol or address...")
-        with col2:
-            sort_by = st.selectbox("Sort by", ["Market Cap", "Discovery MC", "Price", "Volume", "Smart Wallets"])
-        with col3:
-            show_count = st.selectbox("Show", [20, 50, 100, 200])
-        
-        # Filter data
-        filtered_data = coin_data.copy()
-        if search_term:
-            filtered_data = filtered_data[
-                (filtered_data['ticker'].str.contains(search_term, case=False, na=False)) |
-                (filtered_data['ca'].str.contains(search_term, case=False, na=False))
-            ]
-        
-        # Sort data
-        sort_mapping = {
+        if not coin_data.empty:
+            # Enhanced search and filter
+            col1, col2, col3 = st.columns([2, 1, 1])
+            with col1:
+                search_term = st.text_input("🔍 Search coins", placeholder="Enter ticker symbol or address...")
+            with col2:
+                sort_by = st.selectbox("Sort by", ["Market Cap", "Discovery MC", "Price", "Volume", "Smart Wallets"])
+            with col3:
+                show_count = st.selectbox("Show", [20, 50, 100, 200])
+            
+            # Filter data
+            filtered_data = coin_data.copy()
+            if search_term:
+                filtered_data = filtered_data[
+                    (filtered_data['ticker'].str.contains(search_term, case=False, na=False)) |
+                    (filtered_data['ca'].str.contains(search_term, case=False, na=False))
+                ]
+            
+            # Sort data
+            sort_mapping = {
             "Market Cap": "market_cap_usd",
             "Discovery MC": "discovery_mc",
             "Price": "current_price_usd", 
@@ -972,29 +969,29 @@ with tab2:
             "Smart Wallets": "smart_wallets"
         }
         
-        if sort_by in sort_mapping:
-            filtered_data = filtered_data.sort_values(
-                sort_mapping[sort_by], 
-                ascending=False, 
-                na_position='last'
-            )
+            if sort_by in sort_mapping:
+                filtered_data = filtered_data.sort_values(
+                    sort_mapping[sort_by], 
+                    ascending=False, 
+                    na_position='last'
+                )
+            
+            # Display coins in enhanced premium cards
+            st.write(f"Showing {min(len(filtered_data), show_count)} coins")
         
-        # Display coins in enhanced premium cards
-        st.write(f"Showing {min(len(filtered_data), show_count)} coins")
-        
-        # Responsive grid layout - adapt based on screen size
-        display_data = filtered_data.head(show_count)
-        
-        # Use different column layouts based on data count and create responsive grid
-        if len(display_data) > 0:
-            # Create responsive columns with proper spacing
-            for i in range(0, len(display_data), 2):
-                col1, col2 = st.columns(2, gap="medium")
-                
-                # Process both columns
-                for col_idx, col in enumerate([col1, col2]):
-                    if i + col_idx < len(display_data):
-                        coin = display_data.iloc[i + col_idx]
+            # Responsive grid layout - adapt based on screen size
+            display_data = filtered_data.head(show_count)
+            
+            # Use different column layouts based on data count and create responsive grid
+            if len(display_data) > 0:
+                # Create responsive columns with proper spacing
+                for i in range(0, len(display_data), 2):
+                    col1, col2 = st.columns(2, gap="medium")
+                    
+                    # Process both columns
+                    for col_idx, col in enumerate([col1, col2]):
+                        if i + col_idx < len(display_data):
+                            coin = display_data.iloc[i + col_idx]
                         
                         with col:
                             # Prepare display values
@@ -1051,31 +1048,31 @@ with tab2:
                             # Create clickable card using HTML - use index i as ID since coin might not have 'id'
                             coin_id = coin.get('id', f'idx_{i}')
                             card_html = f"""
-                        <div class="coin-card" id="coin-{coin_id}" 
-                             style="cursor: pointer !important; display: block; width: 100%; margin: 12px 0; position: relative; z-index: 10;">
-                            <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
-                                <div style="flex-shrink: 0;">
-                                    {logo_html}
+                            <div class="coin-card" id="coin-{coin_id}" 
+                                 style="cursor: pointer !important; display: block; width: 100%; margin: 12px 0; position: relative; z-index: 10;">
+                                <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+                                    <div style="flex-shrink: 0;">
+                                        {logo_html}
+                                    </div>
+                                    <div class="coin-info" style="flex: 1; min-width: 150px;">
+                                        <h2 class="coin-ticker" style="margin: 0 0 8px 0;">{ticker}</h2>
+                                        <div class="coin-address" style="margin-bottom: 8px;">{ca_display}</div>
+                                    </div>
+                                    <div class="coin-stats" style="text-align: right; flex-shrink: 0;">
+                                        <div class="coin-price" style="margin: 0 0 8px 0;">${price:.8f}</div>
+                                        {price_change_html}
+                                    </div>
                                 </div>
-                                <div class="coin-info" style="flex: 1; min-width: 150px;">
-                                    <h2 class="coin-ticker" style="margin: 0 0 8px 0;">{ticker}</h2>
-                                    <div class="coin-address" style="margin-bottom: 8px;">{ca_display}</div>
-                                </div>
-                                <div class="coin-stats" style="text-align: right; flex-shrink: 0;">
-                                    <div class="coin-price" style="margin: 0 0 8px 0;">${price:.8f}</div>
-                                    {price_change_html}
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                                    <div class="coin-mcap" style="font-weight: 600;">Market Cap: ${mcap}</div>
+                                    <div style="text-align: right; flex: 1; min-width: 200px;">
+                                        <div class="coin-metadata" style="font-size: 12px; opacity: 0.8;">{metadata_html}</div>
+                                    </div>
                                 </div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                                <div class="coin-mcap" style="font-weight: 600;">Market Cap: ${mcap}</div>
-                                <div style="text-align: right; flex: 1; min-width: 200px;">
-                                    <div class="coin-metadata" style="font-size: 12px; opacity: 0.8;">{metadata_html}</div>
-                                </div>
-                            </div>
-                        </div>
                         
-                        <script>
-                        document.addEventListener('DOMContentLoaded', function() {{
+                            <script>
+                            document.addEventListener('DOMContentLoaded', function() {{
                             setTimeout(() => {{
                                 const card = document.getElementById('coin-{coin_id}');
                                 if (card) {{
@@ -1111,8 +1108,8 @@ with tab2:
                                 # Store selected coin in session state for fullscreen view
                                 st.session_state.selected_coin = coin.to_dict()
                                 st.rerun()
-    else:
-        st.info("Loading coin data...")
+        else:
+            st.info("Loading coin data...")
     
     # Fullscreen coin details modal
     if 'selected_coin' in st.session_state and st.session_state.selected_coin:
@@ -1809,9 +1806,6 @@ with tab10:
     with col4:
         if st.button("🔧 Maintenance Mode"):
             st.warning("Maintenance mode not implemented")
-
-    else:
-        st.info("📡 No coins in database yet. Loading...")
 
 # ===== TAB 11: LIVE SIGNALS =====
 with tab11:
