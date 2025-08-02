@@ -213,14 +213,14 @@ section.main > div {
     }
 }
 
-/* Big chunky tabs with clean styling and negative bottom margin */
+/* Big chunky tabs with AGGRESSIVE negative margin */
 .stTabs [data-baseweb="tab-list"] {
     gap: 12px;
     background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
     padding: 16px 32px;
     border-radius: 28px;
     margin-top: 0px !important;
-    margin-bottom: -20px !important;
+    margin-bottom: -40px !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     border: 2px solid rgba(16, 185, 129, 0.15);
     position: relative;
@@ -242,14 +242,14 @@ div[data-testid="stTabs"] {
     padding-top: 0px !important;
 }
 
-/* Ensure proper tab content isolation with negative margin to close gap */
+/* Ensure proper tab content isolation with MORE negative margin */
 .stTabs [data-baseweb="tab-panel"] {
     position: relative;
     isolation: isolate;
     background: transparent;
     overflow: hidden;
     min-height: 500px;
-    margin-top: -20px !important;
+    margin-top: -35px !important;
     padding-top: 0px !important;
 }
 
@@ -559,11 +559,16 @@ div[data-testid="column"] {
     margin: 16px 0;
 }
 
-/* Enhanced tab content visibility with negative top margin to close gap */
+/* Enhanced tab content visibility with AGGRESSIVE negative margins */
 .stTabs [data-baseweb="tab-panel"] > div {
     padding: 0px 8px 10px 8px;
     min-height: 600px;
-    margin-top: -15px !important;
+    margin-top: -30px !important;
+}
+
+/* Target the immediate content container to pull up */
+.stTabs [data-baseweb="tab-panel"] > div > div:first-child {
+    margin-top: -20px !important;
 }
 
 /* Remove space before first content in tabs */
