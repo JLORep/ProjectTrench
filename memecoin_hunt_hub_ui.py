@@ -250,6 +250,8 @@ def render_live_scanner():
     st.markdown('<div class="hunt-container">', unsafe_allow_html=True)
     st.markdown('<div class="scanner-line"></div>', unsafe_allow_html=True)
     
+    st.subheader("🚀 Launch Queue")
+    
     # Simulated token launches
     tokens = [
         {

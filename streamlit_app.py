@@ -266,11 +266,11 @@ div[data-testid="stTabs"] {
     padding-top: 10px !important;
 }
 
-/* Special handling for Dashboard and Coins tabs that need less gap */
-.tab-content-wrapper.dashboard-tab,
-.tab-content-wrapper.coins-tab {
-    margin-top: 0px !important;
-    padding-top: 5px !important;
+/* Remove the special handling that was causing the gap */
+/* All tabs now use consistent spacing */
+.tab-content-wrapper {
+    margin-top: 20px !important;
+    padding-top: 10px !important;
 }
 
 /* Prevent content bleeding with strict containment */
@@ -784,10 +784,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.t
 
 # ===== TAB 1: ENHANCED DASHBOARD =====
 with tab1:
-    # Strong isolation container to prevent tab bleeding
-    with st.container():
-        st.markdown('<div class="tab-content-wrapper dashboard-tab">', unsafe_allow_html=True)
-        st.header("🌟 Market Intelligence Overview")
+    st.header("🌟 Market Intelligence Overview")
     
     # Enhanced market statistics
     if market_stats:
@@ -928,10 +925,7 @@ with tab1:
 
 # ===== TAB 2: COINS =====
 with tab2:
-    # Strong isolation container to prevent tab bleeding
-    with st.container():
-        st.markdown('<div class="tab-content-wrapper coins-tab">', unsafe_allow_html=True)
-        st.header("💎 Live Coin Database")
+    st.header("💎 Live Coin Database")
     
     if not coin_data.empty:
         # Enhanced search and filter
