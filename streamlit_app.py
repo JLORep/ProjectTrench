@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# DEPLOYMENT_TIMESTAMP: 2025-08-02 03:20:15 - CRITICAL FIX: All indentation errors fixed
+# DEPLOYMENT_TIMESTAMP: 2025-08-02 03:22:30 - FIX: Database column error - current_price to axiom_price
 """
 TrenchCoat Pro - Ultimate version with Super Claude AI + MCP Integration
 Updated: 2025-08-02 00:22:30 - FIXED: Coin cards now open properly with enhanced data structure
