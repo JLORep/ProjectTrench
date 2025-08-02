@@ -1152,9 +1152,9 @@ with tab2:
                                     use_container_width=False,
                                     type="secondary"
                                 ):
-                                # Store selected coin in session state for fullscreen view
-                                st.session_state.selected_coin = coin.to_dict()
-                                st.rerun()
+                                    # Store selected coin in session state for fullscreen view
+                                    st.session_state.selected_coin = coin.to_dict()
+                                    st.rerun()
         else:
             st.info("Loading coin data...")
     
