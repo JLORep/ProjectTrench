@@ -172,26 +172,48 @@ class ComprehensiveDevBlogSystem:
             "⚙️ Settings"
         ])
         
-        with main_tabs[0]:
-            self.render_create_update()
+        # Safely render tabs with error handling
+        try:
+            with main_tabs[0]:
+                self.render_create_update()
+        except Exception as e:
+            st.error(f"Error in Create Update tab: {e}")
         
-        with main_tabs[1]:
-            self.render_git_retrospective()
+        try:
+            with main_tabs[1]:
+                self.render_git_retrospective()
+        except Exception as e:
+            st.error(f"Error in Retrospective tab: {e}")
         
-        with main_tabs[2]:
-            self.render_customer_focused()
+        try:
+            with main_tabs[2]:
+                self.render_customer_focused()
+        except Exception as e:
+            st.error(f"Error in Customer Focus tab: {e}")
         
-        with main_tabs[3]:
-            self.render_scheduling()
+        try:
+            with main_tabs[3]:
+                self.render_scheduling()
+        except Exception as e:
+            st.error(f"Error in Schedule tab: {e}")
         
-        with main_tabs[4]:
-            self.render_analytics_dashboard()
+        try:
+            with main_tabs[4]:
+                self.render_analytics_dashboard()
+        except Exception as e:
+            st.error(f"Error in Analytics tab: {e}")
         
-        with main_tabs[5]:
-            self.render_queue_monitor()
+        try:
+            with main_tabs[5]:
+                self.render_queue_monitor()
+        except Exception as e:
+            st.error(f"Error in Queue Monitor tab: {e}")
         
-        with main_tabs[6]:
-            self.render_settings()
+        try:
+            with main_tabs[6]:
+                self.render_settings()
+        except Exception as e:
+            st.error(f"Error in Settings tab: {e}")
     
     def render_create_update(self):
         """Unified update creation interface"""
