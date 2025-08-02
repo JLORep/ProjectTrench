@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: trench-api
+    version: 1.0.0
+  name: trench-api
+  namespace: trench-production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: trench-api
+  template:
+    metadata:
+      labels:
+        app: trench-api
+        version: 1.0.0
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: trench-config
+        - secretRef:
+            name: trench-secrets
+        image: trench/api:1.0.0
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        name: trench-api
+        ports:
+        - containerPort: 8000
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 256Mi

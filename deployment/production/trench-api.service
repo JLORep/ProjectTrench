@@ -1,0 +1,43 @@
+[Unit]
+Description=TrenchCoat Pro API Service
+After=network.target postgresql.service redis.service
+Requires=postgresql.service redis.service
+
+[Service]
+Type=exec
+User=trench
+Group=trench
+WorkingDirectory=/opt/trench
+Environment=ENVIRONMENT=production
+Environment=DB_HOST=localhost
+Environment=DB_PORT=5432
+Environment=DB_NAME=trench_prod
+Environment=DB_USER=trench_user
+Environment=REDIS_HOST=localhost
+Environment=REDIS_PORT=6379
+Environment=WORKERS=8
+Environment=LOG_LEVEL=INFO
+EnvironmentFile=-/etc/trench/secrets.env
+
+ExecStart=/opt/trench/venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8000 --workers 8
+ExecReload=/bin/kill -HUP $MAINPID
+
+Restart=always
+RestartSec=10
+KillMode=mixed
+TimeoutStopSec=30
+
+# Security settings
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/trench/data /var/log/trench
+
+# Resource limits
+LimitNOFILE=65536
+MemoryMax=2G
+CPUQuota=200%
+
+[Install]
+WantedBy=multi-user.target

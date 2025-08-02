@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  DB_HOST: localhost
+  DB_NAME: trench_prod
+  DB_PORT: '5432'
+  DB_USER: trench_user
+  ENVIRONMENT: production
+  LOG_LEVEL: INFO
+  REDIS_HOST: localhost
+  REDIS_PORT: '6379'
+  WORKERS: '8'
+kind: ConfigMap
+metadata:
+  name: trench-config
+  namespace: trench-production

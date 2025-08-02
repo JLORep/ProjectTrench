@@ -1,0 +1,60 @@
+{
+  "environment": "production",
+  "version": "1.0.0",
+  "database": {
+    "type": "postgresql",
+    "host": "localhost",
+    "port": 5432,
+    "database": "trench_prod",
+    "username": "trench_user",
+    "password": "${DB_PASSWORD}",
+    "max_connections": 200,
+    "connection_timeout": 30,
+    "ssl_mode": "prefer"
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "password": "${REDIS_PASSWORD}",
+    "database": 0,
+    "max_connections": 50,
+    "ssl": false
+  },
+  "api": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "workers": 8,
+    "max_requests_per_worker": 1000,
+    "worker_timeout": 30,
+    "keepalive": 2,
+    "max_request_size": 10485760
+  },
+  "monitoring": {
+    "enable_metrics": true,
+    "enable_tracing": true,
+    "enable_logging": true,
+    "log_level": "INFO",
+    "metrics_port": 9090,
+    "health_check_path": "/health",
+    "readiness_check_path": "/ready"
+  },
+  "security": {
+    "enable_cors": true,
+    "cors_origins": [
+      "https://projecttrench.streamlit.app"
+    ],
+    "enable_rate_limiting": true,
+    "rate_limit_per_minute": 1000,
+    "enable_api_key_auth": true,
+    "jwt_secret": "${JWT_SECRET}",
+    "encryption_key": "${ENCRYPTION_KEY}"
+  },
+  "scaling": {
+    "min_replicas": 3,
+    "max_replicas": 20,
+    "target_cpu_utilization": 70,
+    "target_memory_utilization": 80,
+    "scale_up_cooldown": 300,
+    "scale_down_cooldown": 600
+  }
+}
