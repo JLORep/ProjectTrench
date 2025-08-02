@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# DEPLOYMENT_TIMESTAMP: 2025-08-02 01:00:18 - Security & Monitoring Integration Complete
 """
 TrenchCoat Pro - Ultimate version with Super Claude AI + MCP Integration
 Updated: 2025-08-02 00:22:30 - FIXED: Coin cards now open properly with enhanced data structure
@@ -21,6 +22,21 @@ try:
     import plotly.express as px
     from plotly.subplots import make_subplots
     CHARTS_AVAILABLE = True
+except ImportError:
+    pass
+
+# Try to import Security and Monitoring modules
+SECURITY_AVAILABLE = False
+MONITORING_AVAILABLE = False
+try:
+    from security_dashboard import render_security_dashboard
+    SECURITY_AVAILABLE = True
+except ImportError:
+    pass
+
+try:
+    from comprehensive_monitoring import render_monitoring_dashboard
+    MONITORING_AVAILABLE = True
 except ImportError:
     pass
 
@@ -952,9 +968,11 @@ else:
     
     base_tabs.extend([
         "📝 Blog",
-        "💎 Wallet",
+        "💎 Wallet", 
         "🗃️ Database",
-        "🔔 Incoming"
+        "🔔 Incoming",
+        "🔒 Security",
+        "📊 Monitoring"
     ])
     
     tabs = st.tabs(base_tabs)
@@ -1812,3 +1830,49 @@ else:
                     if st.button("🔍 Analyze", key=f"analyze_{disc['ticker']}"):
                         st.info("Analysis started...")
                 st.divider()
+    
+    # Security Dashboard Tab
+    current_tab_index += 1
+    with tabs[current_tab_index]:
+        render_breadcrumb([("Home", None), ("Security", None)])
+        
+        # Import and render security dashboard
+        if SECURITY_AVAILABLE:
+            render_security_dashboard()
+        else:
+            st.error("Security dashboard module not available")
+            st.markdown("""
+            ### 🔒 Security Dashboard
+            
+            **Features:**
+            - Real-time threat detection
+            - API key security monitoring  
+            - Secret exposure scanning
+            - Incident response management
+            - Security metrics and analytics
+            
+            *Security module is loading...*
+            """)
+    
+    # Comprehensive Monitoring Tab
+    current_tab_index += 1
+    with tabs[current_tab_index]:
+        render_breadcrumb([("Home", None), ("Monitoring", None)])
+        
+        # Import and render monitoring dashboard
+        if MONITORING_AVAILABLE:
+            render_monitoring_dashboard()
+        else:
+            st.error("Monitoring dashboard module not available")
+            st.markdown("""
+            ### 📊 Comprehensive System Monitoring
+            
+            **Features:**
+            - Real-time system performance metrics
+            - Database health monitoring
+            - API endpoint status tracking
+            - Historical performance trends
+            - Automated alerting system
+            
+            *Monitoring module is loading...*
+            """)
