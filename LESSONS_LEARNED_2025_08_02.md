@@ -167,4 +167,24 @@ elif st.session_state.view_mode == 'detail':
 
 ---
 
-*This document captures hard-won lessons from debugging the coin card click issue. Reference this when encountering similar Streamlit UI problems.*
+## 🔧 Pre-commit Validation Lessons
+
+### The HTML/CSS Validator Problem
+**Issue**: Original validator was giving 54+ false positives for f-string templates
+**Root Cause**: Validator didn't understand Python f-string expressions vs HTML
+**Solution**: Created smart validator that parses f-strings properly
+
+### F-String Format Spec Gotcha
+**Error**: `${coin['current_volume_24h']:,.0f if coin['current_volume_24h'] else 0}`
+**Problem**: Python doesn't allow conditional expressions inside format specifications
+**Fix**: Use `.get()` with default: `${coin.get('current_volume_24h', 0):,.0f}`
+
+### Smart Validator Benefits
+1. **Reduces false positives** from 54 to 1
+2. **Understands f-strings** and template expressions
+3. **Only fails on real errors**, not warnings
+4. **Allows productive development** without constant blocks
+
+---
+
+*This document captures hard-won lessons from debugging the coin card click issue and validation problems. Reference this when encountering similar Streamlit UI or validation issues.*

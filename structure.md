@@ -383,6 +383,20 @@ C:\trench\
 ├── FUTURE_ROADMAP.md                  # Future features roadmap
 │
 ## ARCHIVE & BACKUP
+├── archive/                            # 📁 Organized archive structure
+│   ├── test_files/                    # Test and temporary files
+│   │   ├── test_*.py                 # All test scripts (30+ files)
+│   │   ├── simple_*_test.py          # Simple test utilities
+│   │   ├── *.txt                     # Test output and logs
+│   │   └── requirements_*.txt        # Old requirement files
+│   ├── backup_files/                  # Backup versions
+│   │   ├── app_backup.py             # App backup
+│   │   ├── streamlit_app_backup.py   # Streamlit backup
+│   │   └── *_backup.py               # Other backups
+│   └── old_validators/                # Previous validation scripts
+│       ├── validate_html_css.py       # Original validator
+│       └── validate_html_css_improved.py # Intermediate version
+│
 ├── Ctrenchgithub_upload/               # GitHub upload archive
 │   ├── MISSION_STATEMENT.md            # Archived mission statement
 │   ├── check_token.py                  # Archived token checker
@@ -393,9 +407,6 @@ C:\trench\
 │
 ├── TrenchCoat_Pro.zip                  # Complete project archive
 ├── azure_deployment.zip               # Azure deployment package
-├── app_backup.py                       # Application backup
-├── streamlit_app_backup.py            # Streamlit app backup
-├── streamlit_safe_dashboard_backup.py # Dashboard backup
 ├── improved-post-commit                # Improved post-commit hook
 ├── final_deployment_report.md          # Final deployment report
 ├── FullDash1.png                       # Dashboard screenshot
@@ -455,5 +466,7 @@ C:\trench\
 ## Validation Files (Added 2025-08-02)
 enhanced_deployment_validator.py  # Comprehensive deployment validation system
 test_enhanced_validation.py       # Test script for validation system
-update_docs_simple.py            # Simple documentation updater (this file)
+validate_html_css_smart.py       # 🎯 Smart HTML/CSS validator with f-string support
+validate_code.py                 # Main code validation orchestrator
+update_docs_simple.py            # Simple documentation updater
 update_md_deployment_validation.py # Original updater with Unicode issues
