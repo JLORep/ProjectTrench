@@ -213,22 +213,18 @@ section.main > div {
     }
 }
 
-/* Big chunky tabs with ABSOLUTE positioning and tight spacing */
+/* Big chunky tabs with clean styling and negative bottom margin */
 .stTabs [data-baseweb="tab-list"] {
     gap: 12px;
     background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-    padding: 12px 32px;
-    border-radius: 0px 0px 28px 28px;
+    padding: 16px 32px;
+    border-radius: 28px;
     margin-top: 0px !important;
-    margin-bottom: 0px !important;
+    margin-bottom: -20px !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     border: 2px solid rgba(16, 185, 129, 0.15);
-    border-top: none;
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    z-index: 9999;
+    position: relative;
+    z-index: 999;
     backdrop-filter: blur(20px);
 }
 
@@ -246,14 +242,14 @@ div[data-testid="stTabs"] {
     padding-top: 0px !important;
 }
 
-/* Ensure proper tab content isolation with tight spacing */
+/* Ensure proper tab content isolation with negative margin to close gap */
 .stTabs [data-baseweb="tab-panel"] {
     position: relative;
     isolation: isolate;
     background: transparent;
     overflow: hidden;
     min-height: 500px;
-    margin-top: 0px !important;
+    margin-top: -20px !important;
     padding-top: 0px !important;
 }
 
@@ -563,11 +559,11 @@ div[data-testid="column"] {
     margin: 16px 0;
 }
 
-/* Enhanced tab content visibility with TIGHT fixed tab offset */
+/* Enhanced tab content visibility with negative top margin to close gap */
 .stTabs [data-baseweb="tab-panel"] > div {
-    padding: 75px 8px 10px 8px;
+    padding: 0px 8px 10px 8px;
     min-height: 600px;
-    margin-top: 0px !important;
+    margin-top: -15px !important;
 }
 
 /* Remove space before first content in tabs */
