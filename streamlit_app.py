@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# DEPLOYMENT_TIMESTAMP: 2025-08-02 03:22:30 - FIX: Database column error - current_price to axiom_price
+# DEPLOYMENT_TIMESTAMP: 2025-08-02 03:27:15 - UI REDESIGN: Status bar moved to bottom, cleaner breadcrumbs, tabs closer to top
 """
 TrenchCoat Pro - Ultimate version with Super Claude AI + MCP Integration
-Updated: 2025-08-02 00:22:30 - FIXED: Coin cards now open properly with enhanced data structure
+Updated: 2025-08-02 03:27:15 - UI REDESIGN: Status bar moved to bottom, cleaner breadcrumbs, tabs closer to top
 """
 import streamlit as st
 import pandas as pd
@@ -124,6 +124,7 @@ div[data-testid="stHorizontalBlock"] button:hover {
     backdrop-filter: blur(20px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
     border: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: 8px;
 }
 
 .stTabs [data-baseweb="tab"] {
@@ -253,6 +254,50 @@ div[data-testid="stHorizontalBlock"] button:hover {
     padding: 32px;
     margin-bottom: 24px;
     backdrop-filter: blur(10px);
+}
+
+/* Fixed Bottom Status Bar */
+.bottom-status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+    padding: 12px 20px;
+    z-index: 1000;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.status-item {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 16px;
+    border-radius: 20px;
+    margin-right: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+/* Simplified breadcrumb styling */
+.simple-breadcrumb {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    margin-bottom: 16px;
+    padding: 8px 0;
+}
+
+.simple-breadcrumb .breadcrumb-item {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+}
+
+.simple-breadcrumb .breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.4);
+    margin: 0 8px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -689,21 +734,14 @@ def get_all_coins_from_db(page=1, per_page=50):
         return [], 0
 
 def render_breadcrumb(path_items):
-    """Render breadcrumb navigation with bigger text"""
-    cols = st.columns(len(path_items) * 2 - 1)
-    
+    """Render simplified breadcrumb navigation with inline text"""
+    breadcrumb_text = ""
     for i, (name, action) in enumerate(path_items):
         if i > 0:
-            # Separator
-            with cols[i*2-1]:
-                st.markdown("<h3 style='color: rgba(255,255,255,0.4); margin: 0;'>/</h3>", unsafe_allow_html=True)
-        
-        with cols[i*2]:
-            if action:
-                if st.button(name, key=f"breadcrumb_{name}_{i}", use_container_width=True):
-                    action()
-            else:
-                st.markdown(f"<h3 style='color: rgba(255,255,255,0.9); margin: 0;'>{name}</h3>", unsafe_allow_html=True)
+            breadcrumb_text += " > "
+        breadcrumb_text += name
+    
+    st.markdown(f'<div class="simple-breadcrumb">{breadcrumb_text}</div>', unsafe_allow_html=True)
 
 def render_stunning_coin_card(coin, index):
     """Render a stunning coin card with full visual effects"""
@@ -917,30 +955,7 @@ def show_coin_detail(coin_data):
 # Main app header
 st.markdown("### 🎯 TrenchCoat Pro | Ultra-Premium Crypto Trading Intelligence with Super Claude AI")
 
-# Feature indicators with glassmorphism
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.markdown("""
-    <div style="background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
-        <p style="margin: 0; color: #10b981; font-weight: 600;">✅ Ultimate Version</p>
-    </div>
-    """, unsafe_allow_html=True)
-with col2:
-    status = "✅ Interactive Charts" if CHARTS_AVAILABLE else "⚠️ Basic Charts"
-    color = "#10b981" if CHARTS_AVAILABLE else "#f59e0b"
-    st.markdown(f"""
-    <div style="background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
-        <p style="margin: 0; color: {color}; font-weight: 600;">{status}</p>
-    </div>
-    """, unsafe_allow_html=True)
-with col3:
-    super_claude_status = "✅ Super Claude Active" if (SUPER_CLAUDE_COMMANDS_AVAILABLE or SUPER_CLAUDE_PERSONAS_AVAILABLE) else "⚠️ Super Claude Loading"
-    super_claude_color = "#8b5cf6" if (SUPER_CLAUDE_COMMANDS_AVAILABLE or SUPER_CLAUDE_PERSONAS_AVAILABLE) else "#f59e0b"
-    st.markdown(f"""
-    <div style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.3);">
-        <p style="margin: 0; color: {super_claude_color}; font-weight: 600;">{super_claude_status}</p>
-    </div>
-    """, unsafe_allow_html=True)
+# Status indicators moved to bottom fixed bar - see end of file
 
 # Main content
 if st.session_state.show_coin_detail:
@@ -1893,3 +1908,18 @@ else:
             
             *Monitoring module is loading...*
             """)
+
+# Fixed Bottom Status Bar
+status_text = "✅ Ultimate Version"
+charts_status = "✅ Interactive Charts" if CHARTS_AVAILABLE else "⚠️ Basic Charts"
+charts_color = "#10b981" if CHARTS_AVAILABLE else "#f59e0b"
+super_claude_status = "✅ Super Claude Active" if (SUPER_CLAUDE_COMMANDS_AVAILABLE or SUPER_CLAUDE_PERSONAS_AVAILABLE) else "⚠️ Super Claude Loading"
+super_claude_color = "#8b5cf6" if (SUPER_CLAUDE_COMMANDS_AVAILABLE or SUPER_CLAUDE_PERSONAS_AVAILABLE) else "#f59e0b"
+
+st.markdown(f"""
+<div class="bottom-status-bar">
+    <span class="status-item" style="color: #10b981;">{status_text}</span>
+    <span class="status-item" style="color: {charts_color};">{charts_status}</span>
+    <span class="status-item" style="color: {super_claude_color};">{super_claude_status}</span>
+</div>
+""", unsafe_allow_html=True)
