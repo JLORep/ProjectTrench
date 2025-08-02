@@ -11,13 +11,33 @@ from typing import Dict, List, Any, Optional, Tuple
 import json
 import sqlite3
 import asyncio
-from enhanced_blog_with_queue import DiscordRateLimitQueue, QueuedMessage, MessagePriority
+import threading
+from contextlib import contextmanager
+from enhanced_blog_with_queue import DiscordRateLimitQueue, QueuedMessage, MessagePriority, run_async_safe
 
 # Import all our systems
 from integrated_webhook_blog_system import IntegratedWebhookBlogSystem, DevelopmentUpdate
 from retrospective_blog_system import RetrospectiveBlogSystem
 from customer_focused_retrospective import CustomerFocusedRetrospective
 from dev_blog_system import DevBlogSystem
+
+class ThreadSafeDatabaseManager:
+    """Thread-safe database connection manager to prevent locking issues"""
+    def __init__(self, db_path: str):
+        self.db_path = db_path
+        self._lock = threading.RLock()
+    
+    @contextmanager
+    def get_connection(self):
+        """Get a thread-safe database connection"""
+        with self._lock:
+            conn = sqlite3.connect(self.db_path)
+            conn.execute("PRAGMA journal_mode=WAL")  # Enable WAL mode for concurrent reads
+            conn.execute("PRAGMA busy_timeout=10000")  # 10 second timeout
+            try:
+                yield conn
+            finally:
+                conn.close()
 
 class ComprehensiveDevBlogSystem:
     """Master system integrating all blog features WITH rate limit queue"""
@@ -35,6 +55,7 @@ class ComprehensiveDevBlogSystem:
         
         # Unified database
         self.db_path = "comprehensive_dev_blog.db"
+        self.db_manager = ThreadSafeDatabaseManager(self.db_path)
         self.init_comprehensive_database()
         
         # Discord channel mapping based on the screenshot
@@ -71,58 +92,57 @@ class ComprehensiveDevBlogSystem:
     
     def init_comprehensive_database(self):
         """Initialize comprehensive blog database"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        # Master posts table
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS comprehensive_posts (
-            id TEXT PRIMARY KEY,
-            post_type TEXT NOT NULL, -- manual, retrospective, customer, automated
-            title TEXT NOT NULL,
-            version TEXT NOT NULL,
-            content_json TEXT NOT NULL, -- Full post content as JSON
-            channels_posted TEXT NOT NULL, -- JSON array of channels
-            discord_success_rate REAL DEFAULT 0.0,
-            git_commits TEXT, -- JSON array of associated commits
-            created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            published_timestamp TIMESTAMP,
-            author TEXT DEFAULT 'TrenchCoat Pro Team',
-            priority TEXT DEFAULT 'medium',
-            customer_impact_score INTEGER DEFAULT 0, -- 0-100
-            technical_depth_score INTEGER DEFAULT 0, -- 0-100
-            engagement_metrics TEXT -- JSON of likes, views, etc.
-        )
-        ''')
-        
-        # Analytics table
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS blog_analytics (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            post_id TEXT NOT NULL,
-            channel TEXT NOT NULL,
-            views INTEGER DEFAULT 0,
-            clicks INTEGER DEFAULT 0,
-            reactions TEXT, -- JSON of reaction types and counts
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (post_id) REFERENCES comprehensive_posts(id)
-        )
-        ''')
-        
-        # Scheduled posts
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS scheduled_posts (
-            id TEXT PRIMARY KEY,
-            post_content TEXT NOT NULL, -- JSON of full post
-            scheduled_time TIMESTAMP NOT NULL,
-            channels TEXT NOT NULL, -- JSON array
-            status TEXT DEFAULT 'pending', -- pending, published, cancelled
-            created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-        ''')
-        
-        conn.commit()
-        conn.close()
+        with self.db_manager.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # Master posts table
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS comprehensive_posts (
+                id TEXT PRIMARY KEY,
+                post_type TEXT NOT NULL, -- manual, retrospective, customer, automated
+                title TEXT NOT NULL,
+                version TEXT NOT NULL,
+                content_json TEXT NOT NULL, -- Full post content as JSON
+                channels_posted TEXT NOT NULL, -- JSON array of channels
+                discord_success_rate REAL DEFAULT 0.0,
+                git_commits TEXT, -- JSON array of associated commits
+                created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                published_timestamp TIMESTAMP,
+                author TEXT DEFAULT 'TrenchCoat Pro Team',
+                priority TEXT DEFAULT 'medium',
+                customer_impact_score INTEGER DEFAULT 0, -- 0-100
+                technical_depth_score INTEGER DEFAULT 0, -- 0-100
+                engagement_metrics TEXT -- JSON of likes, views, etc.
+            )
+            ''')
+            
+            # Analytics table
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS blog_analytics (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id TEXT NOT NULL,
+                channel TEXT NOT NULL,
+                views INTEGER DEFAULT 0,
+                clicks INTEGER DEFAULT 0,
+                reactions TEXT, -- JSON of reaction types and counts
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (post_id) REFERENCES comprehensive_posts(id)
+            )
+            ''')
+            
+            # Scheduled posts
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS scheduled_posts (
+                id TEXT PRIMARY KEY,
+                post_content TEXT NOT NULL, -- JSON of full post
+                scheduled_time TIMESTAMP NOT NULL,
+                channels TEXT NOT NULL, -- JSON array
+                status TEXT DEFAULT 'pending', -- pending, published, cancelled
+                created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+            
+            conn.commit()
     
     def render_comprehensive_interface(self):
         """Main Streamlit interface for comprehensive blog system"""
@@ -745,20 +765,19 @@ class ComprehensiveDevBlogSystem:
     def get_next_version(self) -> str:
         """Get next version number"""
         # Query database for latest version
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT version FROM comprehensive_posts ORDER BY created_timestamp DESC LIMIT 1")
-        result = cursor.fetchone()
-        conn.close()
-        
-        if result:
-            # Increment patch version
-            parts = result[0].split('.')
-            if len(parts) == 3:
-                parts[2] = str(int(parts[2]) + 1)
-                return '.'.join(parts)
-        
-        return "1.3.0"
+        with self.db_manager.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT version FROM comprehensive_posts ORDER BY created_timestamp DESC LIMIT 1")
+            result = cursor.fetchone()
+            
+            if result:
+                # Increment patch version
+                parts = result[0].split('.')
+                if len(parts) == 3:
+                    parts[2] = str(int(parts[2]) + 1)
+                    return '.'.join(parts)
+            
+            return "1.3.0"
     
     def publish_comprehensive_update(self, title, category, version, components, 
                                    technical_details, user_impact, metrics, 
@@ -781,7 +800,11 @@ class ComprehensiveDevBlogSystem:
         # Check if queue processor is running
         if not self.queue_processor_task or self.queue_processor_task.done():
             st.warning("⚠️ Queue processor not running. Starting it now...")
-            asyncio.run(self.start_queue_processor())
+            try:
+                run_async_safe(self.start_queue_processor())
+            except Exception as e:
+                st.error(f"Failed to start queue processor: {e}")
+                return {"total_success": 0, "total_failed": len(channels), "discord_results": {}}
         
         # Create Discord embed
         embed = self._create_discord_embed(update)
@@ -858,31 +881,30 @@ class ComprehensiveDevBlogSystem:
             'metrics': update.metrics
         }
         
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-        INSERT INTO comprehensive_posts 
-        (id, post_type, title, version, content_json, channels_posted,
-         discord_success_rate, created_timestamp, published_timestamp,
-         author, priority)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (
-            post_id,
-            post_type,
-            update.title,
-            update.version,
-            json.dumps(content),
-            json.dumps(list(result.get('discord_results', {}).keys())),
-            result['total_success'] / max(result['total_success'] + result['total_failed'], 1),
-            datetime.now(),
-            datetime.now(),
-            update.author,
-            update.priority
-        ))
-        
-        conn.commit()
-        conn.close()
+        with self.db_manager.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+            INSERT INTO comprehensive_posts 
+            (id, post_type, title, version, content_json, channels_posted,
+             discord_success_rate, created_timestamp, published_timestamp,
+             author, priority)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                post_id,
+                post_type,
+                update.title,
+                update.version,
+                json.dumps(content),
+                json.dumps(list(result.get('discord_results', {}).keys())),
+                result['total_success'] / max(result['total_success'] + result['total_failed'], 1),
+                datetime.now(),
+                datetime.now(),
+                update.author,
+                update.priority
+            ))
+            
+            conn.commit()
     
     def _create_discord_embed(self, update: DevelopmentUpdate) -> Dict[str, Any]:
         """Create Discord embed from development update"""
@@ -957,7 +979,10 @@ class ComprehensiveDevBlogSystem:
         
         with col1:
             if st.button("🚀 Start Queue Processor", type="primary"):
-                asyncio.run(self.start_queue_processor())
+                try:
+                    run_async_safe(self.start_queue_processor())
+                except Exception as e:
+                    st.error(f"Failed to start queue processor: {e}")
         
         with col2:
             if st.button("🛑 Stop Queue Processor"):

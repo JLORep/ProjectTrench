@@ -339,7 +339,7 @@ class EnhancedBlogIntegration:
                 return
             
             # Group and analyze commits
-            groups = self.retrospective.group_commits_by_update(commits)
+            groups = self.retrospective.group_commits_into_updates(commits)
             
             # Generate customer-focused updates
             updates_created = 0

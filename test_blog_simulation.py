@@ -261,7 +261,7 @@ def simulate_24hr_blog_entries():
             commits.append(commit)
         
         # Group commits
-        groups = blog_system.retrospective.group_commits_by_update(commits)
+        groups = blog_system.retrospective.group_commits_into_updates(commits)
         print(f"   - Found {len(commits)} commits")
         print(f"   - Grouped into {len(groups)} updates")
         

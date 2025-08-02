@@ -14,6 +14,25 @@ from dataclasses import dataclass
 from collections import deque
 import sqlite3
 from enum import Enum
+import threading
+import functools
+
+def run_async_safe(coro):
+    """Safely run async code in potentially existing event loop"""
+    try:
+        # Try to get the current event loop
+        loop = asyncio.get_running_loop()
+        # If we're in an existing loop, create a new thread
+        if loop.is_running():
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(asyncio.run, coro)
+                return future.result()
+        else:
+            return asyncio.run(coro)
+    except RuntimeError:
+        # No event loop running, safe to use asyncio.run
+        return asyncio.run(coro)
 
 class MessagePriority(Enum):
     """Priority levels for queued messages"""
