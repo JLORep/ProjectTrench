@@ -99,6 +99,36 @@ try:
 except ImportError:
     pass
 
+# Try to import Architectural Systems
+DATABASE_POOL_AVAILABLE = False
+ENHANCED_CACHE_AVAILABLE = False
+HEALTH_CHECK_AVAILABLE = False
+EVENT_SYSTEM_AVAILABLE = False
+
+try:
+    from database_connection_pool import get_database_pool, execute_query
+    DATABASE_POOL_AVAILABLE = True
+except ImportError:
+    pass
+
+try:
+    from enhanced_caching_system import get_cache_system, smart_cache, database_cache
+    ENHANCED_CACHE_AVAILABLE = True
+except ImportError:
+    pass
+
+try:
+    from health_check_system import get_health_checker
+    HEALTH_CHECK_AVAILABLE = True
+except ImportError:
+    pass
+
+try:
+    from event_system import get_event_bus, publish_event, EventType
+    EVENT_SYSTEM_AVAILABLE = True
+except ImportError:
+    pass
+
 # Page config - optimized for wide layout
 st.set_page_config(
     page_title="TrenchCoat Pro | Premium Crypto Intelligence",
@@ -171,6 +201,36 @@ header {visibility: hidden;}
     position: relative;
     isolation: isolate;
     background: transparent;
+    overflow: hidden;
+    min-height: 500px;
+}
+
+/* Prevent content bleeding with strict containment */
+.stTabs [data-baseweb="tab-panel"] > div {
+    contain: layout style paint;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Force tab content to stay within bounds */
+.stTabs [data-baseweb="tab-panel"] .stMarkdown,
+.stTabs [data-baseweb="tab-panel"] .stContainer {
+    contain: layout;
+    position: relative;
+    z-index: 1;
+}
+
+/* Tab content wrapper for absolute isolation */
+.tab-content-wrapper {
+    position: relative;
+    isolation: isolate;
+    contain: layout style paint;
+    width: 100%;
+    min-height: 400px;
+    background: rgba(0, 0, 0, 0.01);
+    border-radius: 8px;
+    padding: 1px;
+    overflow: hidden;
 }
 
 .stTabs [data-baseweb="tab"] {
@@ -544,8 +604,9 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
 
 # ===== TAB 1: ENHANCED DASHBOARD =====
 with tab1:
-    # Use container to prevent header bleeding
+    # Strong isolation container to prevent tab bleeding
     with st.container():
+        st.markdown('<div class="tab-content-wrapper">', unsafe_allow_html=True)
         st.header("🌟 Market Intelligence Overview")
     
     # Enhanced market statistics
@@ -681,10 +742,16 @@ with tab1:
             <p>• Enterprise security enabled</p>
         </div>
         """, unsafe_allow_html=True)
+        
+        # Close tab content wrapper
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # ===== TAB 2: COINS =====
 with tab2:
-    st.header("💎 Live Coin Database")
+    # Strong isolation container to prevent tab bleeding
+    with st.container():
+        st.markdown('<div class="tab-content-wrapper">', unsafe_allow_html=True)
+        st.header("💎 Live Coin Database")
     
     if not coin_data.empty:
         # Enhanced search and filter
@@ -1047,14 +1114,42 @@ with tab3:
 
 # ===== TAB 4: SECURITY =====
 with tab4:
+    # Enhanced security tab with architectural systems
+    if HEALTH_CHECK_AVAILABLE:
+        # Health check system integration
+        health_checker = get_health_checker()
+        health_checker.render_health_dashboard()
+        
+        st.markdown("---")
+    
     if SECURITY_AVAILABLE:
         render_security_dashboard()
     else:
         st.header("🛡️ Security Dashboard")
-        st.info("Security dashboard module loading...")
+        
+        # System architecture status
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            status = "✅ ACTIVE" if DATABASE_POOL_AVAILABLE else "❌ OFFLINE"
+            st.metric("Connection Pool", status)
+            
+        with col2:
+            status = "✅ ACTIVE" if ENHANCED_CACHE_AVAILABLE else "❌ OFFLINE"
+            st.metric("Enhanced Cache", status)
+            
+        with col3:
+            status = "✅ ACTIVE" if HEALTH_CHECK_AVAILABLE else "❌ OFFLINE"
+            st.metric("Health Monitor", status)
+            
+        with col4:
+            status = "✅ ACTIVE" if EVENT_SYSTEM_AVAILABLE else "❌ OFFLINE"
+            st.metric("Event System", status)
+        
+        st.markdown("---")
         
         # Basic security info
-        st.subheader("Current Security Status")
+        st.subheader("🔒 Security Status")
         
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -1063,6 +1158,60 @@ with tab4:
             st.metric("API Security", "ENCRYPTED", delta="Military-grade")
         with col3:
             st.metric("Database", "PROTECTED", delta="Backup active")
+        
+        # Architecture improvements summary
+        if any([DATABASE_POOL_AVAILABLE, ENHANCED_CACHE_AVAILABLE, HEALTH_CHECK_AVAILABLE, EVENT_SYSTEM_AVAILABLE]):
+            st.markdown("---")
+            st.subheader("🏗️ Architecture Enhancements")
+            
+            improvements = []
+            if DATABASE_POOL_AVAILABLE:
+                improvements.append("✅ **Database Connection Pooling**: High-performance database access with connection reuse")
+            if ENHANCED_CACHE_AVAILABLE:
+                improvements.append("✅ **Enhanced Caching System**: Multi-level caching with intelligent invalidation")
+            if HEALTH_CHECK_AVAILABLE:
+                improvements.append("✅ **Health Check System**: Comprehensive system monitoring and diagnostics")
+            if EVENT_SYSTEM_AVAILABLE:
+                improvements.append("✅ **Event System**: Scalable event-driven architecture for real-time updates")
+            
+            for improvement in improvements:
+                st.markdown(improvement)
+        
+        # Performance metrics
+        st.markdown("---")
+        st.subheader("📊 Performance Metrics")
+        
+        perf_col1, perf_col2, perf_col3 = st.columns(3)
+        
+        with perf_col1:
+            if ENHANCED_CACHE_AVAILABLE:
+                try:
+                    cache_stats = get_cache_system().get_stats()
+                    st.metric("Cache Hit Rate", f"{cache_stats['hit_rate']:.1f}%")
+                except:
+                    st.metric("Cache Hit Rate", "N/A")
+            else:
+                st.metric("Cache Hit Rate", "Standard")
+        
+        with perf_col2:
+            if DATABASE_POOL_AVAILABLE:
+                try:
+                    pool_stats = get_database_pool().get_stats()
+                    st.metric("DB Pool Efficiency", f"{pool_stats['pool_efficiency']:.1f}%")
+                except:
+                    st.metric("DB Pool Efficiency", "N/A")
+            else:
+                st.metric("DB Pool Efficiency", "Single Connection")
+        
+        with perf_col3:
+            if EVENT_SYSTEM_AVAILABLE:
+                try:
+                    event_stats = get_event_bus().get_stats()
+                    st.metric("Events/Second", f"{event_stats['events_per_second']:.2f}")
+                except:
+                    st.metric("Events/Second", "N/A")
+            else:
+                st.metric("Events/Second", "No Event System")
 
 # ===== TAB 5: ENRICHMENT =====
 with tab5:
