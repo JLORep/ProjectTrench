@@ -1,5 +1,18 @@
 # TrenchCoat Pro - Lessons Learned & Gotchas (2025-08-02)
 
+## 🚨 CRITICAL DISCOVERY - Wrong Entry Point!
+
+### The Mystery of No Changes Showing
+**Problem**: Despite multiple deployments, changes weren't showing on Streamlit Cloud.
+**Root Cause**: Streamlit was using `app.py` as the entry point, not `streamlit_app.py`!
+- `app.py` was loading `ultra_premium_dashboard.py`
+- All our fixes were in `streamlit_app.py`
+- This explains why nothing changed despite successful deployments
+
+**Fix**: Updated `app.py` to import `streamlit_app` instead.
+
+**Lesson**: ALWAYS check which file Streamlit Cloud is configured to use as the entry point!
+
 ## 🚨 Critical Gotchas to Remember
 
 ### 1. **Streamlit Tab Rendering Gotcha**
