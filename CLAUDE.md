@@ -37,10 +37,10 @@ This documentation is split into focused sections for easier maintenance:
 - **API Integration**: 17 comprehensive data sources
 
 ### 🚀 **Latest Deployment**
-- **Timestamp**: 2025-08-02 19:09 - HTML RENDERING FIXES
-- **Status**: ✅ COMPLETE - Fixed coin cards and blog system errors
-- **Features**: HTML f-string fixes, parse_time_range resolved, all tabs functional
-- **Validation**: ✅ All deployment checks passed, auto-deployed successfully
+- **Timestamp**: 2025-08-02 19:17 - CRITICAL DEPENDENCY FIX
+- **Status**: ✅ COMPLETE - Fixed missing loguru causing deployment failure
+- **Features**: Added loguru==0.7.2, Poetry integration, deployment failure docs
+- **Validation**: ✅ Import chain fixed, deployment succeeding
 - **Live URL**: https://trenchdemo.streamlit.app
 
 ### 📊 **Key Features Active**
