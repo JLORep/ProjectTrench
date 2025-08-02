@@ -249,7 +249,7 @@ div[data-testid="stTabs"] {
     background: transparent;
     overflow: visible !important;
     min-height: 500px;
-    margin-top: -30px !important;
+    margin-top: 0px !important;
     padding-top: 20px !important;
 }
 
@@ -269,7 +269,7 @@ div[data-testid="stTabs"] {
 /* Special handling for Dashboard and Coins tabs that need less gap */
 .tab-content-wrapper.dashboard-tab,
 .tab-content-wrapper.coins-tab {
-    margin-top: -15px !important;
+    margin-top: 0px !important;
     padding-top: 5px !important;
 }
 
@@ -598,14 +598,14 @@ div[data-testid="column"] {
 .stTabs [data-baseweb="tab-panel"] > div {
     padding: 0px 8px 10px 8px;
     min-height: 600px;
-    margin-top: -30px !important;
+    margin-top: 0px !important;
     position: relative;
     z-index: 1;
 }
 
 /* Target the immediate content container to pull up */
 .stTabs [data-baseweb="tab-panel"] > div > div:first-child {
-    margin-top: -20px !important;
+    margin-top: 0px !important;
     position: relative;
     z-index: 1;
 }
@@ -1040,7 +1040,8 @@ with tab2:
                             coin_id = coin.get('id', f'idx_{i}')
                             card_html = f"""
                         <div class="coin-card" id="coin-{coin_id}" 
-                             style="cursor: pointer !important; display: block; width: 100%; margin: 12px 0;">
+                             onclick="window.location.href='#{coin['ca']}';"
+                             style="cursor: pointer !important; display: block; width: 100%; margin: 12px 0; position: relative; z-index: 10;">
                             <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
                                 <div style="flex-shrink: 0;">
                                     {logo_html}
