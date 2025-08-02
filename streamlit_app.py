@@ -165,6 +165,30 @@ header {visibility: hidden;}
     padding-top: 0px !important;
 }
 
+/* Aggressively target all top-level containers */
+.main .block-container {
+    padding-top: 0px !important;
+    margin-top: 0px !important;
+}
+
+/* Force zero margin on the root app container */
+.stApp {
+    padding-top: 0px !important;
+    margin-top: 0px !important;
+}
+
+/* Target the very first content wrapper */
+section.main > div {
+    padding-top: 0px !important;
+    margin-top: 0px !important;
+}
+
+/* Remove any iframe padding if present */
+.stApp iframe {
+    margin-top: 0px !important;
+    padding-top: 0px !important;
+}
+
 /* Responsive grid layout for cards */
 @media (max-width: 768px) {
     .coin-card {
@@ -189,7 +213,7 @@ header {visibility: hidden;}
     }
 }
 
-/* Big chunky tabs with NO spacing */
+/* Big chunky tabs with ABSOLUTE positioning */
 .stTabs [data-baseweb="tab-list"] {
     gap: 12px;
     background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
@@ -199,9 +223,11 @@ header {visibility: hidden;}
     margin-bottom: 0px !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     border: 2px solid rgba(16, 185, 129, 0.15);
-    position: sticky;
+    position: fixed;
     top: 0px;
-    z-index: 999;
+    left: 0px;
+    right: 0px;
+    z-index: 9999;
     backdrop-filter: blur(20px);
 }
 
@@ -536,9 +562,9 @@ div[data-testid="column"] {
     margin: 16px 0;
 }
 
-/* Enhanced tab content visibility with zero top padding */
+/* Enhanced tab content visibility with fixed tab offset */
 .stTabs [data-baseweb="tab-panel"] > div {
-    padding: 0px 8px 10px 8px;
+    padding: 120px 8px 10px 8px;
     min-height: 600px;
     margin-top: 0px !important;
 }
