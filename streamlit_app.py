@@ -262,12 +262,17 @@ div[data-testid="stHorizontalBlock"] button:hover {
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-    padding: 12px 20px;
-    z-index: 1000;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    padding: 16px 24px;
+    z-index: 99999;
+    border-top: 2px solid rgba(16, 185, 129, 0.5);
     backdrop-filter: blur(20px);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    min-height: 50px;
 }
 
 .status-item {
@@ -280,6 +285,11 @@ div[data-testid="stHorizontalBlock"] button:hover {
     font-weight: 600;
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
+}
+
+/* Ensure content doesn't hide behind status bar */
+.main > .block-container {
+    padding-bottom: 100px !important;
 }
 
 /* Simplified breadcrumb styling */
