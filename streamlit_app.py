@@ -1462,32 +1462,32 @@ with tab2:
                             else:
                                 mcap = "0"
                             
-                            # Get coin image URL - prioritize database images with BIGGER size
+                            # Get coin image URL - reasonable size for cards
                             if coin['image_url']:
-                                # Use real coin image from database - MUCH BIGGER!
+                                # Use real coin image from database
                                 image_url = coin['image_url']
-                                logo_html = f'<img src="{image_url}" alt="{ticker}" style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.2); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 96px; height: 96px; font-size: 32px;&quot;>{ticker[:2].upper()}</div>\'">'
+                                logo_html = f'<img src="{image_url}" alt="{ticker}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.1);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 48px; height: 48px; font-size: 18px; background: #2d3748; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #10b981; font-weight: 600;&quot;>{ticker[:2].upper()}</div>\'">'
                             elif COIN_IMAGES_AVAILABLE:
-                                # Fallback to coin image system - MUCH BIGGER!
+                                # Fallback to coin image system
                                 try:
                                     fallback_url = coin_image_system.get_image_url(ticker, coin['ca'])
-                                    logo_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.2); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 96px; height: 96px; font-size: 32px;&quot;>{ticker[:2].upper()}</div>\'">'
+                                    logo_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.1);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 48px; height: 48px; font-size: 18px; background: #2d3748; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #10b981; font-weight: 600;&quot;>{ticker[:2].upper()}</div>\'">'
                                 except:
-                                    # Error fallback - text logo BIGGER
+                                    # Error fallback - text logo
                                     logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
-                                    logo_html = f'<div class="coin-logo" style="width: 96px; height: 96px; font-size: 32px;">{logo_text}</div>'
+                                    logo_html = f'<div class="coin-logo" style="width: 48px; height: 48px; font-size: 18px; background: #2d3748; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #10b981; font-weight: 600;">{logo_text}</div>'
                             else:
-                                # Pure fallback - text logo BIGGER
+                                # Pure fallback - text logo
                                 logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
-                                logo_html = f'<div class="coin-logo" style="width: 96px; height: 96px; font-size: 32px;">{logo_text}</div>'
+                                logo_html = f'<div class="coin-logo" style="width: 48px; height: 48px; font-size: 18px; background: #2d3748; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #10b981; font-weight: 600;">{logo_text}</div>'
                             
                             # Price change styling
                             price_change_html = ""
                             if coin['price_change_24h'] is not None:
                                 change = coin['price_change_24h']
-                                change_class = "coin-change-positive" if change >= 0 else "coin-change-negative"
+                                change_color = "#10b981" if change >= 0 else "#ef4444"
                                 change_symbol = "+" if change >= 0 else ""
-                                price_change_html = f'<div class="{change_class}">{change_symbol}{change:.2f}%</div>'
+                                price_change_html = f'<div style="color: {change_color}; font-size: 14px; font-weight: 500;">{change_symbol}{change:.2f}%</div>'
                             
                             # Smart wallets and additional metadata
                             metadata_items = []
@@ -1503,34 +1503,56 @@ with tab2:
                             # Create simplified clickable card
                             coin_id = coin.get('id', f'idx_{i + col_idx}')
                             
-                            # Enhanced vibrant card display
-                            card_html = f"""<div class="coin-card" style="background: linear-gradient(135deg, #0a0f1c 0%, #1a2332 50%, #0a0f1c 100%); border: 2px solid rgba(16, 185, 129, 0.5); border-radius: 16px; padding: 20px; margin: 12px 0; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255,255,255,0.1); transition: all 0.3s ease; position: relative; overflow: hidden;">
-                                <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent); animation: shimmer 3s infinite;"></div>
-                                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; position: relative; z-index: 2;">
+                            # Clean, organized card design
+                            card_html = f"""<div class="coin-card" style="
+                                background: #1a1f2e;
+                                border: 1px solid #2d3748;
+                                border-radius: 12px;
+                                padding: 16px;
+                                margin: 8px 0;
+                                transition: all 0.2s ease;
+                                cursor: pointer;
+                            ">
+                                <!-- Header Row -->
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <!-- Logo -->
                                     <div style="flex-shrink: 0;">{logo_html}</div>
+                                    
+                                    <!-- Title & Price -->
                                     <div style="flex: 1;">
-                                        <h2 style="color: #10b981; font-size: 20px; font-weight: 700; margin: 0; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);">{ticker}</h2>
-                                        <div style="color: rgba(255,255,255,0.6); font-size: 11px; font-family: monospace; background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">{ca_display}</div>
-                                    </div>
-                                    <div style="text-align: right;">
-                                        <div style="color: #ffffff; font-size: 18px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${price:.8f}</div>
-                                        {price_change_html}
+                                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                            <h3 style="color: #fff; font-size: 18px; font-weight: 600; margin: 0;">{ticker}</h3>
+                                            <div style="text-align: right;">
+                                                <div style="color: #fff; font-size: 16px; font-weight: 500;">${price:.8f}</div>
+                                                {price_change_html}
+                                            </div>
+                                        </div>
+                                        <div style="color: #718096; font-size: 11px; font-family: monospace; margin-top: 4px;">{ca_display}</div>
                                     </div>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                                    <div style="color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600;">Market Cap: ${mcap}</div>
-                                    <div style="color: rgba(255,255,255,0.7); font-size: 12px;">{metadata_html}</div>
+                                
+                                <!-- Stats Row -->
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding-top: 12px; border-top: 1px solid #2d3748;">
+                                    <div>
+                                        <div style="color: #718096; font-size: 11px; text-transform: uppercase;">Market Cap</div>
+                                        <div style="color: #fff; font-size: 14px; font-weight: 500;">${mcap}</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #718096; font-size: 11px; text-transform: uppercase;">24h Volume</div>
+                                        <div style="color: #fff; font-size: 14px; font-weight: 500;">${coin['current_volume_24h']:,.0f if coin['current_volume_24h'] else 0}</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #718096; font-size: 11px; text-transform: uppercase;">Smart Wallets</div>
+                                        <div style="color: #fff; font-size: 14px; font-weight: 500;">{coin['smart_wallets'] if coin['smart_wallets'] else 0}</div>
+                                    </div>
                                 </div>
                             </div>
                             <style>
-                            @keyframes shimmer {{
-                                0% {{ left: -100%; }}
-                                100% {{ left: 100%; }}
-                            }}
                             .coin-card:hover {{
-                                transform: translateY(-4px);
-                                box-shadow: 0 12px 32px rgba(16, 185, 129, 0.3);
-                                border-color: rgba(16, 185, 129, 0.8) !important;
+                                background: #1e2433 !important;
+                                border-color: #10b981 !important;
+                                transform: translateY(-2px);
+                                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
                             }}
                             </style>"""
                             
