@@ -1,2 +1,0 @@
-Test file for async deployment system
-This should trigger deployment without timeout
