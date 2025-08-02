@@ -649,6 +649,22 @@ div[data-testid="column"] {
 }
 
 /* Enhanced coin cards - consolidated styles */
+.coin-card {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 12px 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+.coin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+    border-color: #10b981;
+}
 
 .coin-ticker {
     font-size: 24px;
@@ -1097,66 +1113,45 @@ with tab2:
                             
                             metadata_html = " • ".join(metadata_items) if metadata_items else "No additional data"
                             
-                            # Create clickable card using HTML - use index i as ID since coin might not have 'id'
-                            coin_id = coin.get('id', f'idx_{i}')
+                            # Create simplified clickable card
+                            coin_id = coin.get('id', f'idx_{i + col_idx}')
+                            
+                            # Simplified card HTML without complex JavaScript
                             card_html = f"""
-                            <div class="coin-card" id="coin-{coin_id}" 
-                                 style="cursor: pointer !important; display: block; width: 100%; margin: 12px 0; position: relative; z-index: 10;">
-                                <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+                            <div class="coin-card" onclick="document.querySelector('[data-testid=\\"baseButton-secondary\\"][key*=\\"{coin['ca']}\\"]').click()">
+                                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
                                     <div style="flex-shrink: 0;">
                                         {logo_html}
                                     </div>
-                                    <div class="coin-info" style="flex: 1; min-width: 150px;">
-                                        <h2 class="coin-ticker" style="margin: 0 0 8px 0;">{ticker}</h2>
-                                        <div class="coin-address" style="margin-bottom: 8px;">{ca_display}</div>
+                                    <div style="flex: 1;">
+                                        <h2 class="coin-ticker">{ticker}</h2>
+                                        <div class="coin-address">{ca_display}</div>
                                     </div>
-                                    <div class="coin-stats" style="text-align: right; flex-shrink: 0;">
-                                        <div class="coin-price" style="margin: 0 0 8px 0;">${price:.8f}</div>
+                                    <div style="text-align: right;">
+                                        <div class="coin-price">${price:.8f}</div>
                                         {price_change_html}
                                     </div>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                                    <div class="coin-mcap" style="font-weight: 600;">Market Cap: ${mcap}</div>
-                                    <div style="text-align: right; flex: 1; min-width: 200px;">
-                                        <div class="coin-metadata" style="font-size: 12px; opacity: 0.8;">{metadata_html}</div>
-                                    </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div class="coin-mcap">Market Cap: ${mcap}</div>
+                                    <div class="coin-metadata">{metadata_html}</div>
                                 </div>
                             </div>
-                        
-                            <script>
-                            document.addEventListener('DOMContentLoaded', function() {{
-                            setTimeout(() => {{
-                                const card = document.getElementById('coin-{coin_id}');
-                                if (card) {{
-                                    card.addEventListener('click', function() {{
-                                        console.log('Card clicked for {ticker}');
-                                        const buttons = document.querySelectorAll('button');
-                                        for (let btn of buttons) {{
-                                            if (btn.textContent.trim() === 'View {ticker}') {{
-                                                console.log('Found button, clicking...');
-                                                btn.click();
-                                                return;
-                                            }}
-                                        }}
-                                        console.log('Button not found for {ticker}');
-                                    }});
-                                }}
-                            }}, 500);
-                        }});
-                            </script>
                             """
                             
                             # Display the clickable card
                             st.markdown(card_html, unsafe_allow_html=True)
                             
-                            # Hidden button for Streamlit state management (more reliable fallback)
-                            if st.button(
-                                f"View {ticker}",
-                                key=f"view_{coin['ca']}", 
-                                help=f"Click to view full details for {ticker}",
-                                use_container_width=True,
-                                type="secondary"
-                            ):
+                            # Compact button for fallback
+                            button_col1, button_col2, button_col3 = st.columns([1, 2, 1])
+                            with button_col2:
+                                if st.button(
+                                    f"📊 {ticker}",
+                                    key=f"view_{coin['ca']}", 
+                                    help=f"Click to view full details for {ticker}",
+                                    use_container_width=False,
+                                    type="secondary"
+                                ):
                                 # Store selected coin in session state for fullscreen view
                                 st.session_state.selected_coin = coin.to_dict()
                                 st.rerun()
