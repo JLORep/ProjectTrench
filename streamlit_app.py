@@ -720,20 +720,24 @@ with tab2:
                         else:
                             mcap = "0"
                         
-                        # Get coin image URL
-                        if coin['image_url'] and COIN_IMAGES_AVAILABLE:
-                            # Use real coin image
+                        # Get coin image URL - prioritize database images
+                        if coin['image_url']:
+                            # Use real coin image from database
                             image_url = coin['image_url']
-                            logo_html = f'<img src="{image_url}" alt="{ticker}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">'
-                        else:
-                            # Fallback to text logo or get image from system
-                            if COIN_IMAGES_AVAILABLE:
+                            logo_html = f'<img src="{image_url}" alt="{ticker}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot;>{ticker[:2].upper()}</div>\'">'
+                        elif COIN_IMAGES_AVAILABLE:
+                            # Fallback to coin image system
+                            try:
                                 fallback_url = coin_image_system.get_image_url(ticker, coin['ca'])
                                 logo_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot;>{ticker[:2].upper()}</div>\'">'
-                            else:
-                                # Pure fallback - text logo
+                            except:
+                                # Error fallback - text logo
                                 logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
                                 logo_html = f'<div class="coin-logo">{logo_text}</div>'
+                        else:
+                            # Pure fallback - text logo
+                            logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
+                            logo_html = f'<div class="coin-logo">{logo_text}</div>'
                         
                         # Price change styling
                         price_change_html = ""
@@ -808,16 +812,19 @@ with tab2:
             # Coin overview with real image
             ticker = coin['ticker'] or 'Unknown'
             
-            # Get image for fullscreen view
-            if coin.get('image_url') and COIN_IMAGES_AVAILABLE:
-                large_image_html = f'<img src="{coin["image_url"]}" alt="{ticker}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(16, 185, 129, 0.3); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4); margin: 0 auto 20px auto; display: block;">'
-            else:
-                if COIN_IMAGES_AVAILABLE:
+            # Get image for fullscreen view - prioritize database images
+            if coin.get('image_url'):
+                large_image_html = f'<img src="{coin["image_url"]}" alt="{ticker}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(16, 185, 129, 0.3); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4); margin: 0 auto 20px auto; display: block;" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 120px; height: 120px; font-size: 36px; margin: 0 auto 20px auto;&quot;>{ticker[:2].upper()}</div>\'">'
+            elif COIN_IMAGES_AVAILABLE:
+                try:
                     fallback_url = coin_image_system.get_image_url(ticker, coin['ca'])
                     large_image_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(16, 185, 129, 0.3); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4); margin: 0 auto 20px auto; display: block;" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 120px; height: 120px; font-size: 36px; margin: 0 auto 20px auto;&quot;>{ticker[:2].upper()}</div>\'">'
-                else:
+                except:
                     logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
                     large_image_html = f'<div class="coin-logo" style="width: 120px; height: 120px; font-size: 36px; margin: 0 auto 20px auto;">{logo_text}</div>'
+            else:
+                logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
+                large_image_html = f'<div class="coin-logo" style="width: 120px; height: 120px; font-size: 36px; margin: 0 auto 20px auto;">{logo_text}</div>'
             
             st.markdown(f"""
             <div style="text-align: center; padding: 20px;">
