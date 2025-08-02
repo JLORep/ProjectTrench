@@ -147,11 +147,22 @@ header {visibility: hidden;}
 
 /* Header removed - space reserved for future logo */
 
-/* Content padding without header offset */
+/* Minimal content padding */
 .block-container {
-    padding-top: 20px !important;
+    padding-top: 5px !important;
     padding-left: clamp(16px, 4vw, 24px) !important;
     padding-right: clamp(16px, 4vw, 24px) !important;
+}
+
+/* Force minimal spacing for main content */
+.main .block-container > div {
+    padding-top: 0px !important;
+    margin-top: 0px !important;
+}
+
+/* Remove default Streamlit spacing */
+.stApp > div:first-child {
+    padding-top: 0px !important;
 }
 
 /* Responsive grid layout for cards */
@@ -178,19 +189,34 @@ header {visibility: hidden;}
     }
 }
 
-/* Compact tabs - reduced spacing */
+/* Big chunky tabs with NO spacing */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 8px;
+    gap: 12px;
     background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-    padding: 8px 16px;
-    border-radius: 20px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 20px 32px;
+    border-radius: 28px;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(16, 185, 129, 0.15);
     position: sticky;
-    top: 10px;
+    top: 0px;
     z-index: 999;
+    backdrop-filter: blur(20px);
+}
+
+/* Remove all margins around tabs container */
+.stTabs {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    padding-top: 0px !important;
+}
+
+/* Target the tabs wrapper directly */
+div[data-testid="stTabs"] {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    padding-top: 0px !important;
 }
 
 /* Ensure proper tab content isolation */
@@ -231,16 +257,19 @@ header {visibility: hidden;}
 }
 
 .stTabs [data-baseweb="tab"] {
-    height: 45px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 12px;
-    padding: 0 18px;
-    font-size: 14px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
-    min-width: 100px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    height: 60px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 0 28px;
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.8);
+    min-width: 120px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .stTabs [data-baseweb="tab"]:hover {
@@ -505,10 +534,11 @@ div[data-testid="column"] {
     margin: 16px 0;
 }
 
-/* Enhanced tab content visibility with reduced padding */
+/* Enhanced tab content visibility with minimal padding */
 .stTabs [data-baseweb="tab-panel"] > div {
-    padding: 10px 8px;
+    padding: 5px 8px 10px 8px;
     min-height: 600px;
+    margin-top: 0px !important;
 }
 
 /* Better spacing for all content */
