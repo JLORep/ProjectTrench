@@ -2383,6 +2383,16 @@ with tab8:
         
     except ImportError as e:
         st.error(f"Blog system import error: {e}")
+        import traceback
+        st.text(traceback.format_exc())
+    except AttributeError as e:
+        st.error(f"Blog system AttributeError: {e}")
+        import traceback
+        st.text(traceback.format_exc())
+    except Exception as e:
+        st.error(f"Blog system error: {type(e).__name__}: {e}")
+        import traceback
+        st.text(traceback.format_exc())
         
         # Fallback: Try the enhanced blog integration
         try:

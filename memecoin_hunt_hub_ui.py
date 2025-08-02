@@ -23,8 +23,9 @@ except ImportError:
 def render_hunt_hub_dashboard():
     """Render the Hunt Hub memecoin sniping dashboard"""
     
-    # Enhanced CSS for Hunt Hub
-    st.markdown("""
+    try:
+        # Enhanced CSS for Hunt Hub
+        st.markdown("""
     <style>
     /* Hunt Hub Specific Styles */
     .hunt-container {
@@ -182,45 +183,63 @@ def render_hunt_hub_dashboard():
     }
     </style>
     """, unsafe_allow_html=True)
-    
-    st.header("🎯 Hunt Hub - Memecoin Sniper Command Center")
-    
-    # Top metrics row
-    col1, col2, col3, col4, col5 = st.columns(5)
-    
-    with col1:
-        st.metric("🔍 Active Scans", "3,847", delta="+142/min", help="Tokens scanned per minute")
-    
-    with col2:
-        st.metric("🎯 High Score", "12", delta="+3", help="Tokens with score >75")
-    
-    with col3:
-        st.metric("⚡ Avg Latency", "0.3s", delta="-0.1s", help="Detection speed")
-    
-    with col4:
-        st.metric("💰 24h Profits", "$8,342", delta="+42.3%", help="Total profits from snipes")
-    
-    with col5:
-        st.metric("🏆 Win Rate", "73.2%", delta="+5.1%", help="Successful snipes")
-    
-    st.markdown("---")
-    
-    # Main content area with tabs
-    hunt_tab1, hunt_tab2, hunt_tab3, hunt_tab4 = st.tabs([
-        "🔍 Live Scanner", "📡 Alpha Radar", "📊 Performance", "⚙️ Settings"
-    ])
-    
-    with hunt_tab1:
-        render_live_scanner()
-    
-    with hunt_tab2:
-        render_alpha_radar()
-    
-    with hunt_tab3:
-        render_performance_tracker()
-    
-    with hunt_tab4:
-        render_hunt_settings()
+        
+        st.header("🎯 Hunt Hub - Memecoin Sniper Command Center")
+        
+        # Top metrics row
+        col1, col2, col3, col4, col5 = st.columns(5)
+        
+        with col1:
+            st.metric("🔍 Active Scans", "3,847", delta="+142/min", help="Tokens scanned per minute")
+        
+        with col2:
+            st.metric("🎯 High Score", "12", delta="+3", help="Tokens with score >75")
+        
+        with col3:
+            st.metric("⚡ Avg Latency", "0.3s", delta="-0.1s", help="Detection speed")
+        
+        with col4:
+            st.metric("💰 24h Profits", "$8,342", delta="+42.3%", help="Total profits from snipes")
+        
+        with col5:
+            st.metric("🏆 Win Rate", "73.2%", delta="+5.1%", help="Successful snipes")
+        
+        st.markdown("---")
+        
+        # Main content area with tabs
+        hunt_tab1, hunt_tab2, hunt_tab3, hunt_tab4 = st.tabs([
+            "🔍 Live Scanner", "📡 Alpha Radar", "📊 Performance", "⚙️ Settings"
+        ])
+        
+        with hunt_tab1:
+            render_live_scanner()
+        
+        with hunt_tab2:
+            render_alpha_radar()
+        
+        with hunt_tab3:
+            render_performance_tracker()
+        
+        with hunt_tab4:
+            render_hunt_settings()
+            
+    except Exception as e:
+        st.error(f"Hunt Hub Error: {e}")
+        import traceback
+        st.text(traceback.format_exc())
+        
+        # Fallback basic interface
+        st.header("🎯 Hunt Hub - Memecoin Scanner")
+        st.info("Hunt Hub is temporarily unavailable. Using fallback interface.")
+        
+        # Basic metrics
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Active Scans", "1,234", delta="+56")
+        with col2:
+            st.metric("High Score Tokens", "8", delta="+2")
+        with col3:
+            st.metric("Avg Response", "0.4s", delta="-0.1s")
 
 def render_live_scanner():
     """Render the live token scanner interface"""
@@ -256,7 +275,7 @@ def render_live_scanner():
     tokens = [
         {
             "symbol": "PEPE2.0",
-            "name": "Pepe 2.0",
+            "name": "Pepe 2.0", 
             "address": "EPjF...3n2",
             "score": 87,
             "liquidity": "$12,450",
@@ -269,27 +288,13 @@ def render_live_scanner():
             "rationale": "🔥 High social momentum | Strong liquidity foundation | KOL backing"
         },
         {
-            "symbol": "DOGE420",
-            "name": "Doge 420",
-            "address": "DGE4...x9k",
-            "score": 74,
-            "liquidity": "$8,200",
-            "mcap": "$32,100",
-            "volume": "$5,123",
-            "holders": 89,
-            "launch_time": "5 mins ago",
-            "platform": "Raydium",
-            "risk": "medium",
-            "rationale": "Growing community interest | 📈 Explosive early volume"
-        },
-        {
             "symbol": "MOONCAT",
             "name": "Moon Cat",
-            "address": "MCT7...p4v",
+            "address": "MCT7...p4v", 
             "score": 92,
             "liquidity": "$25,000",
             "mcap": "$78,400",
-            "volume": "$15,200",
+            "volume": "$15,200", 
             "holders": 234,
             "launch_time": "30 secs ago",
             "platform": "Pump.fun",
@@ -307,6 +312,18 @@ def render_live_scanner():
     # Launch heatmap
     st.subheader("🔥 Launch Heatmap")
     render_launch_heatmap()
+
+def render_alpha_radar():
+    """Render alpha radar signals"""
+    st.info("📡 Alpha Radar signals coming soon...")
+
+def render_performance_tracker():
+    """Render performance tracking"""
+    st.info("📊 Performance tracking coming soon...")
+
+def render_hunt_settings():
+    """Render hunt settings"""
+    st.info("⚙️ Hunt settings coming soon...")
 
 def render_token_card(token: Dict):
     """Render an individual token card"""

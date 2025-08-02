@@ -147,6 +147,7 @@ class ComprehensiveDevBlogSystem:
     
     def render_comprehensive_interface(self):
         """Main Streamlit interface for comprehensive blog system"""
+        import traceback
         
         st.markdown("""
         <div style='text-align: center; padding: 2rem; margin-bottom: 2rem;
@@ -178,42 +179,49 @@ class ComprehensiveDevBlogSystem:
                 self.render_create_update()
         except Exception as e:
             st.error(f"Error in Create Update tab: {e}")
+            st.text(traceback.format_exc())
         
         try:
             with main_tabs[1]:
                 self.render_git_retrospective()
         except Exception as e:
             st.error(f"Error in Retrospective tab: {e}")
+            st.text(traceback.format_exc())
         
         try:
             with main_tabs[2]:
                 self.render_customer_focused()
         except Exception as e:
             st.error(f"Error in Customer Focus tab: {e}")
+            st.text(traceback.format_exc())
         
         try:
             with main_tabs[3]:
                 self.render_scheduling()
         except Exception as e:
             st.error(f"Error in Schedule tab: {e}")
+            st.text(traceback.format_exc())
         
         try:
             with main_tabs[4]:
                 self.render_analytics_dashboard()
         except Exception as e:
             st.error(f"Error in Analytics tab: {e}")
+            st.text(traceback.format_exc())
         
         try:
             with main_tabs[5]:
                 self.render_queue_monitor()
         except Exception as e:
             st.error(f"Error in Queue Monitor tab: {e}")
+            st.text(traceback.format_exc())
         
         try:
             with main_tabs[6]:
                 self.render_settings()
         except Exception as e:
             st.error(f"Error in Settings tab: {e}")
+            st.text(traceback.format_exc())
     
     def render_create_update(self):
         """Unified update creation interface"""
