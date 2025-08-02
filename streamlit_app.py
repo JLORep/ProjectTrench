@@ -145,40 +145,11 @@ st.markdown("""
 footer {visibility: hidden;}
 header {visibility: hidden;}
 
-/* Compact header with menu integration */
-.main-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 24px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
+/* Header removed - space reserved for future logo */
 
-.header-title {
-    color: #10b981;
-    font-size: 28px;
-    font-weight: 700;
-    text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
-}
-
-.header-menu {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-}
-
-/* Push content below fixed header with responsive padding */
+/* Content padding without header offset */
 .block-container {
-    padding-top: 80px !important;
+    padding-top: 20px !important;
     padding-left: clamp(16px, 4vw, 24px) !important;
     padding-right: clamp(16px, 4vw, 24px) !important;
 }
@@ -207,18 +178,18 @@ header {visibility: hidden;}
     }
 }
 
-/* Compact tabs - moved to top */
+/* Compact tabs - reduced spacing */
 .stTabs [data-baseweb="tab-list"] {
     gap: 8px;
     background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
     padding: 8px 16px;
     border-radius: 20px;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    margin-top: 5px;
+    margin-bottom: 10px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.08);
     position: sticky;
-    top: 70px;
+    top: 10px;
     z-index: 999;
 }
 
@@ -534,9 +505,9 @@ div[data-testid="column"] {
     margin: 16px 0;
 }
 
-/* Enhanced tab content visibility */
+/* Enhanced tab content visibility with reduced padding */
 .stTabs [data-baseweb="tab-panel"] > div {
-    padding: 20px 8px;
+    padding: 10px 8px;
     min-height: 600px;
 }
 
@@ -549,20 +520,11 @@ div[data-testid="column"] {
 </style>
 """, unsafe_allow_html=True)
 
-# Fixed header with TrenchCoat Pro branding
-st.markdown("""
-<div class="main-header">
-    <div class="header-title">TrenchCoat Pro</div>
-    <div class="header-menu">
-        <span style="color: rgba(255,255,255,0.8); font-size: 18px; font-weight: 600;">Premium Crypto Intelligence Platform</span>
-        <div class="status-live">LIVE</div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+# Header space reserved for future logo - currently removed
 
 # Sidebar with additional functionality
 with st.sidebar:
-    st.title("🚀 TrenchCoat Pro")
+    st.title("🚀 Dashboard")
     
     # API System Status
     if st.button("📊 API System Status"):
@@ -923,44 +885,44 @@ with tab2:
                             
                             # Get coin image URL - prioritize database images with BIGGER size
                             if coin['image_url']:
-                            # Use real coin image from database - MUCH BIGGER!
-                            image_url = coin['image_url']
-                            logo_html = f'<img src="{image_url}" alt="{ticker}" style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.2); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 96px; height: 96px; font-size: 32px;&quot;>{ticker[:2].upper()}</div>\'">'
-                        elif COIN_IMAGES_AVAILABLE:
-                            # Fallback to coin image system - MUCH BIGGER!
-                            try:
-                                fallback_url = coin_image_system.get_image_url(ticker, coin['ca'])
-                                logo_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.2); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 96px; height: 96px; font-size: 32px;&quot;>{ticker[:2].upper()}</div>\'">'
-                            except:
-                                # Error fallback - text logo BIGGER
+                                # Use real coin image from database - MUCH BIGGER!
+                                image_url = coin['image_url']
+                                logo_html = f'<img src="{image_url}" alt="{ticker}" style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.2); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 96px; height: 96px; font-size: 32px;&quot;>{ticker[:2].upper()}</div>\'">'
+                            elif COIN_IMAGES_AVAILABLE:
+                                # Fallback to coin image system - MUCH BIGGER!
+                                try:
+                                    fallback_url = coin_image_system.get_image_url(ticker, coin['ca'])
+                                    logo_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.2); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 96px; height: 96px; font-size: 32px;&quot;>{ticker[:2].upper()}</div>\'">'
+                                except:
+                                    # Error fallback - text logo BIGGER
+                                    logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
+                                    logo_html = f'<div class="coin-logo" style="width: 96px; height: 96px; font-size: 32px;">{logo_text}</div>'
+                            else:
+                                # Pure fallback - text logo BIGGER
                                 logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
                                 logo_html = f'<div class="coin-logo" style="width: 96px; height: 96px; font-size: 32px;">{logo_text}</div>'
-                        else:
-                            # Pure fallback - text logo BIGGER
-                            logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
-                            logo_html = f'<div class="coin-logo" style="width: 96px; height: 96px; font-size: 32px;">{logo_text}</div>'
-                        
-                        # Price change styling
-                        price_change_html = ""
-                        if coin['price_change_24h'] is not None:
-                            change = coin['price_change_24h']
-                            change_class = "coin-change-positive" if change >= 0 else "coin-change-negative"
-                            change_symbol = "+" if change >= 0 else ""
-                            price_change_html = f'<div class="{change_class}">{change_symbol}{change:.2f}%</div>'
-                        
-                        # Smart wallets and additional metadata
-                        metadata_items = []
-                        if coin['smart_wallets']:
-                            metadata_items.append(f"Smart Wallets: {coin['smart_wallets']}")
-                        if coin['current_volume_24h']:
-                            metadata_items.append(f"24h Vol: ${coin['current_volume_24h']:,.0f}")
-                        if coin['liquidity']:
-                            metadata_items.append(f"Liquidity: ${coin['liquidity']:,.0f}")
-                        
-                        metadata_html = " • ".join(metadata_items) if metadata_items else "No additional data"
-                        
-                        # Create clickable card using HTML with improved responsive layout
-                        card_html = f"""
+                            
+                            # Price change styling
+                            price_change_html = ""
+                            if coin['price_change_24h'] is not None:
+                                change = coin['price_change_24h']
+                                change_class = "coin-change-positive" if change >= 0 else "coin-change-negative"
+                                change_symbol = "+" if change >= 0 else ""
+                                price_change_html = f'<div class="{change_class}">{change_symbol}{change:.2f}%</div>'
+                            
+                            # Smart wallets and additional metadata
+                            metadata_items = []
+                            if coin['smart_wallets']:
+                                metadata_items.append(f"Smart Wallets: {coin['smart_wallets']}")
+                            if coin['current_volume_24h']:
+                                metadata_items.append(f"24h Vol: ${coin['current_volume_24h']:,.0f}")
+                            if coin['liquidity']:
+                                metadata_items.append(f"Liquidity: ${coin['liquidity']:,.0f}")
+                            
+                            metadata_html = " • ".join(metadata_items) if metadata_items else "No additional data"
+                            
+                            # Create clickable card using HTML with improved responsive layout
+                            card_html = f"""
                         <div class="coin-card" onclick="selectCoin('{coin['ca']}')" 
                              style="cursor: pointer; display: block; width: 100%; margin: 12px 0;">
                             <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
@@ -1005,23 +967,23 @@ with tab2:
                                 }}
                             }}
                         }}
-                        </script>
-                        """
-                        
-                        # Display the clickable card
-                        st.markdown(card_html, unsafe_allow_html=True)
-                        
-                        # Hidden button for Streamlit state management (more reliable fallback)
-                        if st.button(
-                            f"View {ticker}",
-                            key=f"view_{coin['ca']}", 
-                            help=f"Click to view full details for {ticker}",
-                            use_container_width=True,
-                            type="secondary"
-                        ):
-                            # Store selected coin in session state for fullscreen view
-                            st.session_state.selected_coin = coin.to_dict()
-                            st.rerun()
+                            </script>
+                            """
+                            
+                            # Display the clickable card
+                            st.markdown(card_html, unsafe_allow_html=True)
+                            
+                            # Hidden button for Streamlit state management (more reliable fallback)
+                            if st.button(
+                                f"View {ticker}",
+                                key=f"view_{coin['ca']}", 
+                                help=f"Click to view full details for {ticker}",
+                                use_container_width=True,
+                                type="secondary"
+                            ):
+                                # Store selected coin in session state for fullscreen view
+                                st.session_state.selected_coin = coin.to_dict()
+                                st.rerun()
     else:
         st.info("Loading coin data...")
     
