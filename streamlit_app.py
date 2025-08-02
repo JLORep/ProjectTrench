@@ -648,23 +648,7 @@ div[data-testid="column"] {
     padding-right: clamp(16px, 5vw, 32px);
 }
 
-/* Coin card styles */
-.coin-card {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    border-radius: 16px;
-    padding: 20px;
-    margin: 12px 0;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
-}
-
-.coin-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
-    border-color: #10b981;
-}
+/* Enhanced coin cards - consolidated styles */
 
 .coin-ticker {
     font-size: 24px;
