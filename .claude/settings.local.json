@@ -71,7 +71,12 @@
       "WebFetch(domain:trenchcoat-pro.streamlit.app)",
       "Bash(git rm:*)",
       "Bash(chcp:*)",
-      "Bash(\"C:\\Program Files\\Git\\cmd\\git.exe\" log --oneline -3)"
+      "Bash(\"C:\\Program Files\\Git\\cmd\\git.exe\" log --oneline -3)",
+      "Bash(if [ -f \"complete_async_deploy.log\" ])",
+      "Bash(then tail -10 complete_async_deploy.log)",
+      "Bash(else echo \"No deployment log found\")",
+      "Bash(fi)",
+      "Bash(then tail -5 complete_async_deploy.log)"
     ],
     "deny": []
   }
