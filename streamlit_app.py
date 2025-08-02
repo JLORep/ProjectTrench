@@ -1589,12 +1589,12 @@ with tab2:
                             if coin['image_url']:
                                 # Use real coin image from database
                                 image_url = coin['image_url']
-                                logo_html = f'<img src="{image_url}" alt="{ticker}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.1);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 48px; height: 48px; font-size: 18px; background: #2d3748; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #10b981; font-weight: 600;&quot;>{ticker[:2].upper()}</div>\'">'
+                                logo_html = f'<img src="{image_url}" alt="{ticker}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.1);">'
                             elif COIN_IMAGES_AVAILABLE:
                                 # Fallback to coin image system
                                 try:
                                     fallback_url = coin_image_system.get_image_url(ticker, coin['ca'])
-                                    logo_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.1);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 48px; height: 48px; font-size: 18px; background: #2d3748; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #10b981; font-weight: 600;&quot;>{ticker[:2].upper()}</div>\'">'
+                                    logo_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.1);">'
                                 except:
                                     # Error fallback - text logo
                                     logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
@@ -1626,14 +1626,14 @@ with tab2:
                             # Create simplified clickable card
                             coin_id = coin.get('id', f'idx_{i + col_idx}')
                             
+                            # Get volume for display
+                            volume_24h = coin.get('current_volume_24h', 0) or 0
+                            smart_wallets = coin.get('smart_wallets', 0) or 0
+                            
                             # Clean, organized card design
                             card_html = f"""<div class="coin-card" style="background: #1a1f2e; border: 1px solid #2d3748; border-radius: 12px; padding: 16px; margin: 8px 0; transition: all 0.2s ease; cursor: pointer;">
-                                <!-- Header Row -->
                                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                                    <!-- Logo -->
                                     <div style="flex-shrink: 0;">{logo_html}</div>
-                                    
-                                    <!-- Title & Price -->
                                     <div style="flex: 1;">
                                         <div style="display: flex; justify-content: space-between; align-items: baseline;">
                                             <h3 style="color: #fff; font-size: 18px; font-weight: 600; margin: 0;">{ticker}</h3>
@@ -1645,8 +1645,6 @@ with tab2:
                                         <div style="color: #718096; font-size: 11px; font-family: monospace; margin-top: 4px;">{ca_display}</div>
                                     </div>
                                 </div>
-                                
-                                <!-- Stats Row -->
                                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding-top: 12px; border-top: 1px solid #2d3748;">
                                     <div>
                                         <div style="color: #718096; font-size: 11px; text-transform: uppercase;">Market Cap</div>
@@ -1654,11 +1652,11 @@ with tab2:
                                     </div>
                                     <div>
                                         <div style="color: #718096; font-size: 11px; text-transform: uppercase;">24h Volume</div>
-                                        <div style="color: #fff; font-size: 14px; font-weight: 500;">${coin.get('current_volume_24h', 0):,.0f}</div>
+                                        <div style="color: #fff; font-size: 14px; font-weight: 500;">${volume_24h:,.0f}</div>
                                     </div>
                                     <div>
                                         <div style="color: #718096; font-size: 11px; text-transform: uppercase;">Smart Wallets</div>
-                                        <div style="color: #fff; font-size: 14px; font-weight: 500;">{coin['smart_wallets'] if coin['smart_wallets'] else 0}</div>
+                                        <div style="color: #fff; font-size: 14px; font-weight: 500;">{smart_wallets}</div>
                                     </div>
                                 </div>
                             </div>"""
