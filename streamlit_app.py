@@ -119,7 +119,7 @@ header {visibility: hidden;}
 
 .header-title {
     color: #10b981;
-    font-size: 22px;
+    font-size: 28px;
     font-weight: 700;
     text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
 }
@@ -148,6 +148,13 @@ header {visibility: hidden;}
     position: sticky;
     top: 70px;
     z-index: 999;
+}
+
+/* Ensure proper tab content isolation */
+.stTabs [data-baseweb="tab-panel"] {
+    position: relative;
+    isolation: isolate;
+    background: transparent;
 }
 
 .stTabs [data-baseweb="tab"] {
@@ -230,22 +237,22 @@ div[data-testid="metric-container"]:hover {
     opacity: 1;
 }
 
-/* Coin card typography and elements */
+/* Coin card typography and elements - BIGGER LOGOS */
 .coin-logo {
-    width: 64px;
-    height: 64px;
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 32px;
     font-weight: 700;
     color: white;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
     margin-right: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 3px solid rgba(255, 255, 255, 0.2);
 }
 
 .coin-info {
@@ -368,7 +375,7 @@ st.markdown("""
 <div class="main-header">
     <div class="header-title">TrenchCoat Pro</div>
     <div class="header-menu">
-        <span style="color: rgba(255,255,255,0.7); font-size: 14px;">Premium Crypto Intelligence Platform</span>
+        <span style="color: rgba(255,255,255,0.8); font-size: 18px; font-weight: 600;">Premium Crypto Intelligence Platform</span>
         <div class="status-live">LIVE</div>
     </div>
 </div>
@@ -521,7 +528,9 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
 
 # ===== TAB 1: ENHANCED DASHBOARD =====
 with tab1:
-    st.header("🌟 Market Intelligence Overview")
+    # Use container to prevent header bleeding
+    with st.container():
+        st.header("🌟 Market Intelligence Overview")
     
     # Enhanced market statistics
     if market_stats:
@@ -720,24 +729,24 @@ with tab2:
                         else:
                             mcap = "0"
                         
-                        # Get coin image URL - prioritize database images
+                        # Get coin image URL - prioritize database images with BIGGER size
                         if coin['image_url']:
-                            # Use real coin image from database
+                            # Use real coin image from database - MUCH BIGGER!
                             image_url = coin['image_url']
-                            logo_html = f'<img src="{image_url}" alt="{ticker}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot;>{ticker[:2].upper()}</div>\'">'
+                            logo_html = f'<img src="{image_url}" alt="{ticker}" style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.2); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 96px; height: 96px; font-size: 32px;&quot;>{ticker[:2].upper()}</div>\'">'
                         elif COIN_IMAGES_AVAILABLE:
-                            # Fallback to coin image system
+                            # Fallback to coin image system - MUCH BIGGER!
                             try:
                                 fallback_url = coin_image_system.get_image_url(ticker, coin['ca'])
-                                logo_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot;>{ticker[:2].upper()}</div>\'">'
+                                logo_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.2); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 96px; height: 96px; font-size: 32px;&quot;>{ticker[:2].upper()}</div>\'">'
                             except:
-                                # Error fallback - text logo
+                                # Error fallback - text logo BIGGER
                                 logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
-                                logo_html = f'<div class="coin-logo">{logo_text}</div>'
+                                logo_html = f'<div class="coin-logo" style="width: 96px; height: 96px; font-size: 32px;">{logo_text}</div>'
                         else:
-                            # Pure fallback - text logo
+                            # Pure fallback - text logo BIGGER
                             logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
-                            logo_html = f'<div class="coin-logo">{logo_text}</div>'
+                            logo_html = f'<div class="coin-logo" style="width: 96px; height: 96px; font-size: 32px;">{logo_text}</div>'
                         
                         # Price change styling
                         price_change_html = ""
@@ -815,19 +824,19 @@ with tab2:
             # Coin overview with real image
             ticker = coin['ticker'] or 'Unknown'
             
-            # Get image for fullscreen view - prioritize database images
+            # Get image for fullscreen view - prioritize database images with MASSIVE size
             if coin.get('image_url'):
-                large_image_html = f'<img src="{coin["image_url"]}" alt="{ticker}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(16, 185, 129, 0.3); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4); margin: 0 auto 20px auto; display: block;" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 120px; height: 120px; font-size: 36px; margin: 0 auto 20px auto;&quot;>{ticker[:2].upper()}</div>\'">'
+                large_image_html = f'<img src="{coin["image_url"]}" alt="{ticker}" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(16, 185, 129, 0.4); box-shadow: 0 12px 40px rgba(16, 185, 129, 0.5); margin: 0 auto 20px auto; display: block;" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 180px; height: 180px; font-size: 48px; margin: 0 auto 20px auto;&quot;>{ticker[:2].upper()}</div>\'">'
             elif COIN_IMAGES_AVAILABLE:
                 try:
                     fallback_url = coin_image_system.get_image_url(ticker, coin['ca'])
-                    large_image_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(16, 185, 129, 0.3); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4); margin: 0 auto 20px auto; display: block;" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 120px; height: 120px; font-size: 36px; margin: 0 auto 20px auto;&quot;>{ticker[:2].upper()}</div>\'">'
+                    large_image_html = f'<img src="{fallback_url}" alt="{ticker}" style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(16, 185, 129, 0.4); box-shadow: 0 12px 40px rgba(16, 185, 129, 0.5); margin: 0 auto 20px auto; display: block;" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 180px; height: 180px; font-size: 48px; margin: 0 auto 20px auto;&quot;>{ticker[:2].upper()}</div>\'">'
                 except:
                     logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
-                    large_image_html = f'<div class="coin-logo" style="width: 120px; height: 120px; font-size: 36px; margin: 0 auto 20px auto;">{logo_text}</div>'
+                    large_image_html = f'<div class="coin-logo" style="width: 180px; height: 180px; font-size: 48px; margin: 0 auto 20px auto;">{logo_text}</div>'
             else:
                 logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
-                large_image_html = f'<div class="coin-logo" style="width: 120px; height: 120px; font-size: 36px; margin: 0 auto 20px auto;">{logo_text}</div>'
+                large_image_html = f'<div class="coin-logo" style="width: 180px; height: 180px; font-size: 48px; margin: 0 auto 20px auto;">{logo_text}</div>'
             
             st.markdown(f"""
             <div style="text-align: center; padding: 20px;">
