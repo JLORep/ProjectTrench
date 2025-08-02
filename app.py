@@ -28,25 +28,12 @@ def main():
     """Main application entry point"""
     print("🚀 Starting TrenchCoat Pro - Ultra Premium Dashboard")
     print("⚠️  Running in DEMO mode - No live trading")
-    print("✨ Ultra-premium UI with live animations")
+    print("✨ Loading streamlit_app.py with all fixes")
     
     try:
-        # Import streamlit first
-        import streamlit as st
-        
-        # Set page config before any other streamlit calls
-        st.set_page_config(
-            page_title="TrenchCoat Pro | Premium Crypto Trading Intelligence",
-            page_icon="🚀",
-            layout="wide",
-            initial_sidebar_state="collapsed"
-        )
-        
-        # Import and run ultra-premium dashboard
-        from ultra_premium_dashboard import UltraPremiumDashboard
-        
-        # Initialize and run dashboard
-        dashboard = UltraPremiumDashboard()
+        # Simply run our main streamlit app
+        # It handles page config and everything else
+        import streamlit_app
         
     except Exception as e:
         print(f"Error starting dashboard: {e}")
