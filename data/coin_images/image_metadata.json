@@ -6,5 +6,165 @@
     "image_source": "coingecko",
     "fetched_at": "2025-08-01T01:57:57.629862",
     "verified": true
+  },
+  "f508212b7cbb": {
+    "ticker": "$NYLA",
+    "contract_address": "3HeUeL8ru8DFfRRQGnE11vGrDdNUzqVwBW8hyYHBbonk",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/3HeUeL8ru8DFfRRQGnE11vGrDdNUzqVwBW8hyYHBbonk.png?key=246094",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:15.090785",
+    "verified": true
+  },
+  "4359a10256a3": {
+    "ticker": "$catwifmask",
+    "contract_address": "6MQpbiTC2YcogidTmKqMLK82qvE9z5QEm7EP3AEDpump",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/6MQpbiTC2YcogidTmKqMLK82qvE9z5QEm7EP3AEDpump.png?key=97be04",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:18.393266",
+    "verified": true
+  },
+  "560cb4bdcecc": {
+    "ticker": "$Hello Kitty",
+    "contract_address": "DFfPq2hHbJeunp1F6eNyuyvBHcPpnTqaawn2tAFUpump",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/DFfPq2hHbJeunp1F6eNyuyvBHcPpnTqaawn2tAFUpump.png?key=7b9ca8",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:21.979999",
+    "verified": true
+  },
+  "68a0d74adf72": {
+    "ticker": "$Domo",
+    "contract_address": "8DKgjd6zAYuP9fVmMHBBtygPqkJ111LrMCT7tDyPhE55",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/8DKgjd6zAYuP9fVmMHBBtygPqkJ111LrMCT7tDyPhE55.png?key=b51769",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:25.268361",
+    "verified": true
+  },
+  "8795b46405ff": {
+    "ticker": "$DEAL WITH IT",
+    "contract_address": "EdhCrv9wh2dVy7LwA4kZ3pvBRhSXzhPrYeVqX7VcsmbS",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/EdhCrv9wh2dVy7LwA4kZ3pvBRhSXzhPrYeVqX7VcsmbS.png?key=8ed82d",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:28.692617",
+    "verified": true
+  },
+  "d5cc837a597b": {
+    "ticker": "$ASSCOIN",
+    "contract_address": "G3EDZoS49NRVKP8X1HggHZJueJeR8d2izUHeXdV3pump",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/G3EDZoS49NRVKP8X1HggHZJueJeR8d2izUHeXdV3pump.png?key=5dda4f",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:31.938359",
+    "verified": true
+  },
+  "c73b2e8d3f26": {
+    "ticker": "$point of convergence",
+    "contract_address": "GFAb9ARdro6dwcYmcXsynubq5PiHHKjHifDH6NiTpump",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/GFAb9ARdro6dwcYmcXsynubq5PiHHKjHifDH6NiTpump.png?key=44dde8",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:35.207782",
+    "verified": true
+  },
+  "ffe31eb3ef38": {
+    "ticker": "$FUCK YOU MONEY",
+    "contract_address": "GY15RsMaKYaoD2PJrTCsJ5CV4yJNnN79czKgYK3zpump",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/GY15RsMaKYaoD2PJrTCsJ5CV4yJNnN79czKgYK3zpump.png?key=269b0e",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:38.652579",
+    "verified": true
+  },
+  "5d35b298e6aa": {
+    "ticker": "$SLESH",
+    "contract_address": "2enpSQzqEaouvWJNpPSbVxmWFqA15j2n18vYeFpFKxfp",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/2enpSQzqEaouvWJNpPSbVxmWFqA15j2n18vYeFpFKxfp.png?key=667b39",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:42.157236",
+    "verified": true
+  },
+  "d63423096859": {
+    "ticker": "$Sanafi Onchain",
+    "contract_address": "5dpN5wMH8j8au29Rp91qn4WfNq6t6xJfcjQNcFeDJ8Ct",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/5dpN5wMH8j8au29Rp91qn4WfNq6t6xJfcjQNcFeDJ8Ct.png?key=8c135f",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:45.461138",
+    "verified": true
+  },
+  "6c3f7f78247b": {
+    "ticker": "$Believe University",
+    "contract_address": "AtkJrro7n295559RaSz9TSDvLMp5w92dzThZiZqXWLhN",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/AtkJrro7n295559RaSz9TSDvLMp5w92dzThZiZqXWLhN.png?key=0198d7",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:48.768049",
+    "verified": true
+  },
+  "3305035d9597": {
+    "ticker": "$Pitaya",
+    "contract_address": "BiwQX15cvwpyyGa5SC8uEXCqE94yXKFuLFSj5WtBbonk",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/BiwQX15cvwpyyGa5SC8uEXCqE94yXKFuLFSj5WtBbonk.png?key=8b35af",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:52.279050",
+    "verified": true
+  },
+  "b5247c729cb8": {
+    "ticker": "$Cryfi",
+    "contract_address": "DkuhDqqxnXwECj2XGhLyrZbWuuRgqyFvU1W4xFJ5pump",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/DkuhDqqxnXwECj2XGhLyrZbWuuRgqyFvU1W4xFJ5pump.png?key=e5fb0c",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:55.771831",
+    "verified": true
+  },
+  "85597764a394": {
+    "ticker": "$the face of sarcasm",
+    "contract_address": "93s39pnRwp5NUxvJ3A5zDWoXxKxqW4RCVzMuNsKZbonk",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/93s39pnRwp5NUxvJ3A5zDWoXxKxqW4RCVzMuNsKZbonk.png?key=44054c",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:56:59.261187",
+    "verified": true
+  },
+  "842e18c072e1": {
+    "ticker": "$StickDAO",
+    "contract_address": "3fAddCWnFZnVfHRaDf86sVDAD7jHXq97NULrpo4GGkth",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/3fAddCWnFZnVfHRaDf86sVDAD7jHXq97NULrpo4GGkth.png?key=0aae8d",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:57:02.545468",
+    "verified": true
+  },
+  "60df8b7b5814": {
+    "ticker": "$Foundry",
+    "contract_address": "2ZiSPGncrkwWa6GBZB4EDtsfq7HEWwkwsPFzEXieXjNL",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/2ZiSPGncrkwWa6GBZB4EDtsfq7HEWwkwsPFzEXieXjNL.png?key=25f693",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:57:05.828883",
+    "verified": true
+  },
+  "3f8abbe69783": {
+    "ticker": "$joobi",
+    "contract_address": "3gFD6JcB1XUjuCG9RCoAjkRgDuceFQ7UQTxtLXzzpump",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/3gFD6JcB1XUjuCG9RCoAjkRgDuceFQ7UQTxtLXzzpump.png?key=770e43",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:57:09.095478",
+    "verified": true
+  },
+  "d56b2de75ee0": {
+    "ticker": "$Jiankui",
+    "contract_address": "HywG4iTKjfW9yDwFMYp4E67vMcuwMvDxyf4FgNQHpump",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/HywG4iTKjfW9yDwFMYp4E67vMcuwMvDxyf4FgNQHpump.png?key=5bd9b2",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:57:12.417716",
+    "verified": true
+  },
+  "e794f5cd790a": {
+    "ticker": "$XChat",
+    "contract_address": "DdGQ5ocQg2CpaNjnZyC5P9UT5e167yB13A74DbZVpump",
+    "image_url": "https://dd.dexscreener.com/ds-data/tokens/solana/DdGQ5ocQg2CpaNjnZyC5P9UT5e167yB13A74DbZVpump.png?key=e35afe",
+    "image_source": "dexscreener",
+    "fetched_at": "2025-08-02T04:57:15.750013",
+    "verified": true
+  },
+  "7a98cc80e9c5": {
+    "ticker": "$6sPxc",
+    "contract_address": "6sPxcz9cGBi3tK1JsSa3QcgSUikHTUzo4UWQxnh3DgtD",
+    "image_url": "https://cryptologos.cc/logos/bitcoin-btc-logo.png",
+    "image_source": "fallback",
+    "fetched_at": "2025-08-02T04:57:22.824443",
+    "verified": false
   }
 }

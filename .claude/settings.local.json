@@ -70,7 +70,8 @@
       "Bash(git gc:*)",
       "WebFetch(domain:trenchcoat-pro.streamlit.app)",
       "Bash(git rm:*)",
-      "Bash(chcp:*)"
+      "Bash(chcp:*)",
+      "Bash(\"C:\\Program Files\\Git\\cmd\\git.exe\" log --oneline -3)"
     ],
     "deny": []
   }
