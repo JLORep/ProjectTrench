@@ -1033,7 +1033,7 @@ with tab2:
                             coin_id = coin.get('id', f'idx_{i}')
                             card_html = f"""
                         <div class="coin-card" id="coin-{coin_id}" 
-                             onclick="window.location.href='#{coin['ca']}';"
+                             onclick="selectCoin('{coin['ca']}');"
                              style="cursor: pointer !important; display: block; width: 100%; margin: 12px 0; position: relative; z-index: 10;">
                             <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
                                 <div style="flex-shrink: 0;">
@@ -1071,8 +1071,16 @@ with tab2:
                                 }}
                                 
                                 // Also trigger click on the hidden button as fallback
-                                const hiddenButton = document.querySelector('button[data-testid*="view_{coin["ca"]}"]');
-                                if (hiddenButton) {{
+                                const hiddenButton = document.querySelector('button[key="view_{coin["ca"]}"]');
+                                if (!hiddenButton) {{
+                                    // Try alternative selector
+                                    const altButton = Array.from(document.querySelectorAll('button')).find(btn => 
+                                        btn.textContent.includes('View {ticker}')
+                                    );
+                                    if (altButton) {{
+                                        altButton.click();
+                                    }}
+                                }} else {{
                                     hiddenButton.click();
                                 }}
                             }}
