@@ -604,20 +604,33 @@ with tab2:
         
         for idx, coin in filtered_data.head(show_count).iterrows():
             with st.container():
-                # Prepare smart wallets display
+                # Prepare display values
+                ticker = coin['ticker'] or 'Unknown'
+                ca_display = f"{coin['ca'][:8]}...{coin['ca'][-8:]}" if len(str(coin['ca'])) > 16 else str(coin['ca'])
+                price = coin['current_price_usd'] if coin['current_price_usd'] else 0
+                
+                # Determine market cap display
+                if coin['market_cap_usd']:
+                    mcap = f"{coin['market_cap_usd']:,.0f}"
+                elif coin['discovery_mc']:
+                    mcap = f"{coin['discovery_mc']:,.0f}"  
+                else:
+                    mcap = "0"
+                
+                # Smart wallets display
                 smart_wallets_html = f'<div style="font-size: 12px; color: rgba(255,255,255,0.5);">Smart Wallets: {coin["smart_wallets"]}</div>' if coin['smart_wallets'] else ''
                 
                 st.markdown(f"""
                 <div class="coin-card">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <h3 style="margin: 0; color: #10b981;">{coin['ticker'] or 'Unknown'}</h3>
-                            <small style="color: rgba(255,255,255,0.6);">{coin['ca'][:8]}...{coin['ca'][-8:] if len(str(coin['ca'])) > 16 else coin['ca']}</small>
+                            <h3 style="margin: 0; color: #10b981;">{ticker}</h3>
+                            <small style="color: rgba(255,255,255,0.6);">{ca_display}</small>
                         </div>
                         <div style="text-align: right;">
-                            <div class="coin-price">${coin['current_price_usd']:.8f if coin['current_price_usd'] else 0}</div>
+                            <div class="coin-price">${price:.8f}</div>
                             <div style="font-size: 14px; color: rgba(255,255,255,0.7);">
-                                MCap: ${coin['market_cap_usd']:,.0f if coin['market_cap_usd'] else coin['discovery_mc']:,.0f if coin['discovery_mc'] else 0}
+                                MCap: ${mcap}
                             </div>
                             {smart_wallets_html}
                         </div>
