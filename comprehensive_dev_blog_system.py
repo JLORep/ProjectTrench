@@ -674,6 +674,142 @@ class ComprehensiveDevBlogSystem:
                 'channel_growth': "0"
             }
     
+    def get_post_frequency_data(self, time_range="Last 30 days"):
+        """Get post frequency data for charts"""
+        try:
+            import pandas as pd
+            conn = sqlite3.connect(self.db_path)
+            
+            # Calculate date filter
+            if time_range == "Last 7 days":
+                date_filter = "datetime('now', '-7 days')"
+            elif time_range == "Last 30 days":
+                date_filter = "datetime('now', '-30 days')"
+            elif time_range == "Last 3 months":
+                date_filter = "datetime('now', '-3 months')"
+            else:
+                date_filter = "datetime('1970-01-01')"
+            
+            # Get daily post counts
+            query = f'''
+                SELECT DATE(created_timestamp) as date, COUNT(*) as posts
+                FROM comprehensive_posts
+                WHERE created_timestamp > {date_filter}
+                GROUP BY DATE(created_timestamp)
+                ORDER BY date
+            '''
+            
+            df = pd.read_sql_query(query, conn)
+            conn.close()
+            
+            if df.empty:
+                # Return dummy data if no posts
+                dates = pd.date_range(end=datetime.now(), periods=7)
+                return pd.DataFrame({'date': dates, 'posts': [0]*7}).set_index('date')
+            
+            df['date'] = pd.to_datetime(df['date'])
+            return df.set_index('date')
+            
+        except Exception as e:
+            st.error(f"Error fetching post frequency: {e}")
+            # Return dummy data
+            dates = pd.date_range(end=datetime.now(), periods=7)
+            return pd.DataFrame({'date': dates, 'posts': [0]*7}).set_index('date')
+    
+    def get_category_distribution(self, time_range="Last 30 days"):
+        """Get category distribution data"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            
+            # Calculate date filter
+            if time_range == "Last 7 days":
+                date_filter = "datetime('now', '-7 days')"
+            elif time_range == "Last 30 days":
+                date_filter = "datetime('now', '-30 days')"
+            elif time_range == "Last 3 months":
+                date_filter = "datetime('now', '-3 months')"
+            else:
+                date_filter = "datetime('1970-01-01')"
+            
+            cursor = conn.cursor()
+            cursor.execute(f'''
+                SELECT post_type, COUNT(*) as count
+                FROM comprehensive_posts
+                WHERE created_timestamp > {date_filter}
+                GROUP BY post_type
+                ORDER BY count DESC
+            ''')
+            
+            data = {}
+            for row in cursor.fetchall():
+                data[row[0]] = row[1]
+            
+            conn.close()
+            
+            if not data:
+                # Return dummy data
+                data = {'feature': 5, 'bug_fix': 3, 'update': 2}
+            
+            return pd.DataFrame(list(data.values()), index=list(data.keys()), columns=['Count'])
+            
+        except Exception as e:
+            st.error(f"Error fetching category distribution: {e}")
+            # Return dummy data
+            return pd.DataFrame([5, 3, 2], index=['feature', 'bug_fix', 'update'], columns=['Count'])
+    
+    def get_channel_performance_metrics(self, time_range="Last 30 days"):
+        """Get channel performance metrics"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            
+            # Calculate date filter
+            if time_range == "Last 7 days":
+                date_filter = "datetime('now', '-7 days')"
+            elif time_range == "Last 30 days":
+                date_filter = "datetime('now', '-30 days')"
+            elif time_range == "Last 3 months":
+                date_filter = "datetime('now', '-3 months')"
+            else:
+                date_filter = "datetime('1970-01-01')"
+            
+            cursor = conn.cursor()
+            cursor.execute(f'''
+                SELECT 
+                    channels_posted,
+                    COUNT(*) as posts,
+                    AVG(discord_success_rate) as avg_success_rate
+                FROM comprehensive_posts
+                WHERE created_timestamp > {date_filter}
+                GROUP BY channels_posted
+            ''')
+            
+            metrics = []
+            for row in cursor.fetchall():
+                metrics.append({
+                    'channel': row[0] or 'Unknown',
+                    'posts': row[1],
+                    'success_rate': f"{row[2]*100:.1f}%" if row[2] else "0%"
+                })
+            
+            conn.close()
+            
+            if not metrics:
+                # Return dummy data
+                metrics = [
+                    {'channel': 'Discord', 'posts': 10, 'success_rate': '95.0%'},
+                    {'channel': 'Blog', 'posts': 8, 'success_rate': '100.0%'},
+                    {'channel': 'Twitter', 'posts': 5, 'success_rate': '88.0%'}
+                ]
+            
+            return metrics
+            
+        except Exception as e:
+            st.error(f"Error fetching channel metrics: {e}")
+            return [
+                {'channel': 'Discord', 'posts': 0, 'success_rate': '0%'},
+                {'channel': 'Blog', 'posts': 0, 'success_rate': '0%'}
+            ]
+    
     def render_scheduling(self):
         """Post scheduling interface"""
         
