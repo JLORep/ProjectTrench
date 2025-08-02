@@ -1140,48 +1140,67 @@ with tab2:
                             # Create simplified clickable card
                             coin_id = coin.get('id', f'idx_{i + col_idx}')
                             
-                            # Fully clickable card with JavaScript handler
+                            # Enhanced vibrant card display
                             card_html = f"""
-                            <div class="coin-card clickable-coin-card" onclick="document.getElementById('coin-btn-{coin['ca']}').click()" 
-                                 style="cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(16, 185, 129, 0.3);
-                                        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-                                        border-radius: 16px; padding: 20px; margin-bottom: 16px;
-                                        box-shadow: 0 4px 16px rgba(0,0,0,0.2);">
-                                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                            <div style="
+                                background: linear-gradient(135deg, #0a0f1c 0%, #1a2332 50%, #0a0f1c 100%);
+                                border: 2px solid rgba(16, 185, 129, 0.5);
+                                border-radius: 16px;
+                                padding: 20px;
+                                margin: 12px 0;
+                                box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+                                transition: all 0.3s ease;
+                                position: relative;
+                                overflow: hidden;
+                            ">
+                                <div style="
+                                    position: absolute;
+                                    top: 0;
+                                    left: -100%;
+                                    width: 100%;
+                                    height: 100%;
+                                    background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+                                    animation: shimmer 3s infinite;
+                                "></div>
+                                
+                                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; position: relative; z-index: 2;">
                                     <div style="flex-shrink: 0;">
                                         {logo_html}
                                     </div>
                                     <div style="flex: 1;">
-                                        <h2 class="coin-ticker" style="color: #10b981; font-size: 18px; font-weight: 600; margin: 0;">{ticker}</h2>
-                                        <div class="coin-address" style="color: rgba(255,255,255,0.6); font-size: 12px; font-family: monospace;">{ca_display}</div>
+                                        <h2 style="color: #10b981; font-size: 20px; font-weight: 700; margin: 0; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);">{ticker}</h2>
+                                        <div style="color: rgba(255,255,255,0.6); font-size: 11px; font-family: monospace; background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">{ca_display}</div>
                                     </div>
                                     <div style="text-align: right;">
-                                        <div class="coin-price" style="color: #ffffff; font-size: 16px; font-weight: 600;">${price:.8f}</div>
+                                        <div style="color: #ffffff; font-size: 18px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${price:.8f}</div>
                                         {price_change_html}
                                     </div>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <div class="coin-mcap" style="color: rgba(255,255,255,0.8); font-size: 14px;">Market Cap: ${mcap}</div>
-                                    <div class="coin-metadata" style="color: rgba(255,255,255,0.6); font-size: 12px;">{metadata_html}</div>
-                                </div>
-                                <div style="text-align: center; margin-top: 12px; color: rgba(16, 185, 129, 0.8); font-size: 12px; font-weight: 500;">
-                                    📊 Click anywhere on card for detailed analysis with charts
+                                
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <div style="color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600;">Market Cap: ${mcap}</div>
+                                    <div style="color: rgba(255,255,255,0.7); font-size: 12px;">{metadata_html}</div>
                                 </div>
                             </div>
+                            
+                            <style>
+                            @keyframes shimmer {{
+                                0% {{ left: -100%; }}
+                                100% {{ left: 100%; }}
+                            }}
+                            </style>
                             """
                             
-                            # Display the clickable card
+                            # Display the enhanced card
                             st.markdown(card_html, unsafe_allow_html=True)
                             
-                            # Hidden button that gets triggered by card click
+                            # Working clickable button with enhanced styling
                             if st.button(
-                                "Hidden Trigger",
-                                key=f"coin-btn-{coin['ca']}", 
-                                type="primary",
-                                disabled=False,
-                                use_container_width=False
+                                f"🔍 Analyze {ticker}",
+                                key=f"view_{coin['ca']}", 
+                                use_container_width=True,
+                                help=f"View detailed analysis for {ticker}"
                             ):
-                                # Store selected coin in session state for fullscreen view
                                 st.session_state.selected_coin = coin.to_dict()
                                 st.rerun()
         else:
@@ -2153,39 +2172,40 @@ with tab12:
     except ImportError:
         # Enhanced fallback for Runners with existing workflow integration
         st.header("🎮 Trading Bot Runners - Complete Workflow")
-    st.markdown("""
-    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-                border: 2px solid rgba(16, 185, 129, 0.4); border-radius: 20px; padding: 32px;
-                margin: 20px 0; box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2);">
-        <h1 style="text-align: center; color: #10b981; font-size: 36px; margin-bottom: 8px;">🎮 TRADING BOT RUNNERS</h1>
-        <p style="text-align: center; color: rgba(255,255,255,0.6); margin-bottom: 24px;">Complete Telegram → Parse → Enrich → Model → Predict → Recommend Workflow</p>
-    </div>
-    """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+                    border: 2px solid rgba(16, 185, 129, 0.4); border-radius: 20px; padding: 32px;
+                    margin: 20px 0; box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2);">
+            <h1 style="text-align: center; color: #10b981; font-size: 36px; margin-bottom: 8px;">🎮 TRADING BOT RUNNERS</h1>
+            <p style="text-align: center; color: rgba(255,255,255,0.6); margin-bottom: 24px;">Complete Telegram → Parse → Enrich → Model → Predict → Recommend Workflow</p>
+        </div>
+        """, unsafe_allow_html=True)
     
-    # Workflow Status Overview
-    st.subheader("📈 Live Workflow Status")
-    workflow_col1, workflow_col2, workflow_col3, workflow_col4, workflow_col5, workflow_col6 = st.columns(6)
+        # Workflow Status Overview
+        st.subheader("📈 Live Workflow Status")
+        workflow_col1, workflow_col2, workflow_col3, workflow_col4, workflow_col5, workflow_col6 = st.columns(6)
+        
+        with workflow_col1:
+            st.metric("📱 Telegram", "ACTIVE", delta="24/7 monitoring")
+        with workflow_col2:
+            st.metric("🔄 Parser", "ONLINE", delta="real-time")
+        with workflow_col3:
+            st.metric("📈 Enricher", "READY", delta="17 APIs")
+        with workflow_col4:
+            st.metric("🤖 Models", "5 ACTIVE", delta="ML ready")
+        with workflow_col5:
+            st.metric("🎯 Predictor", "87% ACC", delta="high confidence")
+        with workflow_col6:
+            st.metric("✨ Recommender", "3 SIGNALS", delta="live alerts")
     
-    with workflow_col1:
-        st.metric("📱 Telegram", "ACTIVE", delta="24/7 monitoring")
-    with workflow_col2:
-        st.metric("🔄 Parser", "ONLINE", delta="real-time")
-    with workflow_col3:
-        st.metric("📈 Enricher", "READY", delta="17 APIs")
-    with workflow_col4:
-        st.metric("🤖 Models", "5 ACTIVE", delta="ML ready")
-    with workflow_col5:
-        st.metric("🎯 Predictor", "87% ACC", delta="high confidence")
-    with workflow_col6:
-        st.metric("✨ Recommender", "3 SIGNALS", delta="live alerts")
+        st.markdown("---")
+        
+        # Live Processing Console
+        st.subheader("🖥️ Real-Time Processing Console")
     
-    st.markdown("---")
-    
-    # Live Processing Console
-    st.subheader("🖥️ Real-Time Processing Console")
-    
-    current_time = datetime.now().strftime("%H:%M:%S")
-    processing_log = f"""
+        current_time = datetime.now().strftime("%H:%M:%S")
+        processing_log = f"""
 🔴 [{current_time}] TrenchCoat Runners Engine v3.0 - FULLY OPERATIONAL
 
 📱 TELEGRAM MONITOR:
@@ -2232,23 +2252,23 @@ with tab12:
   Recommended allocation: $2,300 (23%)
   Expected ROI: +87% to +350%
   Risk-adjusted return: Excellent
-    """
-    
-    st.code(processing_log, language="bash")
-    
-    st.markdown("---")
-    
-    # Workflow Components
-    workflow_tab1, workflow_tab2, workflow_tab3, workflow_tab4, workflow_tab5, workflow_tab6 = st.tabs([
-        "📱 Telegram Monitor", "🔄 Parser", "📈 Enricher", "🤖 Models", "🎯 Predictor", "✨ Recommender"
-    ])
-    
-    with workflow_tab1:
-        st.subheader("📱 Telegram Signal Monitor")
+        """
         
-        # Telegram groups status
-        st.write("**Connected Groups:**")
-        telegram_groups = [
+        st.code(processing_log, language="bash")
+        
+        st.markdown("---")
+        
+        # Workflow Components
+        workflow_tab1, workflow_tab2, workflow_tab3, workflow_tab4, workflow_tab5, workflow_tab6 = st.tabs([
+            "📱 Telegram Monitor", "🔄 Parser", "📈 Enricher", "🤖 Models", "🎯 Predictor", "✨ Recommender"
+        ])
+        
+        with workflow_tab1:
+            st.subheader("📱 Telegram Signal Monitor")
+            
+            # Telegram groups status
+            st.write("**Connected Groups:**")
+            telegram_groups = [
             "✅ Alpha Hunters VIP (287 members) - HIGH QUALITY",
             "✅ Pump Detectives Pro (1,203 members) - VERIFIED SIGNALS",
             "✅ Memecoin Snipers Elite (89 members) - EXCLUSIVE",
@@ -2292,26 +2312,26 @@ with tab12:
         with control_col3:
             if st.button("🔄 Refresh Status", use_container_width=True):
                 st.info("Status refreshed")
-    
-    with workflow_tab2:
-        st.subheader("🔄 Signal Parser Engine")
         
-        st.write("**Parser Configuration:**")
-        parser_settings = {
-            "Contract Address Regex": "[A-Za-z0-9]{32,44}",
-            "Minimum Message Length": "20 characters",
-            "Pump Keywords": "pump, moon, gem, 100x, rocket",
-            "Filter Spam": "Enabled (removes repeated messages)",
-            "Confidence Threshold": "75% (rejects low-quality signals)",
-            "Rate Limiting": "Max 10 signals/minute"
-        }
-        
-        for setting, value in parser_settings.items():
-            st.write(f"**{setting}:** {value}")
-        
-        st.subheader("🔎 Live Parsing Example")
-        
-        example_message = """
+        with workflow_tab2:
+            st.subheader("🔄 Signal Parser Engine")
+            
+            st.write("**Parser Configuration:**")
+            parser_settings = {
+                "Contract Address Regex": "[A-Za-z0-9]{32,44}",
+                "Minimum Message Length": "20 characters",
+                "Pump Keywords": "pump, moon, gem, 100x, rocket",
+                "Filter Spam": "Enabled (removes repeated messages)",
+                "Confidence Threshold": "75% (rejects low-quality signals)",
+                "Rate Limiting": "Max 10 signals/minute"
+            }
+            
+            for setting, value in parser_settings.items():
+                st.write(f"**{setting}:** {value}")
+            
+            st.subheader("🔎 Live Parsing Example")
+            
+            example_message = """
 Original Telegram Message:
 "🚀🚀 PEPE2.0 IS GOING TO THE MOON! 🚀🚀
 Contract: 4xB9k2QpH7vN8mR3tY6sL1pD9wX5cE2fG8hJ4kM7nP0qS
@@ -2329,32 +2349,32 @@ Parsed Data:
 ✅ Confidence: 78% (High quality signal)
 ✅ Timestamp: 2025-08-02 09:47:23
 ⚠️ Flagged Claims: "100X" (needs verification)
-        """
+            """
+            
+            st.code(example_message, language="text")
         
-        st.code(example_message, language="text")
-    
-    with workflow_tab3:
-        st.subheader("📈 Data Enrichment Pipeline")
-        
-        st.write("**Active API Sources:**")
-        api_sources = [
-            "✅ DexScreener - Price & volume data",
-            "✅ Birdeye - Smart wallet analysis",
-            "✅ Solscan - Contract verification",
-            "✅ Jupiter - Liquidity depth",
-            "✅ GMGN - Social metrics",
-            "✅ Pump.fun - Token social data",
-            "✅ TokenSniffer - Security analysis",
-            "✅ Helius RPC - Blockchain data",
-            "✅ TrenchCoat AI - Custom scoring"
-        ]
-        
-        for source in api_sources:
-            st.markdown(f"- {source}")
-        
-        st.subheader("📊 Enrichment Results")
-        
-        enrichment_example = """
+        with workflow_tab3:
+            st.subheader("📈 Data Enrichment Pipeline")
+            
+            st.write("**Active API Sources:**")
+            api_sources = [
+                "✅ DexScreener - Price & volume data",
+                "✅ Birdeye - Smart wallet analysis",
+                "✅ Solscan - Contract verification",
+                "✅ Jupiter - Liquidity depth",
+                "✅ GMGN - Social metrics",
+                "✅ Pump.fun - Token social data",
+                "✅ TokenSniffer - Security analysis",
+                "✅ Helius RPC - Blockchain data",
+                "✅ TrenchCoat AI - Custom scoring"
+            ]
+            
+            for source in api_sources:
+                st.markdown(f"- {source}")
+            
+            st.subheader("📊 Enrichment Results")
+            
+            enrichment_example = """
 Coin: PEPE2.0 (4xB9k2QpH7vN8mR3tY6sL1pD9wX5cE2fG8hJ4kM7nP0qS)
 
 💰 FINANCIAL DATA:
@@ -2381,31 +2401,31 @@ Coin: PEPE2.0 (4xB9k2QpH7vN8mR3tY6sL1pD9wX5cE2fG8hJ4kM7nP0qS)
   Hype Score: 82/100
   
 🎯 QUALITY SCORE: 85/100 (EXCELLENT)
-        """
+            """
+            
+            st.code(enrichment_example, language="text")
         
-        st.code(enrichment_example, language="text")
-    
-    with workflow_tab4:
-        st.subheader("🤖 Machine Learning Models")
-        
-        st.write("**Active ML Models:**")
-        
-        # Model performance metrics
-        model_col1, model_col2 = st.columns(2)
-        
-        with model_col1:
-            st.metric("🎯 Kelly Criterion Model", "87% Accuracy", delta="Optimal position sizing")
-            st.metric("📊 Momentum Factor Model", "82% Accuracy", delta="Price momentum prediction")
-            st.metric("💧 Liquidity Depth Model", "79% Accuracy", delta="Market depth analysis")
-        
-        with model_col2:
-            st.metric("🗮 Risk Assessment Model", "91% Accuracy", delta="Rug detection")
-            st.metric("✅ Veracity Validation Model", "94% Accuracy", delta="Claim verification")
-            st.metric("🌊 Social Sentiment Model", "76% Accuracy", delta="Community analysis")
-        
-        st.subheader("📊 Model Predictions for PEPE2.0")
-        
-        model_predictions = """
+        with workflow_tab4:
+            st.subheader("🤖 Machine Learning Models")
+            
+            st.write("**Active ML Models:**")
+            
+            # Model performance metrics
+            model_col1, model_col2 = st.columns(2)
+            
+            with model_col1:
+                st.metric("🎯 Kelly Criterion Model", "87% Accuracy", delta="Optimal position sizing")
+                st.metric("📊 Momentum Factor Model", "82% Accuracy", delta="Price momentum prediction")
+                st.metric("💧 Liquidity Depth Model", "79% Accuracy", delta="Market depth analysis")
+            
+            with model_col2:
+                st.metric("🗮 Risk Assessment Model", "91% Accuracy", delta="Rug detection")
+                st.metric("✅ Veracity Validation Model", "94% Accuracy", delta="Claim verification")
+                st.metric("🌊 Social Sentiment Model", "76% Accuracy", delta="Community analysis")
+            
+            st.subheader("📊 Model Predictions for PEPE2.0")
+            
+            model_predictions = """
 🎯 KELLY CRITERION MODEL:
   Optimal Position Size: 23% of portfolio
   Expected Return: +187%
@@ -2442,99 +2462,99 @@ Coin: PEPE2.0 (4xB9k2QpH7vN8mR3tY6sL1pD9wX5cE2fG8hJ4kM7nP0qS)
   Hype Sustainability: Medium
   Social Risk: Low
   Confidence: 76%
-        """
+            """
+            
+            st.code(model_predictions, language="text")
         
-        st.code(model_predictions, language="text")
-    
-    with workflow_tab5:
-        st.subheader("🎯 Prediction Engine")
-        
-        # Aggregate prediction
-        st.write("**Aggregate Model Output for PEPE2.0:**")
-        
-        prediction_col1, prediction_col2, prediction_col3 = st.columns(3)
-        
-        with prediction_col1:
-            st.metric("🎯 Overall Confidence", "87%", delta="High confidence")
-            st.metric("💰 Price Target Range", "2.5x - 5x", delta="4-12 hours")
-        
-        with prediction_col2:
-            st.metric("🗮 Risk Level", "LOW", delta="15% rug probability")
-            st.metric("📋 Position Size", "23%", delta="Kelly optimal")
-        
-        with prediction_col3:
-            st.metric("⏱️ Time Horizon", "4-12h", delta="Momentum window")
-            st.metric("⭐ Rating", "A-", delta="Strong buy")
-        
-        st.subheader("📊 Prediction Breakdown")
-        
-        # Create prediction visualization
-        prediction_data = {
-            'Metric': ['Price Target Low', 'Price Target High', 'Current Price'],
-            'Value': [0.00000335, 0.00000670, 0.00000134]
-        }
-        
-        prediction_df = pd.DataFrame(prediction_data)
-        st.bar_chart(prediction_df.set_index('Metric'))
-        
-        st.subheader("⚡ Prediction Alerts")
-        
-        alerts = [
-            "🟢 STRONG BUY signal generated",
-            "⏰ Optimal entry window: Next 30 minutes",
-            "📈 Volume spike detected: +347%",
-            "🐋 Whale activity: 3 large buys detected",
-            "📋 Community growth: +89 members in 1 hour"
-        ]
-        
-        for alert in alerts:
-            st.success(alert)
-    
-    with workflow_tab6:
-        st.subheader("✨ Recommendation System")
-        
-        # Final recommendation
-        st.markdown("""
-        <div style="background: linear-gradient(135deg, #10b981 20%, #059669 100%);
-                    border-radius: 16px; padding: 24px; margin: 16px 0;
-                    text-align: center; color: white;">
-            <h2 style="margin: 0 0 16px 0; color: white;">🟢 STRONG BUY RECOMMENDATION</h2>
-            <h3 style="margin: 0; color: white;">PEPE2.0 - Confidence: 87%</h3>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Recommendation details
-        rec_col1, rec_col2 = st.columns(2)
-        
-        with rec_col1:
-            st.subheader("💰 Trading Plan")
-            trading_plan = [
-                "**Entry Price:** $0.00000134 (Current)",
-                "**Position Size:** 23% of portfolio ($2,300)",
-                "**Target 1:** $0.00000335 (2.5x) - Take 30%",
-                "**Target 2:** $0.00000670 (5x) - Take 50%",
-                "**Target 3:** $0.00001340 (10x) - Take 20%",
-                "**Stop Loss:** $0.00000107 (-20%)",
-                "**Max Hold Time:** 24-48 hours"
+        with workflow_tab5:
+            st.subheader("🎯 Prediction Engine")
+            
+            # Aggregate prediction
+            st.write("**Aggregate Model Output for PEPE2.0:**")
+            
+            prediction_col1, prediction_col2, prediction_col3 = st.columns(3)
+            
+            with prediction_col1:
+                st.metric("🎯 Overall Confidence", "87%", delta="High confidence")
+                st.metric("💰 Price Target Range", "2.5x - 5x", delta="4-12 hours")
+            
+            with prediction_col2:
+                st.metric("🗮 Risk Level", "LOW", delta="15% rug probability")
+                st.metric("📋 Position Size", "23%", delta="Kelly optimal")
+            
+            with prediction_col3:
+                st.metric("⏱️ Time Horizon", "4-12h", delta="Momentum window")
+                st.metric("⭐ Rating", "A-", delta="Strong buy")
+            
+            st.subheader("📊 Prediction Breakdown")
+            
+            # Create prediction visualization
+            prediction_data = {
+                'Metric': ['Price Target Low', 'Price Target High', 'Current Price'],
+                'Value': [0.00000335, 0.00000670, 0.00000134]
+            }
+            
+            prediction_df = pd.DataFrame(prediction_data)
+            st.bar_chart(prediction_df.set_index('Metric'))
+            
+            st.subheader("⚡ Prediction Alerts")
+            
+            alerts = [
+                "🟢 STRONG BUY signal generated",
+                "⏰ Optimal entry window: Next 30 minutes",
+                "📈 Volume spike detected: +347%",
+                "🐋 Whale activity: 3 large buys detected",
+                "📋 Community growth: +89 members in 1 hour"
             ]
             
-            for plan in trading_plan:
-                st.markdown(f"- {plan}")
+            for alert in alerts:
+                st.success(alert)
         
-        with rec_col2:
-            st.subheader("🗮 Risk Management")
-            risk_management = [
-                "**Risk Level:** LOW (15% rug probability)",
-                "**Liquidity:** Adequate for position size",
-                "**Slippage:** Expected 2.3% on entry/exit",
-                "**Market Conditions:** Favorable",
-                "**Community:** Growing (+89 members/hour)",
-                "**Technical:** All signals green",
-                "**Exit Strategy:** Scaled profit taking"
-            ]
+        with workflow_tab6:
+            st.subheader("✨ Recommendation System")
             
-            for risk in risk_management:
-                st.markdown(f"- {risk}")
+            # Final recommendation
+            st.markdown("""
+            <div style="background: linear-gradient(135deg, #10b981 20%, #059669 100%);
+                        border-radius: 16px; padding: 24px; margin: 16px 0;
+                        text-align: center; color: white;">
+                <h2 style="margin: 0 0 16px 0; color: white;">🟢 STRONG BUY RECOMMENDATION</h2>
+                <h3 style="margin: 0; color: white;">PEPE2.0 - Confidence: 87%</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Recommendation details
+            rec_col1, rec_col2 = st.columns(2)
+            
+            with rec_col1:
+                st.subheader("💰 Trading Plan")
+                trading_plan = [
+                    "**Entry Price:** $0.00000134 (Current)",
+                    "**Position Size:** 23% of portfolio ($2,300)",
+                    "**Target 1:** $0.00000335 (2.5x) - Take 30%",
+                    "**Target 2:** $0.00000670 (5x) - Take 50%",
+                    "**Target 3:** $0.00001340 (10x) - Take 20%",
+                    "**Stop Loss:** $0.00000107 (-20%)",
+                    "**Max Hold Time:** 24-48 hours"
+                ]
+                
+                for plan in trading_plan:
+                    st.markdown(f"- {plan}")
+            
+            with rec_col2:
+                st.subheader("🗮 Risk Management")
+                risk_management = [
+                    "**Risk Level:** LOW (15% rug probability)",
+                    "**Liquidity:** Adequate for position size",
+                    "**Slippage:** Expected 2.3% on entry/exit",
+                    "**Market Conditions:** Favorable",
+                    "**Community:** Growing (+89 members/hour)",
+                    "**Technical:** All signals green",
+                    "**Exit Strategy:** Scaled profit taking"
+                ]
+                
+                for risk in risk_management:
+                    st.markdown(f"- {risk}")
         
         st.subheader("🔔 Alert Distribution")
         
