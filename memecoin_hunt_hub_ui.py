@@ -323,6 +323,7 @@ def render_token_card(token: Dict):
         mcap = html.escape(str(token["mcap"]))
         volume = html.escape(str(token["volume"]))
         rationale = html.escape(str(token["rationale"]))
+        holders = html.escape(str(token["holders"]))
         
         score_class = "score-high" if token["score"] >= 80 else "score-medium" if token["score"] >= 60 else "score-low"
         risk_class = f"risk-{token['risk']}"
@@ -358,7 +359,7 @@ def render_token_card(token: Dict):
             </div>
             <div>
                 <p style="margin: 0; color: rgba(255,255,255,0.6); font-size: 12px;">Holders</p>
-                <p style="margin: 0; font-size: 16px; font-weight: 600;">{token["holders"]}</p>
+                <p style="margin: 0; font-size: 16px; font-weight: 600;">{holders}</p>
             </div>
         </div>
         
