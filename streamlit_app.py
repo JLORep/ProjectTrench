@@ -783,7 +783,8 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.t
 
 # ===== TAB 1: ENHANCED DASHBOARD =====
 with tab1:
-    st.header("🌟 Market Intelligence Overview")
+    with st.container():
+        st.header("🌟 Market Intelligence Overview")
     
     # Enhanced market statistics
     if market_stats:
@@ -918,9 +919,6 @@ with tab1:
             <p>• Enterprise security enabled</p>
         </div>
         """, unsafe_allow_html=True)
-        
-        # Close tab content wrapper
-        st.markdown('</div>', unsafe_allow_html=True)
 
 # ===== TAB 2: COINS =====
 with tab2:

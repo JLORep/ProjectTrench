@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-08-02T08:01:40.878078",
+  "timestamp": "2025-08-02T08:09:45.678656",
   "code_deployed": true,
   "dashboard_functional": false,
   "all_tabs_loaded": false,
@@ -8,8 +8,8 @@
   "enrichment_working": false,
   "security_dashboard_ok": false,
   "monitoring_dashboard_ok": false,
-  "deployment_hash": "6cb2a908",
-  "response_time": 1498.27,
+  "deployment_hash": "352ea480",
+  "response_time": 1603.42,
   "errors": [
     "Missing tabs: ['\ud83d\udcca Live Dashboard', '\ud83e\udde0 Advanced Analytics', '\ud83e\udd16 Model Builder', '\u2699\ufe0f Trading Engine', '\ud83d\udce1 Telegram Signals', '\ud83d\udcdd Dev Blog', '\ud83d\udc8e Solana Wallet', '\ud83d\uddc4\ufe0f Coin Data', '\ud83d\uddc3\ufe0f Database', '\ud83d\udd14 Incoming Coins']",
     "Enhanced security dashboard import failed: No module named 'streamlit'",
