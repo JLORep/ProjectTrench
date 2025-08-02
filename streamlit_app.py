@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# DEPLOYMENT_TIMESTAMP: 2025-08-02 14:35:17 - MAJOR: Clickable coin cards with full-screen detailed view
+# DEPLOYMENT_TIMESTAMP: 2025-08-02 14:36:00 - MAJOR: Clickable coin cards with full-screen detailed view
 """
 TrenchCoat Pro - Complete Version with All Functionality
 Updated: 2025-08-02 15:57:00 - Infrastructure consolidation and deployment validation integrated
 """
-import streamlit as st
+try:
+    import streamlit as st
+except ImportError as e:
+    print(f"CRITICAL: Failed to import streamlit: {e}")
+    raise
 import pandas as pd
 import numpy as np
 import sqlite3
@@ -136,6 +140,10 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+# Debug deployment
+st.write("🚀 TrenchCoat Pro Loading...")
+st.write(f"Deployment: 2025-08-02 14:36:00")
 
 # Function to show detailed coin view
 def show_detailed_coin_view(coin):
