@@ -56,7 +56,7 @@ with open(log_file, 'a') as f:
 try:
     # Run deployment with timeout
     result = subprocess.run([
-        sys.executable, "enhanced_auto_deploy.py"
+        sys.executable, "auto_deployment_system.py"
     ], timeout=300, capture_output=True, text=True)
     
     # Log result

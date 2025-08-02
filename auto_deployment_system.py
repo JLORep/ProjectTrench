@@ -163,6 +163,79 @@ class AutoDeploymentSystem:
             print(f"   [ERROR] Deployment error: {e}")
             return False
     
+    def run_enhanced_validation(self) -> bool:
+        """Run enhanced post-deployment validation"""
+        try:
+            from enhanced_deployment_validator import EnhancedDeploymentValidator
+            
+            print("   [VALIDATE] Initializing enhanced deployment validator...")
+            validator = EnhancedDeploymentValidator()
+            
+            # Run comprehensive validation
+            print("   [VALIDATE] Checking GitHub deployment...")
+            github_ok, github_msg = validator.check_github_deployment()
+            print(f"      {github_msg}")
+            
+            print("   [VALIDATE] Checking Streamlit app health...")
+            streamlit_ok, streamlit_msg = validator.check_streamlit_health()
+            print(f"      {streamlit_msg}")
+            
+            print("   [VALIDATE] Validating dashboard tabs...")
+            tabs_ok, tabs_msg = validator.check_dashboard_tabs()
+            print(f"      {tabs_msg}")
+            
+            print("   [VALIDATE] Checking database connectivity...")
+            db_ok, db_msg = validator.check_database_connection()
+            print(f"      {db_msg}")
+            
+            print("   [VALIDATE] Testing module imports...")
+            modules_ok, modules_msg = validator.check_critical_modules()
+            print(f"      {modules_msg}")
+            
+            # Generate validation report
+            validator.generate_validation_report()
+            
+            # Check overall success
+            validation_passed = all([github_ok, streamlit_ok, tabs_ok, db_ok, modules_ok])
+            
+            if validation_passed:
+                print("   [OK] All validation checks passed!")
+                
+                # Send success notification to Discord
+                try:
+                    validator.send_discord_notification(
+                        "✅ **Deployment Validation Successful**\n"
+                        f"🔗 **App**: {validator.streamlit_url}\n"
+                        f"⏱️ **Response Time**: {validator.validation_results.get('response_time', 'N/A')}ms\n"
+                        f"🗂️ **Tabs**: All {validator.validation_results.get('tab_count', 'N/A')} tabs functional\n"
+                        f"💾 **Database**: {validator.validation_results.get('coin_count', 'N/A')} coins accessible"
+                    )
+                except:
+                    pass  # Don't fail validation if Discord notification fails
+                    
+                return True
+            else:
+                print("   [FAIL] Some validation checks failed!")
+                
+                # Send failure notification
+                errors = validator.validation_results.get('errors', [])
+                error_summary = '\n'.join(f"• {error}" for error in errors[:3])  # First 3 errors
+                
+                try:
+                    validator.send_discord_notification(
+                        "❌ **Deployment Validation Failed**\n"
+                        f"🔗 **App**: {validator.streamlit_url}\n"
+                        f"⚠️ **Issues**:\n{error_summary}"
+                    )
+                except:
+                    pass
+                
+                return False
+                
+        except Exception as e:
+            print(f"   [ERROR] Validation failed with exception: {e}")
+            return False
+    
     def notify_deployment_status(self, success: bool, changes: Dict[str, List[str]]):
         """Send deployment notification"""
         
@@ -240,9 +313,16 @@ class AutoDeploymentSystem:
         print("\n3. Deploying to Streamlit Cloud...")
         deployment_success = self.deploy_to_streamlit_cloud()
         
-        # Step 5: Notify
-        print("\n4. Sending notifications...")
-        self.notify_deployment_status(deployment_success, changes)
+        # Step 5: Post-deployment validation
+        validation_success = True
+        if deployment_success:
+            print("\n4. Running post-deployment validation...")
+            validation_success = self.run_enhanced_validation()
+        
+        # Step 6: Notify
+        print("\n5. Sending notifications...")
+        final_success = deployment_success and validation_success
+        self.notify_deployment_status(final_success, changes)
         
         return deployment_success
 
