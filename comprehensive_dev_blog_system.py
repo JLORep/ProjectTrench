@@ -530,6 +530,40 @@ class ComprehensiveDevBlogSystem:
             st.error(f"Error fetching scheduled posts: {e}")
             return []
     
+    def get_draft_posts(self):
+        """Get all draft posts from database"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            
+            # Get draft posts (posts with status 'draft' or version > 1)
+            cursor.execute('''
+                SELECT id, title, content, category, author, version, created_at
+                FROM comprehensive_posts
+                WHERE status = 'draft' OR version > 1
+                ORDER BY updated_at DESC
+                LIMIT 20
+            ''')
+            
+            drafts = []
+            for row in cursor.fetchall():
+                drafts.append({
+                    'id': row[0],
+                    'title': row[1],
+                    'content': row[2],
+                    'category': row[3],
+                    'author': row[4],
+                    'version': row[5],
+                    'created_at': row[6]
+                })
+            
+            conn.close()
+            return drafts
+            
+        except Exception as e:
+            st.error(f"Error fetching draft posts: {e}")
+            return []
+    
     def render_scheduling(self):
         """Post scheduling interface"""
         
