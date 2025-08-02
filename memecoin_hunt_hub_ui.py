@@ -311,10 +311,11 @@ def render_live_scanner():
 def render_token_card(token: Dict):
     """Render an individual token card"""
     
-    score_class = "score-high" if token["score"] >= 80 else "score-medium" if token["score"] >= 60 else "score-low"
-    risk_class = f"risk-{token['risk']}"
-    
-    card_html = f"""
+    try:
+        score_class = "score-high" if token["score"] >= 80 else "score-medium" if token["score"] >= 60 else "score-low"
+        risk_class = f"risk-{token['risk']}"
+        
+        card_html = f"""
     <div class="token-card">
         <div class="score-badge {score_class}">{token["score"]}/100</div>
         
@@ -366,8 +367,10 @@ def render_token_card(token: Dict):
         </div>
     </div>
     """
-    
-    st.markdown(card_html, unsafe_allow_html=True)
+        
+        st.markdown(card_html, unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"Error rendering token card: {str(e)}")
 
 def render_launch_heatmap():
     """Render launch activity heatmap"""
