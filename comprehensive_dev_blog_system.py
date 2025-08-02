@@ -564,6 +564,116 @@ class ComprehensiveDevBlogSystem:
             st.error(f"Error fetching draft posts: {e}")
             return []
     
+    def get_blog_metrics(self, time_range="Last 30 days"):
+        """Get blog metrics for analytics dashboard"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            
+            # Calculate date filter
+            if time_range == "Last 7 days":
+                date_filter = "datetime('now', '-7 days')"
+            elif time_range == "Last 30 days":
+                date_filter = "datetime('now', '-30 days')"
+            elif time_range == "Last 3 months":
+                date_filter = "datetime('now', '-3 months')"
+            else:
+                date_filter = "datetime('1970-01-01')"  # All time
+            
+            # Get total posts
+            cursor.execute(f'''
+                SELECT COUNT(*) FROM comprehensive_posts
+                WHERE created_at > {date_filter}
+            ''')
+            total_posts = cursor.fetchone()[0]
+            
+            # Get posts growth (compare to previous period)
+            cursor.execute(f'''
+                SELECT COUNT(*) FROM comprehensive_posts
+                WHERE created_at > datetime({date_filter}, '-' || 
+                    CASE 
+                        WHEN '{time_range}' = 'Last 7 days' THEN '7 days'
+                        WHEN '{time_range}' = 'Last 30 days' THEN '30 days'
+                        WHEN '{time_range}' = 'Last 3 months' THEN '3 months'
+                        ELSE '1 year'
+                    END)
+                AND created_at <= {date_filter}
+            ''')
+            previous_posts = cursor.fetchone()[0]
+            posts_growth = total_posts - previous_posts
+            
+            # Get webhook success rate
+            cursor.execute(f'''
+                SELECT 
+                    COUNT(CASE WHEN webhook_sent = 1 THEN 1 END) as sent,
+                    COUNT(*) as total
+                FROM comprehensive_posts
+                WHERE created_at > {date_filter}
+            ''')
+            result = cursor.fetchone()
+            webhook_rate = (result[0] / result[1] * 100) if result[1] > 0 else 0
+            
+            # Get avg views (simulated for now)
+            avg_views = total_posts * 42  # Placeholder
+            
+            # Get engagement rate (simulated)
+            engagement_rate = 12.5  # Placeholder
+            
+            # Get posts by category
+            cursor.execute(f'''
+                SELECT category, COUNT(*) as count
+                FROM comprehensive_posts
+                WHERE created_at > {date_filter}
+                GROUP BY category
+                ORDER BY count DESC
+            ''')
+            posts_by_category = cursor.fetchall()
+            
+            # Get recent posts
+            cursor.execute(f'''
+                SELECT title, created_at, views, webhook_sent
+                FROM comprehensive_posts
+                WHERE created_at > {date_filter}
+                ORDER BY created_at DESC
+                LIMIT 10
+            ''')
+            recent_posts = cursor.fetchall()
+            
+            conn.close()
+            
+            return {
+                'total_posts': total_posts,
+                'posts_growth': posts_growth,
+                'webhook_rate': f"{webhook_rate:.1f}%",
+                'avg_views': avg_views,
+                'engagement_rate': engagement_rate / 100,  # Convert to decimal
+                'posts_by_category': posts_by_category,
+                'recent_posts': recent_posts,
+                # Additional metrics needed by render_analytics_dashboard
+                'total_reach': total_posts * 150,  # Placeholder
+                'reach_growth': 25,  # Placeholder
+                'engagement_growth': 15,  # Placeholder
+                'active_channels': 3,  # Placeholder
+                'channel_growth': "+1"  # Placeholder
+            }
+            
+        except Exception as e:
+            st.error(f"Error fetching blog metrics: {e}")
+            return {
+                'total_posts': 0,
+                'posts_growth': 0,
+                'webhook_rate': "0%",
+                'avg_views': 0,
+                'engagement_rate': 0.0,
+                'posts_by_category': [],
+                'recent_posts': [],
+                'total_reach': 0,
+                'reach_growth': 0,
+                'engagement_growth': 0,
+                'active_channels': 0,
+                'channel_growth': "0"
+            }
+    
     def render_scheduling(self):
         """Post scheduling interface"""
         
