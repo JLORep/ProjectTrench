@@ -53,7 +53,7 @@ class LiveEnrichmentSystem:
             total_coins = cursor.fetchone()[0]
             
             # Enriched coins (have price data)
-            cursor.execute("SELECT COUNT(*) FROM coins WHERE discovery_price > 0 OR current_price > 0")
+            cursor.execute("SELECT COUNT(*) FROM coins WHERE discovery_price > 0 OR axiom_price > 0")
             enriched_coins = cursor.fetchone()[0]
             
             # Failed coins (marked as failed)
