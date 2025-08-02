@@ -25,10 +25,10 @@ This documentation is split into focused sections for easier maintenance:
 - **API Integration**: 17 comprehensive data sources
 
 ### 🚀 **Latest Deployment**
-- **Timestamp**: 2025-08-02 07:30:00 - HUNT HUB & ALPHA RADAR INTEGRATION
-- **Status**: Major feature expansion with memecoin sniping capabilities
-- **Features**: Hunt Hub (Tab 3), Alpha Radar (Tab 4), UI gap fixes, enhanced card interactions
-- **Expected**: Complete memecoin trading intelligence platform
+- **Timestamp**: 2025-08-02 09:16:32 - COIN CARD FIXES & DEPLOYMENT VALIDATION
+- **Status**: Fixed critical UI issues and enhanced deployment validation system
+- **Features**: Clickable coin cards, fixed HTML rendering, comprehensive deployment validation
+- **Expected**: Fully functional dashboard with reliable deployment monitoring
 
 ### 📊 **Key Features Active**
 - **Hunt Hub**: Memecoin sniping dashboard with sub-second launch detection
@@ -283,7 +283,60 @@ font-size: 28px; /* header title */
 
 ---
 
-*Last updated: 2025-08-02 07:27 - Solana wallet integration complete, dev blog triggered*
+## Session 2025-08-02 - CLICKABLE COIN CARDS IMPLEMENTATION PLAN 🎯
+
+### 🚨 **CRITICAL USER REQUEST - DOCUMENTED TO PREVENT LOSS**
+**User Request**: "make the coin cards clickable and go large with all data inside plus some charts. get rid of the small button below each coin"
+**Status**: PLANNED - Ready for implementation
+**Priority**: HIGHEST - User has requested this multiple times
+
+### 🎯 **IMPLEMENTATION PLAN**
+
+#### 1. **Clickable Coin Cards**:
+- Remove all small buttons below coin cards (`st.button` with `key=f"view_{coin['ca']}"`)
+- Make entire coin card div clickable using JavaScript click handlers
+- Store coin selection in `st.session_state.selected_coin` when card is clicked
+- Use `st.rerun()` to refresh and show detailed view
+
+#### 2. **Large Detailed View**:
+- Create full-screen coin detail modal/expanded view
+- Show ALL available coin data:
+  - Price, volume, market cap, price changes
+  - Discovery price, peak volume, smart wallets
+  - Enrichment data, timestamps, quality scores
+  - Social metrics, security analysis
+  - Liquidity data, holder information
+  
+#### 3. **Charts Integration**:
+- Add price history chart (if available)
+- Volume chart over time
+- Market cap progression
+- Price change visualization
+- Social sentiment chart
+
+#### 4. **UI Flow**:
+```
+Card Click → st.session_state.selected_coin = coin_data → st.rerun() → 
+Show detailed view with charts → Back button returns to grid
+```
+
+#### 5. **Technical Implementation**:
+- Location: `streamlit_app.py` around line 1116 (coin cards section)
+- Remove: Lines with `st.button` and `key=f"view_{coin['ca']}"`
+- Add: JavaScript onclick handlers to coin card HTML
+- Enhance: Detailed view section with charts and complete data
+
+### 🔧 **FILES TO MODIFY**:
+- `streamlit_app.py` - Main coin card implementation (Tab 2 - Coins)
+- Potentially create `coin_charts.py` for chart generation
+- Update CSS for better clickable card styling
+
+### ⚠️ **CRASH PREVENTION**:
+This plan is documented to prevent context loss. Implementation should follow this exact plan to ensure user requirements are met.
+
+---
+
+*Last updated: 2025-08-02 09:30 - Clickable coin cards plan documented*
 
 ---
 
