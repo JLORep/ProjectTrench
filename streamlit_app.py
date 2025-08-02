@@ -186,38 +186,125 @@ div[data-testid="metric-container"]:hover {
     border-color: rgba(16, 185, 129, 0.3);
 }
 
-/* Enhanced coin cards */
+/* Enhanced coin cards - Premium Design */
 .coin-card {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 20px;
-    margin: 10px 0;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #0f1419 100%);
+    border: 2px solid rgba(16, 185, 129, 0.2);
+    border-radius: 24px;
+    padding: 32px;
+    margin: 16px 0;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(16, 185, 129, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.coin-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.6), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .coin-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-    border-color: rgba(16, 185, 129, 0.3);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 8px 30px rgba(16, 185, 129, 0.3);
+    border-color: rgba(16, 185, 129, 0.6);
+}
+
+.coin-card:hover::before {
+    opacity: 1;
+}
+
+/* Coin card typography and elements */
+.coin-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    margin-right: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.coin-info {
+    flex: 1;
+}
+
+.coin-ticker {
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.coin-address {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 8px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.coin-stats {
+    text-align: right;
 }
 
 .coin-price {
     color: #10b981;
-    font-size: 24px;
+    font-size: 32px;
     font-weight: 700;
-    text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+    text-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    margin: 0 0 8px 0;
+}
+
+.coin-mcap {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
 }
 
 .coin-change-positive {
     color: #10b981;
     font-weight: 600;
+    font-size: 14px;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .coin-change-negative {
     color: #ef4444;
     font-weight: 600;
+    font-size: 14px;
+    background: rgba(239, 68, 68, 0.1);
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.coin-metadata {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    margin-top: 8px;
 }
 
 /* Status indicators */
@@ -599,46 +686,168 @@ with tab2:
                 na_position='last'
             )
         
-        # Display coins in enhanced cards
+        # Display coins in enhanced premium cards
         st.write(f"Showing {min(len(filtered_data), show_count)} coins")
         
-        for idx, coin in filtered_data.head(show_count).iterrows():
-            with st.container():
-                # Prepare display values
-                ticker = coin['ticker'] or 'Unknown'
-                ca_display = f"{coin['ca'][:8]}...{coin['ca'][-8:]}" if len(str(coin['ca'])) > 16 else str(coin['ca'])
-                price = coin['current_price_usd'] if coin['current_price_usd'] else 0
-                
-                # Determine market cap display
-                if coin['market_cap_usd']:
-                    mcap = f"{coin['market_cap_usd']:,.0f}"
-                elif coin['discovery_mc']:
-                    mcap = f"{coin['discovery_mc']:,.0f}"  
-                else:
-                    mcap = "0"
-                
-                # Smart wallets display
-                smart_wallets_html = f'<div style="font-size: 12px; color: rgba(255,255,255,0.5);">Smart Wallets: {coin["smart_wallets"]}</div>' if coin['smart_wallets'] else ''
-                
-                st.markdown(f"""
-                <div class="coin-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <h3 style="margin: 0; color: #10b981;">{ticker}</h3>
-                            <small style="color: rgba(255,255,255,0.6);">{ca_display}</small>
-                        </div>
-                        <div style="text-align: right;">
-                            <div class="coin-price">${price:.8f}</div>
-                            <div style="font-size: 14px; color: rgba(255,255,255,0.7);">
-                                MCap: ${mcap}
+        # Use columns for better layout - 2 cards per row
+        for i in range(0, len(filtered_data.head(show_count)), 2):
+            col1, col2 = st.columns(2)
+            
+            for col_idx, col in enumerate([col1, col2]):
+                if i + col_idx < len(filtered_data.head(show_count)):
+                    coin = filtered_data.iloc[i + col_idx]
+                    
+                    with col:
+                        # Prepare display values
+                        ticker = coin['ticker'] or 'Unknown'
+                        ca_display = f"{coin['ca'][:8]}...{coin['ca'][-8:]}" if len(str(coin['ca'])) > 16 else str(coin['ca'])
+                        price = coin['current_price_usd'] if coin['current_price_usd'] else 0
+                        
+                        # Determine market cap display
+                        if coin['market_cap_usd']:
+                            mcap = f"{coin['market_cap_usd']:,.0f}"
+                        elif coin['discovery_mc']:
+                            mcap = f"{coin['discovery_mc']:,.0f}"  
+                        else:
+                            mcap = "0"
+                        
+                        # Logo placeholder - first 2 letters of ticker
+                        logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
+                        
+                        # Price change styling
+                        price_change_html = ""
+                        if coin['price_change_24h'] is not None:
+                            change = coin['price_change_24h']
+                            change_class = "coin-change-positive" if change >= 0 else "coin-change-negative"
+                            change_symbol = "+" if change >= 0 else ""
+                            price_change_html = f'<div class="{change_class}">{change_symbol}{change:.2f}%</div>'
+                        
+                        # Smart wallets and additional metadata
+                        metadata_items = []
+                        if coin['smart_wallets']:
+                            metadata_items.append(f"Smart Wallets: {coin['smart_wallets']}")
+                        if coin['current_volume_24h']:
+                            metadata_items.append(f"24h Vol: ${coin['current_volume_24h']:,.0f}")
+                        if coin['liquidity']:
+                            metadata_items.append(f"Liquidity: ${coin['liquidity']:,.0f}")
+                        
+                        metadata_html = " • ".join(metadata_items) if metadata_items else "No additional data"
+                        
+                        # Create clickable card with unique key
+                        card_key = f"coin_card_{coin['ca']}"
+                        
+                        if st.button("📊", key=f"fullscreen_{coin['ca']}", help="View full coin details"):
+                            # Store selected coin in session state for fullscreen view
+                            if 'selected_coin' not in st.session_state:
+                                st.session_state.selected_coin = None
+                            st.session_state.selected_coin = coin.to_dict()
+                            st.rerun()
+                        
+                        st.markdown(f"""
+                        <div class="coin-card" onclick="document.getElementById('fullscreen_{coin['ca']}').click();" style="cursor: pointer;">
+                            <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                                <div class="coin-logo">{logo_text}</div>
+                                <div class="coin-info">
+                                    <h2 class="coin-ticker">{ticker}</h2>
+                                    <div class="coin-address">{ca_display}</div>
+                                </div>
+                                <div class="coin-stats">
+                                    <div class="coin-price">${price:.8f}</div>
+                                    {price_change_html}
+                                </div>
                             </div>
-                            {smart_wallets_html}
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div class="coin-mcap">Market Cap: ${mcap}</div>
+                                <div style="text-align: right;">
+                                    <div class="coin-metadata">{metadata_html}</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                        """, unsafe_allow_html=True)
     else:
         st.info("Loading coin data...")
+    
+    # Fullscreen coin details modal
+    if 'selected_coin' in st.session_state and st.session_state.selected_coin:
+        st.markdown("---")
+        st.markdown("### 🔍 Detailed Coin Analysis")
+        
+        coin = st.session_state.selected_coin
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("❌ Close Details", type="secondary"):
+                st.session_state.selected_coin = None
+                st.rerun()
+        
+        # Detailed coin information
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            # Coin overview
+            ticker = coin['ticker'] or 'Unknown'
+            logo_text = ticker[:2].upper() if len(ticker) >= 2 else ticker.upper()
+            
+            st.markdown(f"""
+            <div style="text-align: center; padding: 20px;">
+                <div class="coin-logo" style="width: 120px; height: 120px; font-size: 36px; margin: 0 auto 20px auto;">{logo_text}</div>
+                <h1 style="color: #10b981; margin: 0;">{ticker}</h1>
+                <p style="color: rgba(255,255,255,0.6); font-family: monospace;">{coin['ca']}</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Key metrics
+            st.subheader("📊 Key Metrics")
+            if coin['current_price_usd']:
+                st.metric("Current Price", f"${coin['current_price_usd']:.8f}")
+            if coin['market_cap_usd']:
+                st.metric("Market Cap", f"${coin['market_cap_usd']:,.0f}")
+            elif coin['discovery_mc']:
+                st.metric("Discovery MC", f"${coin['discovery_mc']:,.0f}")
+            if coin['price_change_24h'] is not None:
+                st.metric("24h Change", f"{coin['price_change_24h']:+.2f}%")
+        
+        with col2:
+            # Additional data and charts
+            st.subheader("📈 Trading Data")
+            
+            # Trading metrics
+            trading_col1, trading_col2 = st.columns(2)
+            with trading_col1:
+                if coin['current_volume_24h']:
+                    st.metric("24h Volume", f"${coin['current_volume_24h']:,.0f}")
+                if coin['smart_wallets']:
+                    st.metric("Smart Wallets", f"{coin['smart_wallets']}")
+            
+            with trading_col2:
+                if coin['liquidity']:
+                    st.metric("Liquidity", f"${coin['liquidity']:,.0f}")
+                if coin['peak_volume']:
+                    st.metric("Peak Volume", f"${coin['peak_volume']:,.0f}")
+            
+            # Additional enrichment data
+            st.subheader("🔍 Enrichment Data")
+            
+            enrichment_data = {}
+            if coin['data_quality_score']:
+                enrichment_data['Data Quality Score'] = f"{coin['data_quality_score']:.2f}"
+            if coin['enrichment_timestamp']:
+                enrichment_data['Last Updated'] = coin['enrichment_timestamp']
+            if coin['discovery_price']:
+                enrichment_data['Discovery Price'] = f"${coin['discovery_price']:.8f}"
+            
+            if enrichment_data:
+                st.json(enrichment_data)
+            else:
+                st.info("Limited enrichment data available")
+            
+            # Placeholder for charts and API data
+            st.subheader("📊 Market Analysis")
+            st.info("🚧 Advanced charts and API integration coming soon!")
+            st.info("📈 Price history charts")
+            st.info("📊 Volume analysis")
+            st.info("🔍 Smart wallet activity")
+            st.info("💹 Trading patterns")
 
 # ===== TAB 3: ANALYTICS =====
 with tab3:
