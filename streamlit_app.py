@@ -671,18 +671,13 @@ div[data-testid="column"] {
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
 }
 
-/* Hide the hidden trigger buttons */
-.stButton button:has-text("Hidden Trigger"),
-button[data-testid="baseButton-primary"]:has-text("Hidden Trigger") {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    height: 0 !important;
-    width: 0 !important;
+/* Style coin card buttons to look like cards */
+.coin-card-button {
+    background: transparent !important;
+    border: none !important;
     padding: 0 !important;
-    margin: 0 !important;
-    position: absolute !important;
-    left: -9999px !important;
+    width: 100% !important;
+    text-align: left !important;
 }
 
 /* Alternative approach to hide buttons */
@@ -1140,10 +1135,23 @@ with tab2:
                             # Create simplified clickable card
                             coin_id = coin.get('id', f'idx_{i + col_idx}')
                             
-                            # Enhanced vibrant card display - CLICKABLE
-                            card_html = f"""<div onclick="document.getElementById('coin-btn-{coin['ca']}').click()" style="background: linear-gradient(135deg, #0a0f1c 0%, #1a2332 50%, #0a0f1c 100%); border: 2px solid rgba(16, 185, 129, 0.5); border-radius: 16px; padding: 20px; margin: 12px 0; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255,255,255,0.1); transition: all 0.3s ease; position: relative; overflow: hidden; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 32px rgba(16, 185, 129, 0.3)'; this.style.borderColor='rgba(16, 185, 129, 0.8)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(16, 185, 129, 0.2)'; this.style.borderColor='rgba(16, 185, 129, 0.5)';">
-                                <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent); animation: shimmer 3s infinite; pointer-events: none;"></div>
-                                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; position: relative; z-index: 2; pointer-events: none;">
+                            # Create clickable card container with button
+                            button_key = f"coin_{coin['ca']}"
+                            
+                            # Full card button that looks like a card
+                            if st.button(
+                                f"",  # Empty label
+                                key=button_key,
+                                use_container_width=True,
+                                help=f"View detailed analysis for {ticker}"
+                            ):
+                                st.session_state.selected_coin = coin.to_dict()
+                                st.rerun()
+                            
+                            # Enhanced vibrant card display overlay
+                            card_html = f"""<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; background: linear-gradient(135deg, #0a0f1c 0%, #1a2332 50%, #0a0f1c 100%); border: 2px solid rgba(16, 185, 129, 0.5); border-radius: 16px; padding: 20px; margin: 0; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255,255,255,0.1); transition: all 0.3s ease; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+                                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; position: relative; z-index: 2;">
                                     <div style="flex-shrink: 0;">{logo_html}</div>
                                     <div style="flex: 1;">
                                         <h2 style="color: #10b981; font-size: 20px; font-weight: 700; margin: 0; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);">{ticker}</h2>
@@ -1154,7 +1162,7 @@ with tab2:
                                         {price_change_html}
                                     </div>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; pointer-events: none;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                                     <div style="color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600;">Market Cap: ${mcap}</div>
                                     <div style="color: rgba(255,255,255,0.7); font-size: 12px;">{metadata_html}</div>
                                 </div>
@@ -1164,34 +1172,32 @@ with tab2:
                                 0% {{ left: -100%; }}
                                 100% {{ left: 100%; }}
                             }}
+                            /* Style the button to be invisible but cover the whole card area */
+                            div[data-testid="column"]:has(button[aria-label="{button_key}"]) {{
+                                position: relative;
+                            }}
+                            button[aria-label="{button_key}"] {{
+                                position: relative;
+                                background: transparent !important;
+                                border: none !important;
+                                padding: 0 !important;
+                                margin: 12px 0 !important;
+                                height: auto !important;
+                                min-height: 160px !important;
+                                cursor: pointer !important;
+                            }}
+                            button[aria-label="{button_key}"]:hover {{
+                                background: transparent !important;
+                            }}
+                            button[aria-label="{button_key}"]:hover + div > div {{
+                                transform: translateY(-4px);
+                                box-shadow: 0 12px 32px rgba(16, 185, 129, 0.3);
+                                border-color: rgba(16, 185, 129, 0.8);
+                            }}
                             </style>"""
                             
-                            # Display the enhanced card
+                            # Display the card overlay
                             st.markdown(card_html, unsafe_allow_html=True)
-                            
-                            # Hidden button for click handling
-                            if st.button(
-                                "Hidden Trigger",
-                                key=f"coin-btn-{coin['ca']}", 
-                                use_container_width=True,
-                                help=f"View detailed analysis for {ticker}",
-                                disabled=False,
-                                type="secondary"
-                            ):
-                                st.session_state.selected_coin = coin.to_dict()
-                                st.rerun()
-                            
-                            # Hide the button with CSS
-                            st.markdown(f"""
-                            <style>
-                            button[key="coin-btn-{coin['ca']}"] {{
-                                display: none !important;
-                            }}
-                            div[data-testid="stButton"] button[key="coin-btn-{coin['ca']}"] {{
-                                display: none !important;
-                            }}
-                            </style>
-                            """, unsafe_allow_html=True)
         else:
             st.info("Loading coin data...")
         
@@ -1539,10 +1545,16 @@ with tab2:
 # ===== TAB 3: HUNT HUB - MEMECOIN SNIPING =====
 with tab3:
     # Try to import Hunt Hub UI
+    hunt_hub_loaded = False
     try:
         from memecoin_hunt_hub_ui import render_hunt_hub_dashboard
         render_hunt_hub_dashboard()
+        hunt_hub_loaded = True
     except ImportError:
+        pass
+    
+    # Only show fallback if Hunt Hub didn't load
+    if not hunt_hub_loaded:
         # Fallback UI for Hunt Hub
         st.header("🎯 Hunt Hub - Memecoin Sniper Command Center")
         
