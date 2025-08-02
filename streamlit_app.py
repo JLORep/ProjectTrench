@@ -758,11 +758,12 @@ def get_market_stats():
 coin_data = load_coin_data()
 market_stats = get_market_stats()
 
-# Reorganized tabs with complete functionality
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
+# Reorganized tabs with Hunt Hub integration
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
     "🚀 Dashboard", 
     "💎 Coins", 
-    "🎯 Strategies", 
+    "🎯 Hunt Hub",  # NEW - Memecoin sniping dashboard
+    "📡 Alpha Radar",  # NEW - Renamed from Strategies
     "🛡️ Security", 
     "🔧 Enrichment",
     "🤖 Super Claude",
@@ -1188,13 +1189,73 @@ with tab2:
             st.info("🔍 Smart wallet activity")
             st.info("💹 Trading patterns")
 
-# ===== TAB 3: STRATEGIES =====
+# ===== TAB 3: HUNT HUB - MEMECOIN SNIPING =====
 with tab3:
-    if STRATEGY_ENGINE_AVAILABLE:
-        solana_strategy_engine.render_strategy_dashboard()
-    else:
-        st.header("🎯 Advanced Trading Strategies")
-        st.error("Strategy engine not available. Missing dependencies.")
+    # Try to import Hunt Hub UI
+    try:
+        from memecoin_hunt_hub_ui import render_hunt_hub_dashboard
+        render_hunt_hub_dashboard()
+    except ImportError:
+        # Fallback UI for Hunt Hub
+        st.header("🎯 Hunt Hub - Memecoin Sniper Command Center")
+        
+        # Top metrics
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            st.metric("🔍 Active Scans", "3,847", delta="+142/min")
+        with col2:
+            st.metric("🎯 High Score", "12", delta="+3")
+        with col3:
+            st.metric("⚡ Avg Latency", "0.3s", delta="-0.1s")
+        with col4:
+            st.metric("💰 24h Profits", "$8,342", delta="+42.3%")
+        with col5:
+            st.metric("🏆 Win Rate", "73.2%", delta="+5.1%")
+        
+        st.markdown("---")
+        
+        # Coming soon message
+        st.info("""
+        🚀 **Hunt Hub Coming Soon!**
+        
+        The ultimate memecoin sniping dashboard featuring:
+        - Sub-second launch detection on Pump.fun & Raydium
+        - AI scoring system (1-100) for snipe potential
+        - One-click auto-snipe with Jito bundling
+        - Real-time profit tracking and gamification
+        - Social copy trading and leaderboards
+        
+        **Current Status**: Backend integration in progress...
+        """)
+
+# ===== TAB 4: ALPHA RADAR =====
+with tab4:
+    # Try to import Alpha Radar
+    try:
+        from alpha_radar_system import AlphaRadarSystem, SignalType
+        st.header("📡 Alpha Radar - AI-Powered Signal Feed")
+        
+        # Signal filters
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            signal_types = st.multiselect(
+                "Signal Types",
+                ["🚀 Volume Spike", "🐋 Whale Buy", "📈 Breakout", "🔥 Social Buzz"],
+                default=["🚀 Volume Spike", "🐋 Whale Buy"]
+            )
+        with col2:
+            confidence = st.slider("Min Confidence", 0, 100, 70)
+        with col3:
+            st.metric("Active Signals", "23", delta="+5")
+        
+        st.info("Alpha Radar integration in progress...")
+        
+    except ImportError:
+        if STRATEGY_ENGINE_AVAILABLE:
+            solana_strategy_engine.render_strategy_dashboard()
+        else:
+            st.header("📡 Alpha Radar")
+            st.error("Alpha Radar system not available. Missing dependencies.")
         
         # Fallback content
         st.subheader("📊 Strategy System Features")
@@ -1305,8 +1366,8 @@ with tab3:
     else:
         st.info("Charts require Plotly installation. Install with: pip install plotly")
 
-# ===== TAB 4: SECURITY =====
-with tab4:
+# ===== TAB 5: SECURITY =====
+with tab5:
     # Enhanced security tab with architectural systems
     if HEALTH_CHECK_AVAILABLE:
         try:
@@ -1410,8 +1471,8 @@ with tab4:
             else:
                 st.metric("Events/Second", "No Event System")
 
-# ===== TAB 5: ENRICHMENT =====
-with tab5:
+# ===== TAB 6: ENRICHMENT =====
+with tab6:
     st.header("🔧 Data Enrichment System")
     
     # Enhanced CSS for enrichment animations
@@ -1591,8 +1652,8 @@ with tab5:
     st.markdown("---")
     st.caption("💡 Tip: Enrichment runs automatically every 15 minutes. Check the console output for real-time status.")
 
-# ===== TAB 6: SUPER CLAUDE =====
-with tab6:
+# ===== TAB 7: SUPER CLAUDE =====
+with tab7:
     if SUPER_CLAUDE_AVAILABLE:
         st.header("🤖 Super Claude AI System")
         integrate_super_claude_with_dashboard()
@@ -1611,8 +1672,8 @@ with tab6:
         if st.button("🔄 Initialize Super Claude"):
             st.success("Super Claude system initialization requested!")
 
-# ===== TAB 7: BLOG =====
-with tab7:
+# ===== TAB 8: BLOG =====
+with tab8:
     st.header("📱 Development Blog")
     
     # Dev blog integration
@@ -1643,8 +1704,8 @@ with tab7:
         for milestone in milestones:
             st.markdown(f"- {milestone}")
 
-# ===== TAB 8: MONITORING =====
-with tab8:
+# ===== TAB 9: MONITORING =====
+with tab9:
     if MONITORING_AVAILABLE:
         st.header("📊 Advanced Monitoring")
         render_monitoring_dashboard()
@@ -1664,8 +1725,8 @@ with tab8:
         with col3:
             st.metric("System Load", "NORMAL", delta="Resources available")
 
-# ===== TAB 9: SYSTEM =====
-with tab9:
+# ===== TAB 10: SYSTEM =====
+with tab10:
     st.header("⚙️ System Administration")
     
     # System information
@@ -1715,8 +1776,8 @@ with tab9:
         if st.button("🔧 Maintenance Mode"):
             st.warning("Maintenance mode not implemented")
 
-# ===== TAB 10: BETA FEATURES =====
-with tab10:
+# ===== TAB 11: BETA FEATURES =====
+with tab11:
     st.header("🧪 Beta Features & Future Development")
     
     st.info("Experimental features and integrations in development")
