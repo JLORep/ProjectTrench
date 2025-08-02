@@ -1220,7 +1220,31 @@ div[data-testid="column"] button[data-testid="baseButton-primary"] {
     font-weight: 700;
     color: #10b981;
 }
+</style>\n\n
+<style>
+/* SECURITY FIX: Prevent tab bleeding and content exposure */
+.stTabs [data-baseweb="tab-list"] {
+    isolation: isolate;
+}
+
+.stTabs [data-baseweb="tab-panel"] {
+    isolation: isolate;
+    overflow: hidden;
+}
+
+/* Ensure each tab's content is properly contained */
+.stTabs > div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] {
+    isolation: isolate;
+    contain: layout style;
+}
+
+/* Prevent CSS from one tab affecting others */
+.tab-content {
+    isolation: isolate;
+    contain: layout style paint;
+}
 </style>
+\n
 """, unsafe_allow_html=True)
 
 # Header space reserved for future logo - currently removed
@@ -2075,96 +2099,37 @@ with tab5:
             st.error(f"Health check system error: {e}")
             st.info("Health monitoring temporarily unavailable")
     
-    if SECURITY_AVAILABLE:
-        render_security_dashboard()
-    else:
-        st.header("🛡️ Security Dashboard")
+    try:
+        # Use the REAL paranoid security system
+        from paranoid_security_system import get_security_system
+        security_system = get_security_system()
+        security_system.render_security_dashboard()
+    except ImportError as e:
+        st.error(f"🚨 SECURITY SYSTEM UNAVAILABLE: {e}")
+        st.error("⚠️ **CRITICAL**: Security monitoring is offline - platform is vulnerable!")
         
-        # System architecture status
-        col1, col2, col3, col4 = st.columns(4)
+        # Emergency fallback
+        st.markdown("""
+        ### 🚨 SECURITY SYSTEM OFFLINE
         
-        with col1:
-            status = "✅ ACTIVE" if DATABASE_POOL_AVAILABLE else "❌ OFFLINE"
-            st.metric("Connection Pool", status)
-            
-        with col2:
-            status = "✅ ACTIVE" if ENHANCED_CACHE_AVAILABLE else "❌ OFFLINE"
-            st.metric("Enhanced Cache", status)
-            
-        with col3:
-            status = "✅ ACTIVE" if HEALTH_CHECK_AVAILABLE else "❌ OFFLINE"
-            st.metric("Health Monitor", status)
-            
-        with col4:
-            status = "✅ ACTIVE" if EVENT_SYSTEM_AVAILABLE else "❌ OFFLINE"
-            st.metric("Event System", status)
+        **IMMEDIATE ACTION REQUIRED:**
+        1. Security monitoring is currently unavailable
+        2. Platform may have undetected vulnerabilities
+        3. Manual security audit recommended
+        4. Consider taking platform offline until security is restored
         
-        st.markdown("---")
+        **Known Vulnerabilities:**
+        - Hardcoded credentials in source code
+        - Potential SQL injection vectors
+        - Unsafe HTML rendering
+        - Missing input validation
+        """)
+    except Exception as e:
+        st.error(f"🚨 SECURITY SYSTEM ERROR: {e}")
+        import traceback
+        st.text(traceback.format_exc())
         
-        # Basic security info
-        st.subheader("🔒 Security Status")
-        
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("System Status", "SECURE", delta="No threats detected")
-        with col2:
-            st.metric("API Security", "ENCRYPTED", delta="Military-grade")
-        with col3:
-            st.metric("Database", "PROTECTED", delta="Backup active")
-        
-        # Architecture improvements summary
-        if any([DATABASE_POOL_AVAILABLE, ENHANCED_CACHE_AVAILABLE, HEALTH_CHECK_AVAILABLE, EVENT_SYSTEM_AVAILABLE]):
-            st.markdown("---")
-            st.subheader("🏗️ Architecture Enhancements")
-            
-            improvements = []
-            if DATABASE_POOL_AVAILABLE:
-                improvements.append("✅ **Database Connection Pooling**: High-performance database access with connection reuse")
-            if ENHANCED_CACHE_AVAILABLE:
-                improvements.append("✅ **Enhanced Caching System**: Multi-level caching with intelligent invalidation")
-            if HEALTH_CHECK_AVAILABLE:
-                improvements.append("✅ **Health Check System**: Comprehensive system monitoring and diagnostics")
-            if EVENT_SYSTEM_AVAILABLE:
-                improvements.append("✅ **Event System**: Scalable event-driven architecture for real-time updates")
-            
-            for improvement in improvements:
-                st.markdown(improvement)
-        
-        # Performance metrics
-        st.markdown("---")
-        st.subheader("📊 Performance Metrics")
-        
-        perf_col1, perf_col2, perf_col3 = st.columns(3)
-        
-        with perf_col1:
-            if ENHANCED_CACHE_AVAILABLE:
-                try:
-                    cache_stats = get_cache_system().get_stats()
-                    st.metric("Cache Hit Rate", f"{cache_stats['hit_rate']:.1f}%")
-                except:
-                    st.metric("Cache Hit Rate", "N/A")
-            else:
-                st.metric("Cache Hit Rate", "Standard")
-        
-        with perf_col2:
-            if DATABASE_POOL_AVAILABLE:
-                try:
-                    pool_stats = get_database_pool().get_stats()
-                    st.metric("DB Pool Efficiency", f"{pool_stats['pool_efficiency']:.1f}%")
-                except:
-                    st.metric("DB Pool Efficiency", "N/A")
-            else:
-                st.metric("DB Pool Efficiency", "Single Connection")
-        
-        with perf_col3:
-            if EVENT_SYSTEM_AVAILABLE:
-                try:
-                    event_stats = get_event_bus().get_stats()
-                    st.metric("Events/Second", f"{event_stats['events_per_second']:.2f}")
-                except:
-                    st.metric("Events/Second", "N/A")
-            else:
-                st.metric("Events/Second", "No Event System")
+        st.warning("⚠️ Security system encountered an error. Platform security status unknown.")
 
 # ===== TAB 6: ENRICHMENT =====
 with tab6:
