@@ -79,7 +79,8 @@
       "Bash(then tail -5 complete_async_deploy.log)",
       "Bash(tasklist)",
       "Bash(true)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "Bash(chmod:*)"
     ],
     "deny": []
   }

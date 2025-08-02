@@ -162,11 +162,22 @@ def main():
     # Validate other Python files
     validator.validate_all_python_files()
     
-    # Print report
-    success = validator.print_report()
+    # Print Python validation report
+    python_success = validator.print_report()
+    
+    # Run HTML/CSS validation
+    print("\nRunning HTML/CSS validation...")
+    html_result = subprocess.run(
+        [sys.executable, 'validate_html_css.py'],
+        capture_output=True,
+        text=True
+    )
+    
+    print(html_result.stdout)
+    html_success = html_result.returncode == 0
     
     # Exit with appropriate code
-    sys.exit(0 if success else 1)
+    sys.exit(0 if (python_success and html_success) else 1)
 
 if __name__ == "__main__":
     main()

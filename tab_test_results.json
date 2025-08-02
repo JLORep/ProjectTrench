@@ -1,0 +1,167 @@
+{
+  "tabs": {
+    "tab1": {
+      "index": 1,
+      "name": "\ud83d\ude80 Dashboard",
+      "description": "Market intelligence overview",
+      "valid": true,
+      "implemented": true
+    },
+    "tab2": {
+      "index": 2,
+      "name": "\ud83d\udc8e Coins",
+      "description": "Coin database and analysis",
+      "valid": true,
+      "implemented": true
+    },
+    "tab3": {
+      "index": 3,
+      "name": "\ud83c\udfaf Hunt Hub",
+      "description": "Memecoin sniping dashboard",
+      "valid": true,
+      "implemented": true,
+      "features": {
+        "found": [
+          "Hunt Hub",
+          "memecoin",
+          "Active Scans"
+        ],
+        "missing": [],
+        "description": "Hunt Hub memecoin sniping"
+      }
+    },
+    "tab4": {
+      "index": 4,
+      "name": "\ud83d\udce1 Alpha Radar",
+      "description": "AI-powered signal feed",
+      "valid": true,
+      "implemented": true,
+      "features": {
+        "found": [
+          "Alpha Radar",
+          "signal",
+          "AI"
+        ],
+        "missing": [],
+        "description": "Alpha Radar signal system"
+      }
+    },
+    "tab5": {
+      "index": 5,
+      "name": "\ud83d\udee1\ufe0f Security",
+      "description": "Security and threat monitoring",
+      "valid": true,
+      "implemented": true,
+      "features": {
+        "found": [
+          "Security",
+          "System Status",
+          "SECURE"
+        ],
+        "missing": [],
+        "description": "Security monitoring"
+      }
+    },
+    "tab6": {
+      "index": 6,
+      "name": "\ud83d\udd27 Enrichment",
+      "description": "Data enrichment system",
+      "valid": true,
+      "implemented": true,
+      "features": {
+        "found": [
+          "Enrichment",
+          "API",
+          "console-output"
+        ],
+        "missing": [],
+        "description": "Enrichment system"
+      }
+    },
+    "tab7": {
+      "index": 7,
+      "name": "\ud83e\udd16 Super Claude",
+      "description": "AI assistant",
+      "valid": true,
+      "implemented": true
+    },
+    "tab8": {
+      "index": 8,
+      "name": "\ud83d\udcf1 Blog",
+      "description": "Development blog",
+      "valid": true,
+      "implemented": true
+    },
+    "tab9": {
+      "index": 9,
+      "name": "\ud83d\udcca Monitoring",
+      "description": "System monitoring",
+      "valid": true,
+      "implemented": true
+    },
+    "tab10": {
+      "index": 10,
+      "name": "\u2699\ufe0f System",
+      "description": "System configuration",
+      "valid": true,
+      "implemented": true
+    },
+    "tab11": {
+      "index": 11,
+      "name": "\ud83d\udce1 Live Signals",
+      "description": "Live signal monitoring",
+      "valid": true,
+      "implemented": true
+    },
+    "tab12": {
+      "index": 12,
+      "name": "\ud83e\uddee Runners",
+      "description": "Trading bot runners",
+      "valid": true,
+      "implemented": true
+    }
+  },
+  "html_css": {
+    "html_usages": 17,
+    "css_blocks": 2,
+    "html_locations": [
+      {
+        "line": 718,
+        "context": ".coin-change-positive {\n    color: #10b981;\n    font-weight: 600;\n}\n\n.coin-change-negative {\n    color: #ef4444;\n    font-weight: 600;\n}\n\n.coin-logo {\n    display: flex;\n    align-items: center;\n    j..."
+      },
+      {
+        "line": 937,
+        "context": "    if not coin_data.empty:\n        st.subheader(\"\ud83c\udfc6 Top Performers\")\n        \n        # Create tabs for different views\n        perf_tab1, perf_tab2, perf_tab3 = st.tabs([\"Market Cap\", \"Discovery MC\",..."
+      },
+      {
+        "line": 943,
+        "context": "        with perf_tab1:\n            top_coins = coin_data[coin_data['market_cap_usd'].notna()].head(10)\n            for idx, coin in top_coins.iterrows():\n                col1, col2, col3, col4 = st.c..."
+      },
+      {
+        "line": 995,
+        "context": "                    st.caption(f\"Smart Wallets: {coin['smart_wallets']}\")\n                \n                with col3:\n                    if coin['liquidity']:\n                        st.caption(f\"Liq..."
+      },
+      {
+        "line": 1006,
+        "context": "    with col1:\n        st.markdown(\"\"\"\n        <div class=\"success-panel\">\n            <h4>\ud83d\udfe2 System Status</h4>\n            <p>\u2022 100+ API providers integrated</p>\n            <p>\u2022 Real-time data enric..."
+      }
+    ],
+    "css_valid": false,
+    "found_classes": [
+      "coin-card",
+      "enrichment-container",
+      "coin-logo",
+      "coin-ticker",
+      "coin-price"
+    ],
+    "missing_classes": [],
+    "validator_output": null,
+    "validator_success": false
+  },
+  "errors": [
+    "CSS block 2 has mismatched braces",
+    "HTML/CSS validator failed"
+  ],
+  "warnings": [],
+  "summary": {}
+}

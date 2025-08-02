@@ -647,6 +647,73 @@ div[data-testid="column"] {
     padding-left: clamp(16px, 5vw, 32px);
     padding-right: clamp(16px, 5vw, 32px);
 }
+
+/* Coin card styles */
+.coin-card {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 12px 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+.coin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+    border-color: #10b981;
+}
+
+.coin-ticker {
+    font-size: 24px;
+    font-weight: 700;
+    color: #10b981;
+    margin: 0;
+}
+
+.coin-price {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.coin-address {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Courier New', monospace;
+}
+
+.coin-mcap {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.coin-metadata {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+}
+
+.coin-change-positive {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.coin-change-negative {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.coin-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 50%;
+    font-weight: 700;
+    color: #10b981;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -783,8 +850,8 @@ def get_market_stats():
 coin_data = load_coin_data()
 market_stats = get_market_stats()
 
-# Reorganized tabs with Hunt Hub integration - 11 tabs total
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
+# Reorganized tabs with Hunt Hub integration - 12 tabs total
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.tabs([
     "🚀 Dashboard", 
     "💎 Coins", 
     "🎯 Hunt Hub",  # NEW - Memecoin sniping dashboard
@@ -795,7 +862,8 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
     "📱 Blog",
     "📊 Monitoring",
     "⚙️ System",
-    "📡 Live Signals"
+    "📡 Live Signals",
+    "🧮 Runners"  # Mathematical modeling
 ])
 
 # ===== TAB 1: ENHANCED DASHBOARD =====
@@ -1883,6 +1951,8 @@ with tab11:
         st.markdown("---")
         st.caption("💡 Real-time signal processing with ~20 minute intervals from ATM.day group")
 
+# ===== TAB 12: MATHEMATICAL RUNNERS =====
+with tab12:
     # Try to import the mathematical runners dashboard
     try:
         from mathematical_runners_dashboard import render_mathematical_runners_dashboard
