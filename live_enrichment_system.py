@@ -92,11 +92,11 @@ class LiveEnrichmentSystem:
             
             # Get coins without price data
             cursor.execute("""
-                SELECT ticker, contract_address, coin_name 
+                SELECT ticker, ca, ticker 
                 FROM coins 
                 WHERE (discovery_price IS NULL OR discovery_price = 0) 
-                AND (current_price IS NULL OR current_price = 0)
-                AND contract_address IS NOT NULL
+                AND (axiom_price IS NULL OR axiom_price = 0)
+                AND ca IS NOT NULL
                 LIMIT ?
             """, (limit,))
             
