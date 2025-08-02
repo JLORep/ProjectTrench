@@ -242,20 +242,28 @@ div[data-testid="stTabs"] {
     padding-top: 0px !important;
 }
 
-/* Tab-specific spacing fixes */
+/* ULTRA AGGRESSIVE tab spacing fix - remove ALL gaps */
 .stTabs [data-baseweb="tab-panel"] {
     position: relative;
     isolation: isolate;
     background: transparent;
-    overflow: hidden;
+    overflow: visible !important;
     min-height: 500px;
+    margin-top: -60px !important;
+    padding-top: 0px !important;
+}
+
+/* Force ALL content to move up */
+.stTabs [data-baseweb="tab-panel"] > div,
+[data-testid="stVerticalBlock"] {
     margin-top: 0px !important;
     padding-top: 0px !important;
 }
 
-/* Special handling for Dashboard and Coins tabs that use tab-content-wrapper */
+/* Tab content wrapper - aggressive negative margin */
 .tab-content-wrapper {
-    margin-top: -30px !important;
+    margin-top: -10px !important;
+    padding-top: 0px !important;
 }
 
 /* Prevent content bleeding with strict containment */
@@ -349,10 +357,10 @@ div[data-testid="metric-container"] [data-testid="metric-label"] {
     opacity: 0.8;
 }
 
-/* Enhanced coin cards - Premium Design with Responsive Layout */
+/* Enhanced coin cards - FORCE CLICKABILITY */
 .coin-card {
     background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #0f1419 100%);
-    border: 2px solid rgba(16, 185, 129, 0.2);
+    border: 2px solid rgba(16, 185, 129, 0.3);
     border-radius: 24px;
     padding: clamp(16px, 3vw, 32px);
     margin: 16px 0;
@@ -366,8 +374,15 @@ div[data-testid="metric-container"] [data-testid="metric-label"] {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    cursor: pointer;
-    z-index: 10;
+    cursor: pointer !important;
+    z-index: 100 !important;
+    pointer-events: auto !important;
+}
+
+/* Ensure cards are above everything */
+.element-container:has(.coin-card) {
+    z-index: 100 !important;
+    position: relative;
 }
 
 /* Hide the View buttons - they're just fallbacks */
@@ -388,9 +403,10 @@ button[data-testid*="view_"] {
 }
 
 .coin-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 8px 30px rgba(16, 185, 129, 0.3);
-    border-color: rgba(16, 185, 129, 0.6);
+    transform: translateY(-8px) scale(1.02) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 8px 30px rgba(16, 185, 129, 0.5) !important;
+    border-color: #10b981 !important;
+    background: linear-gradient(135deg, rgba(16,185,129,0.1) 0%, #1a1f2e 50%, rgba(16,185,129,0.1) 100%) !important;
 }
 
 .coin-card:hover::before {
@@ -1010,10 +1026,10 @@ with tab2:
                             
                             metadata_html = " • ".join(metadata_items) if metadata_items else "No additional data"
                             
-                            # Create clickable card using HTML with improved responsive layout
+                            # Create clickable card using HTML with JavaScript handler
                             card_html = f"""
-                        <div class="coin-card" onclick="selectCoin('{coin['ca']}')" 
-                             style="cursor: pointer; display: block; width: 100%; margin: 12px 0;">
+                        <div class="coin-card" id="coin-{coin['id']}" 
+                             style="cursor: pointer !important; display: block; width: 100%; margin: 12px 0;">
                             <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
                                 <div style="flex-shrink: 0;">
                                     {logo_html}
