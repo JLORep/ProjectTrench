@@ -82,7 +82,14 @@
       "Bash(touch:*)",
       "Bash(chmod:*)",
       "Bash(./fix_unicode_permanently.bat)",
-      "Bash(cmd:*)"
+      "Bash(cmd:*)",
+      "Bash(for module in comprehensive_monitoring enhanced_caching_system memecoin_hunt_hub_ui mathematical_runners_dashboard alpha_radar_system event_system database_connection_pool security_dashboard comprehensive_dev_blog_system super_claude_commands live_signals_dashboard coin_image_system mcp_server_integration enhanced_security_dashboard super_claude_system super_claude_personas solana_strategy_engine enhanced_blog_integration premium_chart_system health_check_system)",
+      "Bash(do)",
+      "Bash(if [ -f \"$module.py\" ])",
+      "Bash(then)",
+      "Bash(echo:*)",
+      "Bash(else)",
+      "Bash(done)"
     ],
     "deny": []
   }
