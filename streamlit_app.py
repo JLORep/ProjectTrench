@@ -176,9 +176,35 @@ header {visibility: hidden;}
     align-items: center;
 }
 
-/* Push content below fixed header */
+/* Push content below fixed header with responsive padding */
 .block-container {
     padding-top: 80px !important;
+    padding-left: clamp(16px, 4vw, 24px) !important;
+    padding-right: clamp(16px, 4vw, 24px) !important;
+}
+
+/* Responsive grid layout for cards */
+@media (max-width: 768px) {
+    .coin-card {
+        margin: 8px 0;
+        padding: 16px;
+        min-height: 160px;
+    }
+    
+    .coin-logo {
+        width: 48px;
+        height: 48px;
+        font-size: 16px;
+        margin-right: 12px;
+    }
+    
+    .coin-ticker {
+        font-size: 16px;
+    }
+    
+    .coin-price {
+        font-size: 18px;
+    }
 }
 
 /* Compact tabs - moved to top */
@@ -261,7 +287,7 @@ header {visibility: hidden;}
     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
-/* Enhanced metrics cards */
+/* Enhanced metrics cards with responsive design */
 div[data-testid="metric-container"] {
     background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -269,6 +295,11 @@ div[data-testid="metric-container"] {
     padding: 20px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
+    width: 100%;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 div[data-testid="metric-container"]:hover {
@@ -277,18 +308,35 @@ div[data-testid="metric-container"]:hover {
     border-color: rgba(16, 185, 129, 0.3);
 }
 
-/* Enhanced coin cards - Premium Design */
+/* Responsive metric text */
+div[data-testid="metric-container"] [data-testid="metric-value"] {
+    font-size: clamp(1.5rem, 4vw, 2.5rem) !important;
+    font-weight: 700;
+}
+
+div[data-testid="metric-container"] [data-testid="metric-label"] {
+    font-size: clamp(0.8rem, 2vw, 1rem) !important;
+    opacity: 0.8;
+}
+
+/* Enhanced coin cards - Premium Design with Responsive Layout */
 .coin-card {
     background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #0f1419 100%);
     border: 2px solid rgba(16, 185, 129, 0.2);
     border-radius: 24px;
-    padding: 32px;
+    padding: clamp(16px, 3vw, 32px);
     margin: 16px 0;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(16, 185, 129, 0.1);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(10px);
+    width: 100%;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
 }
 
 .coin-card::before {
@@ -313,22 +361,23 @@ div[data-testid="metric-container"]:hover {
     opacity: 1;
 }
 
-/* Coin card typography and elements - BIGGER LOGOS */
+/* Coin card typography and elements - RESPONSIVE LOGOS */
 .coin-logo {
-    width: 96px;
-    height: 96px;
+    width: clamp(64px, 8vw, 96px);
+    height: clamp(64px, 8vw, 96px);
     border-radius: 50%;
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
+    font-size: clamp(18px, 3vw, 32px);
     font-weight: 700;
     color: white;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-    margin-right: 20px;
+    margin-right: clamp(12px, 2vw, 20px);
     border: 3px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
 }
 
 .coin-info {
@@ -337,20 +386,23 @@ div[data-testid="metric-container"]:hover {
 
 .coin-ticker {
     color: #ffffff;
-    font-size: 28px;
+    font-size: clamp(18px, 3.5vw, 28px);
     font-weight: 700;
     margin: 0 0 8px 0;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
 }
 
 .coin-address {
     color: rgba(255, 255, 255, 0.6);
-    font-size: 14px;
+    font-size: clamp(10px, 1.8vw, 14px);
     font-family: 'Courier New', monospace;
     background: rgba(255, 255, 255, 0.05);
     padding: 4px 8px;
     border-radius: 8px;
     display: inline-block;
+    word-break: break-all;
+    max-width: 100%;
 }
 
 .coin-stats {
@@ -359,10 +411,11 @@ div[data-testid="metric-container"]:hover {
 
 .coin-price {
     color: #10b981;
-    font-size: 32px;
+    font-size: clamp(16px, 4vw, 32px);
     font-weight: 700;
     text-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
     margin: 0 0 8px 0;
+    line-height: 1.1;
 }
 
 .coin-mcap {
@@ -442,6 +495,56 @@ div[data-testid="metric-container"]:hover {
     padding: 16px;
     margin: 16px 0;
     color: white;
+}
+
+/* Streamlit button styling for better visibility */
+.stButton > button {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+/* Enhanced visibility for interactive elements */
+.element-container {
+    margin-bottom: 16px;
+}
+
+/* Better visibility for metrics and cards */
+div[data-testid="column"] {
+    padding: 0 8px;
+}
+
+/* Make charts and interactive elements more visible */
+.stPlotlyChart, .stDataFrame, .stTable {
+    background: rgba(26, 32, 46, 0.8);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 16px 0;
+}
+
+/* Enhanced tab content visibility */
+.stTabs [data-baseweb="tab-panel"] > div {
+    padding: 20px 8px;
+    min-height: 600px;
+}
+
+/* Better spacing for all content */
+.main .block-container {
+    max-width: 1200px;
+    padding-left: clamp(16px, 5vw, 32px);
+    padding-right: clamp(16px, 5vw, 32px);
 }
 </style>
 """, unsafe_allow_html=True)
@@ -790,30 +893,36 @@ with tab2:
         # Display coins in enhanced premium cards
         st.write(f"Showing {min(len(filtered_data), show_count)} coins")
         
-        # Use columns for better layout - 2 cards per row
-        for i in range(0, len(filtered_data.head(show_count)), 2):
-            col1, col2 = st.columns(2)
-            
-            for col_idx, col in enumerate([col1, col2]):
-                if i + col_idx < len(filtered_data.head(show_count)):
-                    coin = filtered_data.iloc[i + col_idx]
-                    
-                    with col:
-                        # Prepare display values
-                        ticker = coin['ticker'] or 'Unknown'
-                        ca_display = f"{coin['ca'][:8]}...{coin['ca'][-8:]}" if len(str(coin['ca'])) > 16 else str(coin['ca'])
-                        price = coin['current_price_usd'] if coin['current_price_usd'] else 0
+        # Responsive grid layout - adapt based on screen size
+        display_data = filtered_data.head(show_count)
+        
+        # Use different column layouts based on data count and create responsive grid
+        if len(display_data) > 0:
+            # Create responsive columns with proper spacing
+            for i in range(0, len(display_data), 2):
+                col1, col2 = st.columns(2, gap="medium")
+                
+                # Process both columns
+                for col_idx, col in enumerate([col1, col2]):
+                    if i + col_idx < len(display_data):
+                        coin = display_data.iloc[i + col_idx]
                         
-                        # Determine market cap display
-                        if coin['market_cap_usd']:
-                            mcap = f"{coin['market_cap_usd']:,.0f}"
-                        elif coin['discovery_mc']:
-                            mcap = f"{coin['discovery_mc']:,.0f}"  
-                        else:
-                            mcap = "0"
-                        
-                        # Get coin image URL - prioritize database images with BIGGER size
-                        if coin['image_url']:
+                        with col:
+                            # Prepare display values
+                            ticker = coin['ticker'] or 'Unknown'
+                            ca_display = f"{coin['ca'][:8]}...{coin['ca'][-8:]}" if len(str(coin['ca'])) > 16 else str(coin['ca'])
+                            price = coin['current_price_usd'] if coin['current_price_usd'] else 0
+                            
+                            # Determine market cap display
+                            if coin['market_cap_usd']:
+                                mcap = f"{coin['market_cap_usd']:,.0f}"
+                            elif coin['discovery_mc']:
+                                mcap = f"{coin['discovery_mc']:,.0f}"  
+                            else:
+                                mcap = "0"
+                            
+                            # Get coin image URL - prioritize database images with BIGGER size
+                            if coin['image_url']:
                             # Use real coin image from database - MUCH BIGGER!
                             image_url = coin['image_url']
                             logo_html = f'<img src="{image_url}" alt="{ticker}" style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.2); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);" onerror="this.outerHTML=\'<div class=&quot;coin-logo&quot; style=&quot;width: 96px; height: 96px; font-size: 32px;&quot;>{ticker[:2].upper()}</div>\'">'
@@ -850,35 +959,51 @@ with tab2:
                         
                         metadata_html = " • ".join(metadata_items) if metadata_items else "No additional data"
                         
-                        # Create clickable card using HTML and JavaScript
+                        # Create clickable card using HTML with improved responsive layout
                         card_html = f"""
-                        <div class="coin-card" onclick="selectCoin('{coin['ca']}')" style="cursor: pointer;">
-                            <div style="display: flex; align-items: center; margin-bottom: 16px;">
-                                {logo_html}
-                                <div class="coin-info" style="margin-left: 16px;">
-                                    <h2 class="coin-ticker">{ticker}</h2>
-                                    <div class="coin-address">{ca_display}</div>
+                        <div class="coin-card" onclick="selectCoin('{coin['ca']}')" 
+                             style="cursor: pointer; display: block; width: 100%; margin: 12px 0;">
+                            <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+                                <div style="flex-shrink: 0;">
+                                    {logo_html}
                                 </div>
-                                <div class="coin-stats">
-                                    <div class="coin-price">${price:.8f}</div>
+                                <div class="coin-info" style="flex: 1; min-width: 150px;">
+                                    <h2 class="coin-ticker" style="margin: 0 0 8px 0;">{ticker}</h2>
+                                    <div class="coin-address" style="margin-bottom: 8px;">{ca_display}</div>
+                                </div>
+                                <div class="coin-stats" style="text-align: right; flex-shrink: 0;">
+                                    <div class="coin-price" style="margin: 0 0 8px 0;">${price:.8f}</div>
                                     {price_change_html}
                                 </div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div class="coin-mcap">Market Cap: ${mcap}</div>
-                                <div style="text-align: right;">
-                                    <div class="coin-metadata">{metadata_html}</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                                <div class="coin-mcap" style="font-weight: 600;">Market Cap: ${mcap}</div>
+                                <div style="text-align: right; flex: 1; min-width: 200px;">
+                                    <div class="coin-metadata" style="font-size: 12px; opacity: 0.8;">{metadata_html}</div>
                                 </div>
                             </div>
                         </div>
                         
                         <script>
-                        function selectCoin(ca) {{
-                            // Send the selection to Streamlit
-                            window.parent.postMessage({{
-                                type: 'streamlit:selectCoin',
-                                ca: ca
-                            }}, '*');
+                        if (typeof selectCoin === 'undefined') {{
+                            function selectCoin(ca) {{
+                                // Log the selection for debugging
+                                console.log('Coin selected:', ca);
+                                
+                                // Try to trigger Streamlit rerun with session state
+                                if (window.parent && window.parent.postMessage) {{
+                                    window.parent.postMessage({{
+                                        type: 'streamlit:selectCoin',
+                                        ca: ca
+                                    }}, '*');
+                                }}
+                                
+                                // Also trigger click on the hidden button as fallback
+                                const hiddenButton = document.querySelector('button[data-testid*="view_{coin["ca"]}"]');
+                                if (hiddenButton) {{
+                                    hiddenButton.click();
+                                }}
+                            }}
                         }}
                         </script>
                         """
@@ -1425,10 +1550,54 @@ with tab10:
     for feature in features:
         st.markdown(f"- {feature}")
 
+# Interactive Status Bar - Fixed at bottom
+st.markdown("""
+<div style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 12px 24px;
+    z-index: 99999;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+">
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <span style="color: #10b981; font-weight: 600;">💎 TrenchCoat Pro v3.0</span>
+        <span>📊 Interactive Cards & Charts Available</span>
+        <span>🎯 Click Cards to View Details</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <span style="color: #10b981;">✨ Real-Time Data</span>
+        <span style="color: #10b981;">🚀 Live Updates</span>
+        <div style="
+            background: linear-gradient(90deg, #10b981, #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            animation: pulse-green 2s infinite;
+        ">ONLINE</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Add padding to prevent content hiding behind status bar
+st.markdown('<div style="height: 80px;"></div>', unsafe_allow_html=True)
+
 # Footer with enhanced system status
 st.markdown("---")
 st.markdown("""
-<div style="text-align: center; color: rgba(255,255,255,0.5); font-size: 12px; padding: 20px;">
+<div style="text-align: center; color: rgba(255,255,255,0.5); font-size: 12px; padding: 20px; margin-bottom: 60px;">
     TrenchCoat Pro v3.0 | Premium Crypto Intelligence Platform<br/>
     <span class="status-live">LIVE DATA</span> | Mass Enrichment Active | 100+ APIs Integrated | Complete Feature Set
 </div>

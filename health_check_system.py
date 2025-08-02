@@ -834,7 +834,7 @@ class HealthChecker:
             response_time = check_data.get('response_time_ms', 0)
             
             with st.expander(f"{'✅' if status == 'healthy' else '⚠️' if status == 'warning' else '❌'} {check_name.replace('_', ' ').title()}"):
-                st.write(f"**Status:** {status.upper()}")
+                st.write(f"**Status:** {str(status).upper()}")
                 st.write(f"**Message:** {message}")
                 st.write(f"**Response Time:** {response_time:.1f}ms")
                 
