@@ -272,11 +272,28 @@ div[data-testid="stTabs"] {
     padding-top: 20px !important;
 }
 
-/* Prevent content bleeding with strict containment */
+/* CRITICAL: Prevent content bleeding with strict containment */
+.stTabs [data-baseweb="tab-panel"] {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    contain: layout style paint;
+}
+
 .stTabs [data-baseweb="tab-panel"] > div {
     contain: layout style paint;
     max-width: 100%;
     overflow-x: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+/* Hide non-active tab content completely */
+.stTabs [data-baseweb="tab-panel"][hidden] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 /* Force tab content to stay within bounds */
@@ -285,6 +302,7 @@ div[data-testid="stTabs"] {
     contain: layout;
     position: relative;
     z-index: 1;
+    isolation: isolate;
 }
 
 /* Tab content wrapper for absolute isolation */
@@ -765,8 +783,8 @@ def get_market_stats():
 coin_data = load_coin_data()
 market_stats = get_market_stats()
 
-# Reorganized tabs with Hunt Hub integration
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.tabs([
+# Reorganized tabs with Hunt Hub integration - 11 tabs total
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
     "🚀 Dashboard", 
     "💎 Coins", 
     "🎯 Hunt Hub",  # NEW - Memecoin sniping dashboard
@@ -777,8 +795,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.t
     "📱 Blog",
     "📊 Monitoring",
     "⚙️ System",
-    "📡 Live Signals",
-    "🧮 Runners"  # NEW - Mathematical modeling
+    "📡 Live Signals"
 ])
 
 # ===== TAB 1: ENHANCED DASHBOARD =====
@@ -922,7 +939,11 @@ with tab1:
 
 # ===== TAB 2: COINS =====
 with tab2:
-    st.header("💎 Live Coin Database")
+    with st.container():
+        st.header("💎 Live Coin Database")
+        
+        # Container to isolate tab content
+        with st.container():
     
     if not coin_data.empty:
         # Enhanced search and filter
@@ -1789,6 +1810,9 @@ with tab10:
         if st.button("🔧 Maintenance Mode"):
             st.warning("Maintenance mode not implemented")
 
+    else:
+        st.info("📡 No coins in database yet. Loading...")
+
 # ===== TAB 11: LIVE SIGNALS =====
 with tab11:
     # Try to import the live signals dashboard
@@ -1865,8 +1889,6 @@ with tab11:
         st.markdown("---")
         st.caption("💡 Real-time signal processing with ~20 minute intervals from ATM.day group")
 
-# ===== TAB 12: MATHEMATICAL RUNNERS =====
-with tab12:
     # Try to import the mathematical runners dashboard
     try:
         from mathematical_runners_dashboard import render_mathematical_runners_dashboard
