@@ -1116,11 +1116,15 @@ with tab3:
 with tab4:
     # Enhanced security tab with architectural systems
     if HEALTH_CHECK_AVAILABLE:
-        # Health check system integration
-        health_checker = get_health_checker()
-        health_checker.render_health_dashboard()
-        
-        st.markdown("---")
+        try:
+            # Health check system integration
+            health_checker = get_health_checker()
+            health_checker.render_health_dashboard()
+            
+            st.markdown("---")
+        except Exception as e:
+            st.error(f"Health check system error: {e}")
+            st.info("Health monitoring temporarily unavailable")
     
     if SECURITY_AVAILABLE:
         render_security_dashboard()
