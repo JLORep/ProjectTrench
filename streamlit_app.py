@@ -362,6 +362,12 @@ div[data-testid="metric-container"] [data-testid="metric-label"] {
     flex-direction: column;
     justify-content: space-between;
     cursor: pointer;
+    z-index: 10;
+}
+
+/* Hide the View buttons - they're just fallbacks */
+button[data-testid*="view_"] {
+    display: none !important;
 }
 
 .coin-card::before {
@@ -564,11 +570,15 @@ div[data-testid="column"] {
     padding: 0px 8px 10px 8px;
     min-height: 600px;
     margin-top: -30px !important;
+    position: relative;
+    z-index: 1;
 }
 
 /* Target the immediate content container to pull up */
 .stTabs [data-baseweb="tab-panel"] > div > div:first-child {
     margin-top: -20px !important;
+    position: relative;
+    z-index: 1;
 }
 
 /* Remove space before first content in tabs */
