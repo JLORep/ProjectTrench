@@ -499,6 +499,37 @@ class ComprehensiveDevBlogSystem:
                     selected_channels
                 )
     
+    def get_scheduled_posts(self):
+        """Get all scheduled posts from database"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                SELECT id, post_content, scheduled_time, channels, status
+                FROM scheduled_posts
+                WHERE status = 'pending'
+                ORDER BY scheduled_time ASC
+            ''')
+            
+            posts = []
+            for row in cursor.fetchall():
+                post_data = json.loads(row[1])
+                posts.append({
+                    'id': row[0],
+                    'title': post_data.get('title', 'Untitled'),
+                    'scheduled_time': row[2],
+                    'channels': json.loads(row[3]),
+                    'status': row[4]
+                })
+            
+            conn.close()
+            return posts
+            
+        except Exception as e:
+            st.error(f"Error fetching scheduled posts: {e}")
+            return []
+    
     def render_scheduling(self):
         """Post scheduling interface"""
         
