@@ -213,16 +213,17 @@ section.main > div {
     }
 }
 
-/* Big chunky tabs with ABSOLUTE positioning */
+/* Big chunky tabs with ABSOLUTE positioning and tight spacing */
 .stTabs [data-baseweb="tab-list"] {
     gap: 12px;
     background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-    padding: 20px 32px;
-    border-radius: 28px;
+    padding: 12px 32px;
+    border-radius: 0px 0px 28px 28px;
     margin-top: 0px !important;
     margin-bottom: 0px !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     border: 2px solid rgba(16, 185, 129, 0.15);
+    border-top: none;
     position: fixed;
     top: 0px;
     left: 0px;
@@ -562,9 +563,9 @@ div[data-testid="column"] {
     margin: 16px 0;
 }
 
-/* Enhanced tab content visibility with fixed tab offset */
+/* Enhanced tab content visibility with TIGHT fixed tab offset */
 .stTabs [data-baseweb="tab-panel"] > div {
-    padding: 120px 8px 10px 8px;
+    padding: 75px 8px 10px 8px;
     min-height: 600px;
     margin-top: 0px !important;
 }
