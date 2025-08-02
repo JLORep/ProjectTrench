@@ -219,13 +219,15 @@ div[data-testid="stTabs"] {
     padding-top: 0px !important;
 }
 
-/* Ensure proper tab content isolation */
+/* Ensure proper tab content isolation with tight spacing */
 .stTabs [data-baseweb="tab-panel"] {
     position: relative;
     isolation: isolate;
     background: transparent;
     overflow: hidden;
     min-height: 500px;
+    margin-top: 0px !important;
+    padding-top: 0px !important;
 }
 
 /* Prevent content bleeding with strict containment */
@@ -534,11 +536,25 @@ div[data-testid="column"] {
     margin: 16px 0;
 }
 
-/* Enhanced tab content visibility with minimal padding */
+/* Enhanced tab content visibility with zero top padding */
 .stTabs [data-baseweb="tab-panel"] > div {
-    padding: 5px 8px 10px 8px;
+    padding: 0px 8px 10px 8px;
     min-height: 600px;
     margin-top: 0px !important;
+}
+
+/* Remove space before first content in tabs */
+.stTabs [data-baseweb="tab-panel"] h1,
+.stTabs [data-baseweb="tab-panel"] h2,
+.stTabs [data-baseweb="tab-panel"] h3 {
+    margin-top: 8px !important;
+    padding-top: 0px !important;
+}
+
+/* Ensure first element in tab has no top margin */
+.stTabs [data-baseweb="tab-panel"] > div > div:first-child {
+    margin-top: 0px !important;
+    padding-top: 0px !important;
 }
 
 /* Better spacing for all content */
