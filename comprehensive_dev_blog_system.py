@@ -871,7 +871,8 @@ class ComprehensiveDevBlogSystem:
     
     def save_comprehensive_post(self, update: DevelopmentUpdate, result: Dict, post_type: str):
         """Save post to comprehensive database"""
-        post_id = f"comp_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        import random
+        post_id = f"comp_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{random.randint(1000, 9999)}"
         
         content = {
             'title': update.title,
