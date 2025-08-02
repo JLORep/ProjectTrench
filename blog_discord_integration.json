@@ -1,0 +1,12 @@
+{
+  "auto_post_to_discord": true,
+  "discord_channels": [
+    "blog",
+    "discord"
+  ],
+  "default_priority": "high",
+  "rate_limit_respect": true,
+  "queue_enabled": true,
+  "retry_on_failure": true,
+  "max_retries": 3
+}
