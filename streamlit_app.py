@@ -1870,8 +1870,7 @@ with tab6:
     """, unsafe_allow_html=True)
     
     # Enrichment status with animations
-    st.markdown('<div class="enrichment-container">', unsafe_allow_html=True)
-    st.markdown('<div class="data-stream"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="enrichment-container"><div class="data-stream"></div>', unsafe_allow_html=True)
     
     st.subheader("🚀 Live Enrichment Status")
     
