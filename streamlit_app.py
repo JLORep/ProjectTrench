@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# DEPLOYMENT_TIMESTAMP: 2025-08-02 03:27:15 - UI REDESIGN: Status bar moved to bottom, cleaner breadcrumbs, tabs closer to top
+# DEPLOYMENT_TIMESTAMP: 2025-08-02 04:15:30 - ENRICHMENT FIX: Working enrichment tab with real data + reduced top padding
 """
 TrenchCoat Pro - Ultimate version with Super Claude AI + MCP Integration
-Updated: 2025-08-02 03:27:15 - UI REDESIGN: Status bar moved to bottom, cleaner breadcrumbs, tabs closer to top
+Updated: 2025-08-02 04:15:30 - ENRICHMENT FIX: Working enrichment tab with real data + reduced top padding
 """
 import streamlit as st
 import pandas as pd
@@ -90,7 +90,7 @@ div[data-testid="stHorizontalBlock"] > div:first-child {
     background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
     padding: 16px 24px;
     border-radius: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 8px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.15);
 }
@@ -124,7 +124,7 @@ div[data-testid="stHorizontalBlock"] button:hover {
     backdrop-filter: blur(20px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    margin-top: 8px;
+    margin-top: 4px;
 }
 
 .stTabs [data-baseweb="tab"] {
@@ -287,8 +287,9 @@ div[data-testid="stHorizontalBlock"] button:hover {
     backdrop-filter: blur(10px);
 }
 
-/* Ensure content doesn't hide behind status bar */
+/* Reduce top padding and ensure content doesn't hide behind status bar */
 .main > .block-container {
+    padding-top: 2rem !important;
     padding-bottom: 100px !important;
 }
 
@@ -296,8 +297,8 @@ div[data-testid="stHorizontalBlock"] button:hover {
 .simple-breadcrumb {
     color: rgba(255, 255, 255, 0.7);
     font-size: 16px;
-    margin-bottom: 16px;
-    padding: 8px 0;
+    margin-bottom: 4px;
+    padding: 4px 0;
 }
 
 .simple-breadcrumb .breadcrumb-item {
@@ -1302,16 +1303,16 @@ else:
     with tabs[6]:
         render_breadcrumb([("Home", None), ("API Enrichment", None)])
         
-        # Try to use live enrichment system
-        LIVE_ENRICHMENT_AVAILABLE = False
+        # Try to use improved enrichment system
+        IMPROVED_ENRICHMENT_AVAILABLE = False
         try:
-            from live_enrichment_system import render_live_enrichment_tab
-            LIVE_ENRICHMENT_AVAILABLE = True
+            from improved_enrichment_system import render_improved_enrichment_tab
+            IMPROVED_ENRICHMENT_AVAILABLE = True
         except ImportError:
             pass
         
-        if LIVE_ENRICHMENT_AVAILABLE:
-            render_live_enrichment_tab()
+        if IMPROVED_ENRICHMENT_AVAILABLE:
+            render_improved_enrichment_tab()
         else:
             # Fallback to existing enrichment UI
             st.header("🚀 Comprehensive API Enrichment System")
