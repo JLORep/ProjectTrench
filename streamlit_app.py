@@ -141,9 +141,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Debug deployment
-st.write("🚀 TrenchCoat Pro Loading...")
-st.write(f"Deployment: 2025-08-02 14:36:00")
+# Remove debug for clean deployment
 
 # Function to show detailed coin view
 def show_detailed_coin_view(coin):
