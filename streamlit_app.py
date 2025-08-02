@@ -1026,9 +1026,10 @@ with tab2:
                             
                             metadata_html = " • ".join(metadata_items) if metadata_items else "No additional data"
                             
-                            # Create clickable card using HTML with JavaScript handler
+                            # Create clickable card using HTML - use index i as ID since coin might not have 'id'
+                            coin_id = coin.get('id', f'idx_{i}')
                             card_html = f"""
-                        <div class="coin-card" id="coin-{coin['id']}" 
+                        <div class="coin-card" id="coin-{coin_id}" 
                              style="cursor: pointer !important; display: block; width: 100%; margin: 12px 0;">
                             <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
                                 <div style="flex-shrink: 0;">
