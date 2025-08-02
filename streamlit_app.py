@@ -1736,6 +1736,9 @@ with tab3:
 with tab4:
     st.header("📡 Alpha Radar - AI-Powered Signal Feed & Strategy Testing")
     
+    # VISIBLE INDICATOR OF NEW FEATURES
+    st.success("✨ NEW FEATURES ACTIVE: Strategy Testing Panel with Backtesting, Performance Analytics, and Portfolio Optimization!")
+    
     # Create tabs for Alpha Radar features
     radar_tab1, radar_tab2, radar_tab3, radar_tab4 = st.tabs([
         "📡 Live Signals", "🧪 Strategy Testing", "📊 Performance", "⚙️ Optimization"
