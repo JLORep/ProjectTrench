@@ -1538,7 +1538,7 @@ with tab2:
                                     </div>
                                     <div>
                                         <div style="color: #718096; font-size: 11px; text-transform: uppercase;">24h Volume</div>
-                                        <div style="color: #fff; font-size: 14px; font-weight: 500;">${coin.get('current_volume_24h', 0):,.0f}</div>
+                                        <div style="color: #fff; font-size: 14px; font-weight: 500;">${coin.get('current_volume_24h') or 0:,.0f}</div>
                                     </div>
                                     <div>
                                         <div style="color: #718096; font-size: 11px; text-transform: uppercase;">Smart Wallets</div>

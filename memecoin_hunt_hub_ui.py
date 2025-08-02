@@ -312,6 +312,18 @@ def render_token_card(token: Dict):
     """Render an individual token card"""
     
     try:
+        import html
+        
+        # HTML escape all dynamic content
+        symbol = html.escape(str(token["symbol"]))
+        name = html.escape(str(token["name"]))
+        address = html.escape(str(token["address"]))
+        launch_time = html.escape(str(token["launch_time"]))
+        liquidity = html.escape(str(token["liquidity"]))
+        mcap = html.escape(str(token["mcap"]))
+        volume = html.escape(str(token["volume"]))
+        rationale = html.escape(str(token["rationale"]))
+        
         score_class = "score-high" if token["score"] >= 80 else "score-medium" if token["score"] >= 60 else "score-low"
         risk_class = f"risk-{token['risk']}"
         
@@ -322,11 +334,11 @@ def render_token_card(token: Dict):
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
             <div>
                 <h3 style="margin: 0; font-size: 24px; font-weight: 700;">
-                    {token["symbol"]}
+                    {symbol}
                     <span class="risk-indicator {risk_class}"></span>
                 </h3>
                 <p style="margin: 0; color: rgba(255,255,255,0.6); font-size: 14px;">
-                    {token["name"]} • {token["address"]} • <span class="launch-time">{token["launch_time"]}</span>
+                    {name} • {address} • <span class="launch-time">{launch_time}</span>
                 </p>
             </div>
         </div>
@@ -334,15 +346,15 @@ def render_token_card(token: Dict):
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;">
             <div>
                 <p style="margin: 0; color: rgba(255,255,255,0.6); font-size: 12px;">Liquidity</p>
-                <p style="margin: 0; font-size: 16px; font-weight: 600;">{token["liquidity"]}</p>
+                <p style="margin: 0; font-size: 16px; font-weight: 600;">{liquidity}</p>
             </div>
             <div>
                 <p style="margin: 0; color: rgba(255,255,255,0.6); font-size: 12px;">Market Cap</p>
-                <p style="margin: 0; font-size: 16px; font-weight: 600;">{token["mcap"]}</p>
+                <p style="margin: 0; font-size: 16px; font-weight: 600;">{mcap}</p>
             </div>
             <div>
                 <p style="margin: 0; color: rgba(255,255,255,0.6); font-size: 12px;">Volume</p>
-                <p style="margin: 0; font-size: 16px; font-weight: 600;">{token["volume"]}</p>
+                <p style="margin: 0; font-size: 16px; font-weight: 600;">{volume}</p>
             </div>
             <div>
                 <p style="margin: 0; color: rgba(255,255,255,0.6); font-size: 12px;">Holders</p>
@@ -351,7 +363,7 @@ def render_token_card(token: Dict):
         </div>
         
         <p style="margin: 12px 0; color: rgba(255,255,255,0.8); font-size: 14px;">
-            {token["rationale"]}
+            {rationale}
         </p>
         
         <div style="display: flex; gap: 12px; margin-top: 16px;">

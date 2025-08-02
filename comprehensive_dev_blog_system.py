@@ -175,7 +175,7 @@ class ComprehensiveDevBlogSystem:
             self.render_create_update()
         
         with main_tabs[1]:
-            self.render_retrospective_analysis()
+            self.render_git_retrospective()
         
         with main_tabs[2]:
             self.render_customer_focused()
@@ -247,7 +247,8 @@ class ComprehensiveDevBlogSystem:
             components = st.multiselect(
                 "🔧 Affected Components",
                 ["Dashboard", "Trading Engine", "API System", "Webhooks", "Database", "UI/UX", "Security", "Analytics"],
-                default=suggested_components
+                default=suggested_components,
+                key="blog_create_components"
             )
             
             # Rich text editors
@@ -448,7 +449,8 @@ class ComprehensiveDevBlogSystem:
             audience = st.multiselect(
                 "Target Audience",
                 ["All Users", "Pro Traders", "Beginners", "API Users", "Mobile Users"],
-                default=["All Users"]
+                default=["All Users"],
+                key="blog_customer_audience"
             )
         
         # Generate customer-friendly content
@@ -470,7 +472,8 @@ class ComprehensiveDevBlogSystem:
             selected_channels = st.multiselect(
                 "Select Channels",
                 list(self.discord_channels.keys()),
-                default=recommended
+                default=recommended,
+                key="blog_customer_channels"
             )
             
             if st.button("🚀 Publish Customer Update", type="primary"):
