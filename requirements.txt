@@ -6,3 +6,5 @@ requests==2.31.0
 base58==2.1.1
 # Python 3.9 compatibility - Updated: 2025-08-01 01:00:00
 # Updated: 2025-08-01 12:35:00 - Super Claude AI + MCP Server Integration deployed
+# Updated: 2025-08-02 01:03:00 - Security & Monitoring Integration
+psutil==5.9.5
