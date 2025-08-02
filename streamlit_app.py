@@ -1627,7 +1627,8 @@ with tab4:
             signal_types = st.multiselect(
                 "Signal Types",
                 ["🚀 Volume Spike", "🐋 Whale Buy", "📈 Breakout", "🔥 Social Buzz"],
-                default=["🚀 Volume Spike", "🐋 Whale Buy"]
+                default=["🚀 Volume Spike", "🐋 Whale Buy"],
+                key="alpha_radar_signal_types"
             )
         with col2:
             confidence = st.slider("Min Confidence", 0, 100, 70)
