@@ -2082,4 +2082,4 @@ st.markdown("""
     TrenchCoat Pro v3.0 | Premium Crypto Intelligence Platform<br/>
     <span class="status-live">LIVE DATA</span> | Mass Enrichment Active | 100+ APIs Integrated | Complete Feature Set
 </div>
-""", unsafe_allow_html=True)# Force deployment 1754112432
+""", unsafe_allow_html=True)# Force deployment 1754115300
