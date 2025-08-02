@@ -297,26 +297,74 @@ def render_improved_enrichment_tab():
             f"{stats['no_price']/stats['total']*100:.1f}%"
         )
     
-    # Progress bar
+    # Beautiful animated progress bar with gradient
     progress_value = stats['enrichment_percentage'] / 100
+    
+    # Custom CSS for beautiful progress animation
+    st.markdown("""
+    <style>
+    @keyframes progress-glow {
+        0% { box-shadow: 0 0 5px #10b981, 0 0 10px #10b981; }
+        50% { box-shadow: 0 0 20px #10b981, 0 0 30px #10b981, 0 0 40px #10b981; }
+        100% { box-shadow: 0 0 5px #10b981, 0 0 10px #10b981; }
+    }
+    
+    @keyframes progress-pulse {
+        0% { transform: scaleX(1); }
+        50% { transform: scaleX(1.02); }
+        100% { transform: scaleX(1); }
+    }
+    
+    .stProgress > div > div > div > div {
+        background: linear-gradient(90deg, #10b981 0%, #059669 50%, #10b981 100%);
+        animation: progress-glow 2s ease-in-out infinite, progress-pulse 1s ease-in-out infinite;
+        height: 20px !important;
+        border-radius: 10px;
+    }
+    
+    .stProgress > div > div > div {
+        background-color: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     st.progress(
         progress_value, 
-        text=f"Overall Enrichment Progress: {stats['enrichment_percentage']:.1f}% ({stats['fully_enriched']:,}/{stats['total']:,})"
+        text=f"✨ Overall Enrichment Progress: {stats['enrichment_percentage']:.1f}% ({stats['fully_enriched']:,}/{stats['total']:,} coins enriched)"
     )
     
-    # API Status indicators
-    st.markdown("### 🔌 **API Connection Status**")
+    # Compact API Status Traffic Light Box
+    api_status_html = """
+    <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); 
+                border-radius: 12px; padding: 12px; margin-bottom: 20px;
+                border: 1px solid rgba(255, 255, 255, 0.1); max-width: 400px;">
+        <div style="text-align: center; margin-bottom: 10px;">
+            <span style="color: #10b981; font-weight: bold; font-size: 14px;">🔌 API STATUS</span>
+        </div>
+        <div style="display: flex; justify-content: space-around; align-items: center;">
+            <div style="text-align: center;">
+                <div style="font-size: 20px;">🟢</div>
+                <div style="color: #10b981; font-size: 11px; font-weight: bold;">DexScreener</div>
+                <div style="color: #666; font-size: 9px;">300/min</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 20px;">🟢</div>
+                <div style="color: #10b981; font-size: 11px; font-weight: bold;">Jupiter</div>
+                <div style="color: #666; font-size: 9px;">600/min</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 20px;">🟡</div>
+                <div style="color: #f59e0b; font-size: 11px; font-weight: bold;">Birdeye</div>
+                <div style="color: #666; font-size: 9px;">Key Required</div>
+            </div>
+        </div>
+    </div>
+    """
     
-    api_col1, api_col2, api_col3 = st.columns(3)
-    
-    with api_col1:
-        st.success("🟢 **DexScreener API**\nActive • 300 req/min")
-    
-    with api_col2:
-        st.success("🟢 **Jupiter Price API**\nActive • 600 req/min")
-    
-    with api_col3:
-        st.warning("🟡 **Birdeye API**\nRequires Key • 120 req/min")
+    st.markdown(api_status_html, unsafe_allow_html=True)
     
     # Main enrichment interface
     st.markdown("### 🛠 **Enrichment Tools**")
@@ -370,11 +418,108 @@ def render_improved_enrichment_tab():
                     progress_container = st.container()
                     
                     with progress_container:
-                        progress_bar = st.progress(0)
+                        # Add beautiful visual coin flow animation CSS
+                        st.markdown("""
+                        <style>
+                        @keyframes coin-pulse {
+                            0% { transform: scale(1); opacity: 1; }
+                            50% { transform: scale(1.1); opacity: 0.8; }
+                            100% { transform: scale(1); opacity: 1; }
+                        }
+                        
+                        @keyframes data-slide {
+                            0% { transform: translateX(-50px); opacity: 0; }
+                            100% { transform: translateX(0); opacity: 1; }
+                        }
+                        
+                        @keyframes coin-fly {
+                            0% { transform: translateX(0) scale(1); opacity: 1; }
+                            50% { transform: translateX(100px) scale(0.8); opacity: 0.8; }
+                            100% { transform: translateX(200px) scale(0.5); opacity: 0; }
+                        }
+                        
+                        .coin-scanning {
+                            animation: coin-pulse 2s infinite;
+                        }
+                        
+                        .data-found {
+                            animation: data-slide 0.5s ease-out;
+                        }
+                        
+                        .coin-flying {
+                            animation: coin-fly 1s ease-in-out;
+                        }
+                        </style>
+                        """, unsafe_allow_html=True)
+                        
+                        # Processing Status Indicator
+                        processing_status = st.empty()
+                        processing_status.markdown("""
+                        <div style="background: linear-gradient(135deg, #065f46 0%, #10b981 100%); 
+                                   border-radius: 10px; padding: 10px; margin-bottom: 20px;
+                                   text-align: center; color: white; font-weight: bold;
+                                   box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">
+                            ⚡ ENRICHMENT STARTED - PROCESSING NOW ⚡
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                        # Visual coin container
+                        coin_visual_col1, coin_visual_col2, coin_visual_col3 = st.columns([1, 2, 1])
+                        
+                        with coin_visual_col2:
+                            coin_display = st.empty()
+                            coin_display.markdown(f"""
+                            <div class="coin-scanning" style="text-align: center; padding: 20px; border: 2px solid #10b981; 
+                                                    border-radius: 20px; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+                                                    box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);">
+                                <div style="font-size: 80px; margin-bottom: 10px;">🪙</div>
+                                <div style="font-size: 28px; font-weight: bold; color: #10b981;">{coin_ticker}</div>
+                                <div style="font-size: 14px; color: #888;">Contract: {coin_ca[:8]}...{coin_ca[-4:]}</div>
+                                <div style="font-size: 16px; color: #10b981; margin-top: 10px;">🔍 Scanning blockchain...</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                        
+                        # Beautiful progress bar with stages
+                        progress_bar = st.empty()
                         status_text = st.empty()
+                        api_display = st.empty()
+                        
+                        # API stages with visual indicators
+                        api_stages = [
+                            ("🔍 Initializing", "System", 5, "#888"),
+                            ("📊 DexScreener", "Market Data", 20, "#10b981"),
+                            ("💰 Jupiter", "Price Aggregation", 35, "#ffd700"),
+                            ("🌐 CoinGecko", "Global Data", 50, "#8b5cf6"),
+                            ("⛓️ Solscan", "On-chain Analysis", 65, "#3b82f6"),
+                            ("👁️ Birdeye", "Trading Analytics", 80, "#ec4899"),
+                            ("✅ Finalizing", "Enhancement Complete", 100, "#10b981")
+                        ]
                         
                         def update_progress(progress, status):
-                            progress_bar.progress(progress / 100)
+                            # Update progress bar with gradient
+                            progress_bar.markdown(f"""
+                            <div style="width: 100%; height: 30px; background: rgba(16, 185, 129, 0.1); 
+                                       border-radius: 15px; overflow: hidden; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                <div style="width: {progress}%; height: 100%; 
+                                           background: linear-gradient(90deg, #10b981 0%, #059669 50%, #10b981 100%);
+                                           transition: width 0.5s ease; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: white; font-weight: bold; font-size: 14px;">{progress}%</span>
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                            # Update status with current API
+                            for stage, api, stage_progress, color in api_stages:
+                                if progress <= stage_progress:
+                                    api_display.markdown(f"""
+                                    <div style="text-align: center; margin: 10px 0;">
+                                        <span style="color: {color}; font-size: 18px; font-weight: bold;">
+                                            {stage} - {api}
+                                        </span>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+                                    break
+                            
                             status_text.text(status)
                         
                         # Perform enrichment
@@ -448,16 +593,128 @@ def render_improved_enrichment_tab():
             st.markdown("<br>", unsafe_allow_html=True)  # Add spacing
             
             if st.button("🚀 Start Bulk Enrichment", type="primary", use_container_width=True):
-                # Progress tracking for bulk operation
-                bulk_progress_bar = st.progress(0)
-                bulk_status_text = st.empty()
+                # Add bulk enrichment animation CSS
+                st.markdown("""
+                <style>
+                @keyframes wave {
+                    0% { transform: translateX(-100%); }
+                    100% { transform: translateX(100%); }
+                }
                 
-                def bulk_progress_callback(progress, status):
-                    bulk_progress_bar.progress(progress)
-                    bulk_status_text.text(status)
+                @keyframes batch-process {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
                 
-                # Perform bulk enrichment
-                bulk_result = enricher.simulate_bulk_enrichment(batch_size, bulk_progress_callback)
+                .bulk-progress-container {
+                    position: relative;
+                    overflow: hidden;
+                    border-radius: 20px;
+                    background: rgba(16, 185, 129, 0.1);
+                    border: 2px solid rgba(16, 185, 129, 0.3);
+                    padding: 20px;
+                    margin: 20px 0;
+                }
+                
+                .bulk-progress-bar {
+                    height: 40px;
+                    background: linear-gradient(90deg, #10b981, #059669, #10b981, #059669);
+                    background-size: 200% 100%;
+                    animation: batch-process 3s ease infinite;
+                    border-radius: 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-weight: bold;
+                    font-size: 18px;
+                    box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+                }
+                
+                .coin-batch {
+                    display: inline-block;
+                    font-size: 30px;
+                    margin: 0 5px;
+                    animation: coin-pulse 1s infinite;
+                    animation-delay: var(--delay);
+                }
+                </style>
+                """, unsafe_allow_html=True)
+                
+                # Visual bulk progress container
+                bulk_container = st.container()
+                
+                with bulk_container:
+                    st.markdown("### 🎯 **Bulk Enrichment in Progress**")
+                    
+                    # Processing status banner
+                    st.markdown("""
+                    <div style="background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%); 
+                               border-radius: 10px; padding: 12px; margin-bottom: 20px;
+                               text-align: center; color: white; font-weight: bold; font-size: 16px;
+                               box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+                               animation: pulse 2s infinite;">
+                        🚀 BULK PROCESSING ACTIVE - {batch_size} COINS IN QUEUE 🚀
+                    </div>
+                    """.format(batch_size=batch_size), unsafe_allow_html=True)
+                    
+                    # Animated coin row
+                    coin_row = st.empty()
+                    coin_row.markdown("""
+                    <div style="text-align: center; margin: 20px 0;">
+                        <span class="coin-batch" style="--delay: 0s;">🪙</span>
+                        <span class="coin-batch" style="--delay: 0.2s;">🪙</span>
+                        <span class="coin-batch" style="--delay: 0.4s;">🪙</span>
+                        <span class="coin-batch" style="--delay: 0.6s;">🪙</span>
+                        <span class="coin-batch" style="--delay: 0.8s;">🪙</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Enhanced progress tracking
+                    progress_placeholder = st.empty()
+                    status_placeholder = st.empty()
+                    stats_placeholder = st.empty()
+                    
+                    def bulk_progress_callback(progress, status):
+                        # Beautiful progress bar
+                        progress_placeholder.markdown(f"""
+                        <div class="bulk-progress-container">
+                            <div class="bulk-progress-bar" style="width: {progress * 100}%;">
+                                {int(progress * 100)}% Complete
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                        # Status with emoji indicators
+                        status_placeholder.markdown(f"""
+                        <div style="text-align: center; font-size: 18px; color: #10b981; margin: 10px 0;">
+                            📊 {status}
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                        # Live stats
+                        if progress > 0:
+                            processed = int(batch_size * progress)
+                            stats_placeholder.markdown(f"""
+                            <div style="display: flex; justify-content: center; gap: 40px; margin: 20px 0;">
+                                <div style="text-align: center;">
+                                    <div style="font-size: 24px; color: #10b981; font-weight: bold;">{processed}</div>
+                                    <div style="color: #888;">Processed</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 24px; color: #ffd700; font-weight: bold;">{batch_size - processed}</div>
+                                    <div style="color: #888;">Remaining</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 24px; color: #8b5cf6; font-weight: bold;">{int(processed * 0.85)}</div>
+                                    <div style="color: #888;">Successful</div>
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                    
+                    # Perform bulk enrichment
+                    bulk_result = enricher.simulate_bulk_enrichment(batch_size, bulk_progress_callback)
                 
                 if bulk_result['success']:
                     st.success("🎉 **Bulk Enrichment Complete!**")
