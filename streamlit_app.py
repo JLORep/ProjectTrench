@@ -515,6 +515,78 @@ st.markdown("""
 footer {visibility: hidden;}
 header {visibility: hidden;}
 
+/* FIXED HEADER SYSTEM */
+.fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(90deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    border-bottom: 2px solid #10b981;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.header-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #10b981;
+    margin-right: 30px;
+}
+
+.header-nav {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.header-nav-item {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.header-nav-item:hover {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+/* Breadcrumb System */
+.breadcrumb-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+}
+
+.breadcrumb-separator {
+    color: #10b981;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-item:hover {
+    color: #10b981;
+}
+
+/* Adjust content for fixed header */
+.main-content-with-header {
+    margin-top: 60px;
+}
+
 /* Header removed - space reserved for future logo */
 
 /* Minimal content padding */
