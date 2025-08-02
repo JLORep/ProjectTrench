@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# DEPLOYMENT_TIMESTAMP: 2025-08-02 01:18:23 - CRITICAL: Security & Monitoring modules deployed
+# DEPLOYMENT_TIMESTAMP: 2025-08-02 01:31:45 - ENHANCED: Real data for security and enrichment tabs
 """
 TrenchCoat Pro - Ultimate version with Super Claude AI + MCP Integration
 Updated: 2025-08-02 00:22:30 - FIXED: Coin cards now open properly with enhanced data structure
@@ -29,10 +29,14 @@ except ImportError:
 SECURITY_AVAILABLE = False
 MONITORING_AVAILABLE = False
 try:
-    from security_dashboard import render_security_dashboard
+    from enhanced_security_dashboard import render_security_dashboard
     SECURITY_AVAILABLE = True
 except ImportError:
-    pass
+    try:
+        from security_dashboard import render_security_dashboard
+        SECURITY_AVAILABLE = True
+    except ImportError:
+        pass
 
 try:
     from comprehensive_monitoring import render_monitoring_dashboard
@@ -1272,13 +1276,26 @@ else:
     
     with tabs[6]:
         render_breadcrumb([("Home", None), ("API Enrichment", None)])
-        st.header("🚀 Comprehensive API Enrichment System")
         
-        # Database Status Overview at the top
-        st.markdown("### 📊 **Enrichment Status Dashboard**")
-        
-        # Get database stats (simulate for now)
+        # Try to use live enrichment system
+        LIVE_ENRICHMENT_AVAILABLE = False
         try:
+            from live_enrichment_system import render_live_enrichment_tab
+            LIVE_ENRICHMENT_AVAILABLE = True
+        except ImportError:
+            pass
+        
+        if LIVE_ENRICHMENT_AVAILABLE:
+            render_live_enrichment_tab()
+        else:
+            # Fallback to existing enrichment UI
+            st.header("🚀 Comprehensive API Enrichment System")
+            
+            # Database Status Overview at the top
+            st.markdown("### 📊 **Enrichment Status Dashboard**")
+            
+            # Get database stats (simulate for now)
+            try:
             conn = sqlite3.connect('data/trench.db')
             cursor = conn.execute("SELECT COUNT(*) FROM coins")
             total_coins = cursor.fetchone()[0]
@@ -1289,41 +1306,41 @@ else:
             issues_count = int(total_coins * 0.05)  # 5% with issues
             
             conn.close()
-        except:
+            except:
             total_coins = 1733
             enriched_coins = 1265
             pending_coins = 468
             issues_count = 87
         
-        # Main status cards
-        status_col1, status_col2, status_col3, status_col4, status_col5 = st.columns(5)
+            # Main status cards
+            status_col1, status_col2, status_col3, status_col4, status_col5 = st.columns(5)
         
-        with status_col1:
+            with status_col1:
             st.metric("📊 Total Coins", f"{total_coins:,}", "Live Database")
         
-        with status_col2:
+            with status_col2:
             st.metric("✅ Enriched", f"{enriched_coins:,}", f"{(enriched_coins/total_coins)*100:.1f}%")
         
-        with status_col3:
+            with status_col3:
             st.metric("⏳ Pending", f"{pending_coins:,}", f"Need enrichment")
         
-        with status_col4:
+            with status_col4:
             st.metric("⚠️ Issues", f"{issues_count:,}", "Need attention")
         
-        with status_col5:
+            with status_col5:
             st.metric("🔄 Processing", "12", "Currently active")
         
-        # Progress bar for overall enrichment
-        st.markdown("#### 📈 **Overall Enrichment Progress**")
-        enrichment_percentage = (enriched_coins / total_coins)
-        st.progress(enrichment_percentage, text=f"{enrichment_percentage*100:.1f}% of database enriched ({enriched_coins:,}/{total_coins:,})")
+            # Progress bar for overall enrichment
+            st.markdown("#### 📈 **Overall Enrichment Progress**")
+            enrichment_percentage = (enriched_coins / total_coins)
+            st.progress(enrichment_percentage, text=f"{enrichment_percentage*100:.1f}% of database enriched ({enriched_coins:,}/{total_coins:,})")
         
-        st.divider()
+            st.divider()
         
-        # Live Processing Status
-        st.markdown("### 🔄 **Live Processing Status**")
+            # Live Processing Status
+            st.markdown("### 🔄 **Live Processing Status**")
         
-        if st.button("🔍 Show Currently Processing Coins"):
+            if st.button("🔍 Show Currently Processing Coins"):
             # Show currently processing coins
             processing_container = st.container()
             with processing_container:
@@ -1356,14 +1373,14 @@ else:
                         else:
                             st.warning("Starting...")
         
-        st.divider()
+            st.divider()
         
-        # Interactive Enrichment Tools
-        st.markdown("### 🛠 **Interactive Enrichment Tools**")
+            # Interactive Enrichment Tools
+            st.markdown("### 🛠 **Interactive Enrichment Tools**")
         
-        enrichment_col1, enrichment_col2 = st.columns([1, 1])
+            enrichment_col1, enrichment_col2 = st.columns([1, 1])
         
-        with enrichment_col1:
+            with enrichment_col1:
             st.markdown("#### 🎯 **Single Coin Enrichment**")
             
             # Input for single coin enrichment
@@ -1504,7 +1521,7 @@ else:
                 else:
                     st.error("Please enter a contract address or ticker symbol")
         
-        with enrichment_col2:
+            with enrichment_col2:
             st.markdown("#### 📊 **Bulk Enrichment**")
             
             st.info(f"**{pending_coins:,} coins** are pending enrichment in the database")
@@ -1569,15 +1586,15 @@ else:
                 # Update pending count
                 st.info(f"**{pending_coins - bulk_count:,} coins** remaining for enrichment")
         
-        st.divider()
+            st.divider()
         
-        # API Sources Status
-        st.markdown("### 🌐 **API Sources Status Grid**")
+            # API Sources Status
+            st.markdown("### 🌐 **API Sources Status Grid**")
         
-        # Create 3-column layout for API status
-        api_status_col1, api_status_col2, api_status_col3 = st.columns(3)
+            # Create 3-column layout for API status
+            api_status_col1, api_status_col2, api_status_col3 = st.columns(3)
         
-        with api_status_col1:
+            with api_status_col1:
             st.markdown("#### 💰 **Price & Market APIs**")
             price_apis = [
                 ("DexScreener", "🟢", "5.2 req/s"),
@@ -1591,7 +1608,7 @@ else:
             for name, status, rate in price_apis:
                 st.markdown(f"**{name}** {status} `{rate}`")
         
-        with api_status_col2:
+            with api_status_col2:
             st.markdown("#### 🔍 **Analytics & Data APIs**")
             analytics_apis = [
                 ("Solscan", "🟢", "3.0 req/s"),
@@ -1605,7 +1622,7 @@ else:
             for name, status, rate in analytics_apis:
                 st.markdown(f"**{name}** {status} `{rate}`")
         
-        with api_status_col3:
+            with api_status_col3:
             st.markdown("#### 🛡️ **Security & Social APIs**")
             security_apis = [
                 ("GMGN", "🟢", "1.5 req/s"),
