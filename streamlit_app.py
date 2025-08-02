@@ -1577,8 +1577,10 @@ with tab3:
         from memecoin_hunt_hub_ui import render_hunt_hub_dashboard
         render_hunt_hub_dashboard()
         hunt_hub_loaded = True
-    except ImportError:
-        pass
+    except ImportError as e:
+        st.error(f"Hunt Hub import error: {e}")
+    except Exception as e:
+        st.error(f"Hunt Hub error: {e}")
     
     # Only show fallback if Hunt Hub didn't load
     if not hunt_hub_loaded:
