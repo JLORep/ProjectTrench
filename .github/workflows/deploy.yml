@@ -1,0 +1,124 @@
+name: Deploy to Streamlit Cloud
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Verify critical files
+      run: |
+        echo "✅ Checking critical files..."
+        test -f streamlit_app.py || exit 1
+        test -f data/trench.db || exit 1
+        test -f requirements.txt || exit 1
+        echo "✅ All critical files present"
+    
+    - name: Check Python syntax
+      run: |
+        echo "🐍 Checking Python syntax..."
+        python -m py_compile streamlit_app.py
+        echo "✅ Python syntax valid"
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy notification
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      run: |
+        if [ ! -z "$DISCORD_WEBHOOK" ]; then
+          curl -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "🚀 TrenchCoat Pro Deployment Started",
+                "description": "Deploying to Streamlit Cloud...",
+                "color": 3447003,
+                "fields": [
+                  {"name": "Branch", "value": "main", "inline": true},
+                  {"name": "Commit", "value": "${{ github.sha }}", "inline": true}
+                ]
+              }]
+            }' \
+            $DISCORD_WEBHOOK
+        fi
+    
+    # Streamlit Cloud auto-deploys from GitHub
+    # This workflow ensures code quality before deployment
+
+  validate:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Wait for deployment
+      run: sleep 90
+    
+    - name: Validate deployment
+      run: |
+        echo "🔍 Validating deployment..."
+        response=$(curl -s -o /dev/null -w "%{http_code}" https://trenchdemo.streamlit.app)
+        if [ $response -eq 200 ]; then
+          echo "✅ Deployment successful!"
+        else
+          echo "❌ Deployment validation failed (HTTP $response)"
+          exit 1
+        fi
+    
+    - name: Success notification
+      if: success()
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      run: |
+        if [ ! -z "$DISCORD_WEBHOOK" ]; then
+          curl -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "✅ TrenchCoat Pro Deployed Successfully",
+                "description": "Application is live and accessible",
+                "color": 65280,
+                "fields": [
+                  {"name": "URL", "value": "https://trenchdemo.streamlit.app", "inline": true},
+                  {"name": "Status", "value": "Healthy", "inline": true}
+                ]
+              }]
+            }' \
+            $DISCORD_WEBHOOK
+        fi
+    
+    - name: Failure notification
+      if: failure()
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      run: |
+        if [ ! -z "$DISCORD_WEBHOOK" ]; then
+          curl -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "❌ TrenchCoat Pro Deployment Failed",
+                "description": "Deployment validation failed",
+                "color": 16711680,
+                "fields": [
+                  {"name": "Action Required", "value": "Check Streamlit logs", "inline": true}
+                ]
+              }]
+            }' \
+            $DISCORD_WEBHOOK
+        fi
