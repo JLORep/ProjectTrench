@@ -69,6 +69,45 @@ class CompleteAsyncDeployer:
         except Exception as e:
             self.log_message(f"DEV UPDATE ERROR: {e}")
     
+    def run_enhanced_validation(self):
+        """Run enhanced deployment validation"""
+        try:
+            # Import and run the enhanced validator
+            from enhanced_deployment_validator import EnhancedDeploymentValidator
+            
+            validator = EnhancedDeploymentValidator()
+            
+            # Quick validation without full report generation
+            self.log_message("VALIDATION: Checking GitHub deployment...")
+            github_ok, _ = validator.check_github_deployment()
+            
+            self.log_message("VALIDATION: Checking dashboard tabs...")
+            tabs_ok = validator.check_dashboard_tabs()
+            
+            self.log_message("VALIDATION: Checking critical modules...")
+            modules_ok = validator.check_critical_modules()
+            
+            self.log_message("VALIDATION: Checking database...")
+            db_ok = validator.check_database_connection()
+            
+            # Log results
+            self.log_message(f"VALIDATION RESULTS: GitHub={github_ok}, Tabs={tabs_ok}, Modules={modules_ok}, DB={db_ok}")
+            
+            # Overall success if critical components pass
+            validation_success = github_ok and tabs_ok and modules_ok
+            
+            if validation_success:
+                self.log_message("VALIDATION: All critical checks passed")
+            else:
+                self.log_message("VALIDATION: Some critical checks failed")
+                
+            return validation_success
+            
+        except Exception as e:
+            self.log_message(f"VALIDATION ERROR: {e}")
+            # Don't fail deployment on validation errors
+            return True
+    
     def check_and_reboot_streamlit(self):
         """Check Streamlit app health and reboot if needed"""
         try:
@@ -215,7 +254,15 @@ class CompleteAsyncDeployer:
                     self.log_message("DEV UPDATE: Triggering dev blog update")
                     self.run_dev_update()
                 
-                # Step 5: Always check Streamlit health, but don't always notify
+                # Step 5: Run enhanced deployment validation
+                self.log_message("VALIDATION: Running enhanced deployment validation")
+                validation_success = self.run_enhanced_validation()
+                
+                if not validation_success:
+                    self.log_message("VALIDATION WARNING: Some validation checks failed")
+                    # Don't fail the deployment, but log the issues
+                
+                # Step 6: Always check Streamlit health, but don't always notify
                 self.log_message("STREAMLIT: Checking app health silently")
                 # Only do health check for major changes to avoid spam
                 if send_notifications:

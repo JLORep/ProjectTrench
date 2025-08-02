@@ -422,3 +422,9 @@ C:\trench\
 - **Professional Documentation**: Complete guides for setup, deployment, and usage
 
 *Structure updated: 2025-08-01 22:35 - Added enhanced charts, navigation, and documentation automation systems*
+
+## Validation Files (Added 2025-08-02)
+enhanced_deployment_validator.py  # Comprehensive deployment validation system
+test_enhanced_validation.py       # Test script for validation system
+update_docs_simple.py            # Simple documentation updater (this file)
+update_md_deployment_validation.py # Original updater with Unicode issues
