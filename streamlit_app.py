@@ -434,7 +434,7 @@ with st.sidebar:
 # Database connection
 DATABASE_PATH = "data/trench.db"
 
-@st.cache_data(ttl=60)  # Cache for 1 minute
+@st.cache_data(ttl=300)  # Cache for 5 minutes
 def load_coin_data():
     """Load coin data with caching"""
     try:
@@ -459,7 +459,7 @@ def load_coin_data():
         st.error(f"Database error: {e}")
         return pd.DataFrame()
 
-@st.cache_data(ttl=300)  # Cache for 5 minutes
+@st.cache_data(ttl=600)  # Cache for 10 minutes
 def get_market_stats():
     """Get global market statistics"""
     try:
@@ -758,37 +758,40 @@ with tab2:
                         
                         metadata_html = " • ".join(metadata_items) if metadata_items else "No additional data"
                         
-                        # Create clickable card with unique key
-                        card_key = f"coin_card_{coin['ca']}"
-                        
-                        if st.button("📊", key=f"fullscreen_{coin['ca']}", help="View full coin details"):
+                        # Create a clean clickable button that looks like a premium card
+                        if st.button(
+                            f"{ticker} - ${price:.8f}",
+                            key=f"coin_card_{coin['ca']}", 
+                            help=f"Click to view full details for {ticker}",
+                            use_container_width=True
+                        ):
                             # Store selected coin in session state for fullscreen view
-                            if 'selected_coin' not in st.session_state:
-                                st.session_state.selected_coin = None
                             st.session_state.selected_coin = coin.to_dict()
                             st.rerun()
                         
-                        st.markdown(f"""
-                        <div class="coin-card" onclick="document.getElementById('fullscreen_{coin['ca']}').click();" style="cursor: pointer;">
-                            <div style="display: flex; align-items: center; margin-bottom: 16px;">
-                                {logo_html}
-                                <div class="coin-info" style="margin-left: 16px;">
-                                    <h2 class="coin-ticker">{ticker}</h2>
-                                    <div class="coin-address">{ca_display}</div>
+                        # Display the beautiful card design for visual appeal
+                        with st.container():
+                            st.markdown(f"""
+                            <div class="coin-card">
+                                <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                                    {logo_html}
+                                    <div class="coin-info" style="margin-left: 16px;">
+                                        <h2 class="coin-ticker">{ticker}</h2>
+                                        <div class="coin-address">{ca_display}</div>
+                                    </div>
+                                    <div class="coin-stats">
+                                        <div class="coin-price">${price:.8f}</div>
+                                        {price_change_html}
+                                    </div>
                                 </div>
-                                <div class="coin-stats">
-                                    <div class="coin-price">${price:.8f}</div>
-                                    {price_change_html}
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div class="coin-mcap">Market Cap: ${mcap}</div>
+                                    <div style="text-align: right;">
+                                        <div class="coin-metadata">{metadata_html}</div>
+                                    </div>
                                 </div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div class="coin-mcap">Market Cap: ${mcap}</div>
-                                <div style="text-align: right;">
-                                    <div class="coin-metadata">{metadata_html}</div>
-                                </div>
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
+                            """, unsafe_allow_html=True)
     else:
         st.info("Loading coin data...")
     
