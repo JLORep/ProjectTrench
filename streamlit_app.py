@@ -249,7 +249,7 @@ div[data-testid="stTabs"] {
     background: transparent;
     overflow: visible !important;
     min-height: 500px;
-    margin-top: 0px !important;
+    margin-top: 40px !important;
     padding-top: 20px !important;
 }
 
@@ -266,11 +266,10 @@ div[data-testid="stTabs"] {
     padding-top: 10px !important;
 }
 
-/* Remove the special handling that was causing the gap */
-/* All tabs now use consistent spacing */
+/* Balanced spacing - not too much, not too little */
 .tab-content-wrapper {
-    margin-top: 20px !important;
-    padding-top: 10px !important;
+    margin-top: 60px !important;
+    padding-top: 20px !important;
 }
 
 /* Prevent content bleeding with strict containment */
