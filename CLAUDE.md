@@ -1065,4 +1065,71 @@ st.markdown('<div class="enrichment-container"><div class="data-stream"></div>',
 
 ---
 
-*Last updated: 2025-08-02 13:54 - Session 2025-08-02 completed*
+## Session 2025-08-02 - Coin Card Click Fix & UI Cleanup ✅
+
+### 🎯 COIN CARD DETAILED VIEW FIX ✅
+**Problem**: Clicking coin cards or analyze buttons caused screen dimming but no detailed view appeared
+**Implementation**: Fixed mutual exclusion logic and cleaned up card design
+**Timestamp**: 2025-08-02 14:21:00
+
+### Critical Gotcha - Streamlit Tab Context Issue:
+**THE PROBLEM**: Detailed view code was placed AFTER the coin grid inside tab2, causing both to render
+```python
+# WRONG - This causes both grid AND detailed view to show:
+with tab2:
+    # Show coin grid
+    for coin in coins:
+        display_coin_card()
+    
+    # Then show detailed view - WRONG!
+    if 'selected_coin' in st.session_state:
+        show_detailed_view()
+```
+
+**THE FIX**: Use mutual exclusion - show EITHER grid OR detailed view
+```python
+# CORRECT - Show one or the other:
+with tab2:
+    if 'selected_coin' in st.session_state and st.session_state.selected_coin:
+        show_detailed_coin_view(st.session_state.selected_coin)
+    else:
+        # Show coin grid only when no coin is selected
+        for coin in coins:
+            display_coin_card()
+```
+
+### Key Lessons Learned:
+1. **Streamlit Rendering**: Everything in a tab gets rendered unless you use conditional logic
+2. **State Management**: Always check session state FIRST before rendering alternatives
+3. **Code Organization**: Extract complex views into separate functions for clarity
+4. **Duplicate Code**: 300+ lines of duplicate detailed view code was causing confusion
+
+### Technical Implementation:
+1. **Created Function**: `show_detailed_coin_view(coin)` at line 141
+2. **Fixed Tab Logic**: Modified tab2 to use if/else for mutual exclusion
+3. **Removed Duplicates**: Deleted 300+ lines of duplicate detailed view code
+4. **Cleaned UI**: Simplified coin cards from 96px logos to 48px, cleaner design
+
+### UI Improvements:
+- **Before**: Messy cards with large logos, excessive animations, complex gradients
+- **After**: Clean cards with grid stats, subtle hover effects, professional look
+- **Colors**: Simplified to #1a1f2e background with #10b981 accent
+- **Layout**: Organized grid with Market Cap, Volume, Smart Wallets
+
+### Files Modified:
+- `streamlit_app.py` - Major restructuring of coin display logic
+- Lines affected: 141-501 (new function), 1033-1035 (logic fix), removed 1551-1872
+
+### Commits:
+- `c53a4f3` - FIX: Coin cards now properly show detailed view when clicked
+- `cc29c9f` - UI: Clean, organized coin card design
+
+### Result:
+✅ Clicking analyze buttons now properly shows detailed coin view
+✅ Cards look clean and professional
+✅ No more screen dimming without action
+✅ Code is properly organized with no duplicates
+
+---
+
+*Last updated: 2025-08-02 14:30 - Coin card fixes and UI cleanup completed*

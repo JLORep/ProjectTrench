@@ -1504,15 +1504,7 @@ with tab2:
                             coin_id = coin.get('id', f'idx_{i + col_idx}')
                             
                             # Clean, organized card design
-                            card_html = f"""<div class="coin-card" style="
-                                background: #1a1f2e;
-                                border: 1px solid #2d3748;
-                                border-radius: 12px;
-                                padding: 16px;
-                                margin: 8px 0;
-                                transition: all 0.2s ease;
-                                cursor: pointer;
-                            ">
+                            card_html = f"""<div class="coin-card" style="background: #1a1f2e; border: 1px solid #2d3748; border-radius: 12px; padding: 16px; margin: 8px 0; transition: all 0.2s ease; cursor: pointer;">
                                 <!-- Header Row -->
                                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
                                     <!-- Logo -->
