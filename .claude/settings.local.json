@@ -80,7 +80,9 @@
       "Bash(tasklist)",
       "Bash(true)",
       "Bash(touch:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(./fix_unicode_permanently.bat)",
+      "Bash(cmd:*)"
     ],
     "deny": []
   }

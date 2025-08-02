@@ -3,7 +3,7 @@
 > **Ultra-Premium Cryptocurrency Trading Intelligence Platform**
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://trenchdemo.streamlit.app)
-[![Version](https://img.shields.io/badge/version-2.2.0-green.svg)](https://github.com/JLORep/ProjectTrench)
+[![Version](https://img.shields.io/badge/version-3.0.0-green.svg)](https://github.com/JLORep/ProjectTrench)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 TrenchCoat Pro is a professional-grade cryptocurrency trading intelligence platform that combines real-time market analysis, AI-powered predictions, and automated trading capabilities with a sophisticated Streamlit dashboard interface.
@@ -12,13 +12,20 @@ TrenchCoat Pro is a professional-grade cryptocurrency trading intelligence platf
 
 ### 📊 **12-Tab Professional Dashboard**
 - **Live Market Intelligence** - Real-time crypto market overview
-- **Coin Database** - 1,733+ tracked cryptocurrencies
-- **Hunt Hub** - Memecoin sniping command center
-- **Alpha Radar** - AI-powered signal detection
-- **Security Center** - Threat monitoring and protection
-- **Enrichment Pipeline** - 17 API data sources
-- **Super Claude AI** - Advanced trading intelligence
-- **And more...**
+- **💎 Coin Database** - 1,733+ tracked cryptocurrencies with **CLICKABLE CARDS**
+- **🎯 Hunt Hub** - Memecoin sniping command center
+- **📡 Alpha Radar** - AI-powered signal detection
+- **🛡️ Security Center** - Threat monitoring and protection
+- **🔧 Enrichment Pipeline** - 17 API data sources
+- **🤖 Super Claude AI** - Advanced trading intelligence
+- **🎮 Runners** - Complete Telegram → Parse → Enrich → Model → Predict workflow
+
+### ✨ **NEW: Interactive Coin Cards (v3.0)**
+- **🎯 Fully Clickable Cards** - No more small buttons, entire card is clickable
+- **📊 Enhanced Detailed View** - Comprehensive 3-column layout with all data
+- **📈 Live Charts** - Price analytics, volume analysis, market cap progression
+- **🤖 AI Recommendations** - Complete trading intelligence with confidence scoring
+- **💎 Professional Styling** - Gradient backgrounds, smooth animations, responsive design
 
 ### 🤖 **AI-Powered Intelligence**
 - 18 specialized trading commands
