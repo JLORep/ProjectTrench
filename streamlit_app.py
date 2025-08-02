@@ -1135,39 +1135,23 @@ with tab2:
                             # Create simplified clickable card
                             coin_id = coin.get('id', f'idx_{i + col_idx}')
                             
-                            # Create button container 
-                            button_container = st.container()
-                            
-                            # Make the entire card a button 
-                            with button_container:
-                                if st.button(
-                                    "",
-                                    key=f"coin_{coin['ca']}",
-                                    use_container_width=True,
-                                    help=f"Click to view detailed analysis for {ticker}"
-                                ):
-                                    st.session_state.selected_coin = coin.to_dict()
-                                    st.rerun()
-                            
-                            # Enhanced vibrant card display - overlaid on button
-                            card_html = f"""<div class="coin-card-overlay" data-coin-id="{coin['ca']}" style="position: relative; margin-top: -75px; pointer-events: none; z-index: 1;">
-                                <div style="background: linear-gradient(135deg, #0a0f1c 0%, #1a2332 50%, #0a0f1c 100%); border: 2px solid rgba(16, 185, 129, 0.5); border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255,255,255,0.1); transition: all 0.3s ease; position: relative; overflow: hidden;">
-                                    <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent); animation: shimmer 3s infinite;"></div>
-                                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; position: relative; z-index: 2;">
-                                        <div style="flex-shrink: 0;">{logo_html}</div>
-                                        <div style="flex: 1;">
-                                            <h2 style="color: #10b981; font-size: 20px; font-weight: 700; margin: 0; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);">{ticker}</h2>
-                                            <div style="color: rgba(255,255,255,0.6); font-size: 11px; font-family: monospace; background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">{ca_display}</div>
-                                        </div>
-                                        <div style="text-align: right;">
-                                            <div style="color: #ffffff; font-size: 18px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${price:.8f}</div>
-                                            {price_change_html}
-                                        </div>
+                            # Enhanced vibrant card display
+                            card_html = f"""<div class="coin-card" style="background: linear-gradient(135deg, #0a0f1c 0%, #1a2332 50%, #0a0f1c 100%); border: 2px solid rgba(16, 185, 129, 0.5); border-radius: 16px; padding: 20px; margin: 12px 0; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255,255,255,0.1); transition: all 0.3s ease; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+                                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; position: relative; z-index: 2;">
+                                    <div style="flex-shrink: 0;">{logo_html}</div>
+                                    <div style="flex: 1;">
+                                        <h2 style="color: #10b981; font-size: 20px; font-weight: 700; margin: 0; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);">{ticker}</h2>
+                                        <div style="color: rgba(255,255,255,0.6); font-size: 11px; font-family: monospace; background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">{ca_display}</div>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <div style="color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600;">Market Cap: ${mcap}</div>
-                                        <div style="color: rgba(255,255,255,0.7); font-size: 12px;">{metadata_html}</div>
+                                    <div style="text-align: right;">
+                                        <div style="color: #ffffff; font-size: 18px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${price:.8f}</div>
+                                        {price_change_html}
                                     </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <div style="color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600;">Market Cap: ${mcap}</div>
+                                    <div style="color: rgba(255,255,255,0.7); font-size: 12px;">{metadata_html}</div>
                                 </div>
                             </div>
                             <style>
@@ -1175,23 +1159,25 @@ with tab2:
                                 0% {{ left: -100%; }}
                                 100% {{ left: 100%; }}
                             }}
-                            /* Hide button but keep it functional */
-                            button[aria-label*="coin_{coin['ca']}"] {{
-                                background: transparent !important;
-                                border: none !important;
-                                height: 140px !important;
-                                padding: 0 !important;
-                                cursor: pointer !important;
-                            }}
-                            button[aria-label*="coin_{coin['ca']}"]:hover + .coin-card-overlay > div {{
+                            .coin-card:hover {{
                                 transform: translateY(-4px);
                                 box-shadow: 0 12px 32px rgba(16, 185, 129, 0.3);
                                 border-color: rgba(16, 185, 129, 0.8) !important;
                             }}
                             </style>"""
                             
-                            # Display the card overlay
+                            # Display the card
                             st.markdown(card_html, unsafe_allow_html=True)
+                            
+                            # Simple button below card
+                            if st.button(
+                                f"📊 Analyze {ticker}",
+                                key=f"analyze_{coin['ca']}",
+                                use_container_width=True,
+                                type="primary"
+                            ):
+                                st.session_state.selected_coin = coin.to_dict()
+                                st.rerun()
         else:
             st.info("Loading coin data...")
         
