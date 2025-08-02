@@ -1,5 +1,9 @@
 # TrenchCoat Pro - Main Project Context
 
+## 🚨 CRITICAL: Read Gotchas First!
+**MANDATORY**: Before making ANY changes, read [GOTCHAS_AND_LESSONS_LEARNED.md](GOTCHAS_AND_LESSONS_LEARNED.md)
+This file contains ALL critical lessons learned that will save you 30k+ credits and hours of debugging.
+
 ## 🚀 OPTIMIZED DOCUMENTATION STRUCTURE
 
 ### For Fast Context Recovery:

@@ -187,4 +187,69 @@ elif st.session_state.view_mode == 'detail':
 
 ---
 
-*This document captures hard-won lessons from debugging the coin card click issue and validation problems. Reference this when encountering similar Streamlit UI or validation issues.*
+## 🚀 Blog System & Discord Integration Lessons
+
+### 1. **Intelligent Discord Routing Implementation**
+**Problem**: All blog posts going to #trading-signals channel regardless of content
+**Solution**: Content-aware routing system that analyzes keywords and commit messages
+
+```python
+# Analyze content to determine appropriate channels
+def analyze_content(self, title: str, content: str) -> List[str]:
+    full_text = f"{title} {content}".lower()
+    
+    # Score each channel based on keyword matches
+    channel_scores = {}
+    for channel, keywords in self.channel_keywords.items():
+        score = sum(1 for keyword in keywords if keyword in full_text)
+        if score > 0:
+            channel_scores[channel] = score
+```
+
+### 2. **Blog System Database Schema Issues**
+**Problem**: AttributeError - missing 21 methods in blog system
+**Solution**: Added all methods comprehensively with proper pandas imports
+
+```python
+# Missing methods that caused hours of debugging:
+- get_scheduled_posts()
+- get_draft_posts()
+- get_blog_metrics()
+- get_post_frequency_data()
+- get_category_distribution()
+- get_channel_performance_metrics()
+# ... and 15 more!
+```
+
+### 3. **Deployment Blog Integration**
+**Problem**: Dev blog not triggering after deployments
+**Solution**: Integrated into post-commit hook with automatic posting
+
+```python
+# In post-commit hook:
+try:
+    # Create blog post for deployment
+    post_id = f"deploy_{commit_hash}_{timestamp}"
+    # Auto-determine post type from commit message
+    if 'fix' in msg_lower:
+        post_type = 'bug_fix'
+    elif 'feature' in msg_lower:
+        post_type = 'feature'
+```
+
+### 4. **Enhanced Deployment Notifications**
+**Problem**: No visibility into deployment health status
+**Solution**: Comprehensive health check system with Discord notifications
+
+```python
+class EnhancedDeploymentNotifier:
+    def check_streamlit_health(self):
+        # Check app response time
+        # Verify features are loaded
+        # Test database connectivity
+        # Count dashboard tabs
+```
+
+---
+
+*This document captures hard-won lessons from debugging the coin card click issue, validation problems, blog system integration, and Discord routing. Reference this when encountering similar Streamlit UI, validation, or integration issues.*
