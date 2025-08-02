@@ -1224,6 +1224,9 @@ div[data-testid="column"] button[data-testid="baseButton-primary"] {
 
 # Header space reserved for future logo - currently removed
 
+# DEBUG: Deployment verification
+st.error("🚀 DEPLOYMENT TEST: If you see this, changes ARE deploying! Timestamp: 2025-08-02 17:32 - Strategy Testing Panel, Premium Visual Effects, and Advanced Charts have been added!")
+
 # Sidebar with additional functionality
 with st.sidebar:
     st.title("🚀 Dashboard")
