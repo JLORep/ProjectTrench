@@ -314,7 +314,24 @@ class ComprehensiveDevBlogSystem:
                 start_date = st.date_input("Start Date")
                 end_date = st.date_input("End Date")
             else:
-                start_date, end_date = self.parse_time_range(time_range)
+                # Parse time range inline
+                from datetime import datetime, timedelta
+                now = datetime.now()
+                if time_range == "Last 24 hours":
+                    start_date = now - timedelta(days=1)
+                    end_date = now
+                elif time_range == "Last 3 days":
+                    start_date = now - timedelta(days=3)
+                    end_date = now
+                elif time_range == "Last week":
+                    start_date = now - timedelta(days=7)
+                    end_date = now
+                elif time_range == "Last 2 weeks":
+                    start_date = now - timedelta(days=14)
+                    end_date = now
+                else:
+                    start_date = now - timedelta(days=30)
+                    end_date = now
         
         with col2:
             grouping = st.selectbox(

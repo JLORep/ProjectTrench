@@ -1654,24 +1654,28 @@ with tab2:
                                     </div>
                                     <div>
                                         <div style="color: #718096; font-size: 11px; text-transform: uppercase;">24h Volume</div>
-                                        <div style="color: #fff; font-size: 14px; font-weight: 500;">${coin.get('current_volume_24h') or 0:,.0f}</div>
+                                        <div style="color: #fff; font-size: 14px; font-weight: 500;">${coin.get('current_volume_24h', 0):,.0f}</div>
                                     </div>
                                     <div>
                                         <div style="color: #718096; font-size: 11px; text-transform: uppercase;">Smart Wallets</div>
                                         <div style="color: #fff; font-size: 14px; font-weight: 500;">{coin['smart_wallets'] if coin['smart_wallets'] else 0}</div>
                                     </div>
                                 </div>
-                            </div>
-                            <style>
-                            .coin-card:hover {{
+                            </div>"""
+                            
+                            # Add hover styles separately
+                            hover_styles = """<style>
+                            .coin-card:hover {
                                 background: #1e2433 !important;
                                 border-color: #10b981 !important;
                                 transform: translateY(-2px);
                                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                            }}
+                            }
                             </style>"""
                             
-                            # Display the card
+                            # Display the card with hover styles (only once)
+                            if i == 0 and col_idx == 0:
+                                st.markdown(hover_styles, unsafe_allow_html=True)
                             st.markdown(card_html, unsafe_allow_html=True)
                             
                             # Simple button below card
