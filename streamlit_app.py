@@ -1031,7 +1031,6 @@ with tab2:
                             coin_id = coin.get('id', f'idx_{i}')
                             card_html = f"""
                         <div class="coin-card" id="coin-{coin_id}" 
-                             onclick="selectCoin('{coin['ca']}');"
                              style="cursor: pointer !important; display: block; width: 100%; margin: 12px 0; position: relative; z-index: 10;">
                             <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
                                 <div style="flex-shrink: 0;">
@@ -1055,34 +1054,25 @@ with tab2:
                         </div>
                         
                         <script>
-                        if (typeof selectCoin === 'undefined') {{
-                            function selectCoin(ca) {{
-                                // Log the selection for debugging
-                                console.log('Coin selected:', ca);
-                                
-                                // Try to trigger Streamlit rerun with session state
-                                if (window.parent && window.parent.postMessage) {{
-                                    window.parent.postMessage({{
-                                        type: 'streamlit:selectCoin',
-                                        ca: ca
-                                    }}, '*');
+                        document.addEventListener('DOMContentLoaded', function() {{
+                            setTimeout(() => {{
+                                const card = document.getElementById('coin-{coin_id}');
+                                if (card) {{
+                                    card.addEventListener('click', function() {{
+                                        console.log('Card clicked for {ticker}');
+                                        const buttons = document.querySelectorAll('button');
+                                        for (let btn of buttons) {{
+                                            if (btn.textContent.trim() === 'View {ticker}') {{
+                                                console.log('Found button, clicking...');
+                                                btn.click();
+                                                return;
+                                            }}
+                                        }}
+                                        console.log('Button not found for {ticker}');
+                                    }});
                                 }}
-                                
-                                // Also trigger click on the hidden button as fallback
-                                const hiddenButton = document.querySelector('button[key="view_{coin["ca"]}"]');
-                                if (!hiddenButton) {{
-                                    // Try alternative selector
-                                    const altButton = Array.from(document.querySelectorAll('button')).find(btn => 
-                                        btn.textContent.includes('View {ticker}')
-                                    );
-                                    if (altButton) {{
-                                        altButton.click();
-                                    }}
-                                }} else {{
-                                    hiddenButton.click();
-                                }}
-                            }}
-                        }}
+                            }}, 500);
+                        }});
                             </script>
                             """
                             
@@ -1295,9 +1285,15 @@ with tab4:
         
         st.header("📊 Basic Market Analytics")
     
-    if CHARTS_AVAILABLE and not coin_data.empty:
-        # Market cap distribution
-        st.subheader("Market Cap Distribution")
+    # Always show basic chart info first
+    if not coin_data.empty:
+        st.subheader("📊 Market Analytics")
+        
+        # Try to display charts if available
+        if CHARTS_AVAILABLE:
+            st.success("✅ Charts system available")
+            # Market cap distribution
+            st.subheader("Market Cap Distribution")
         
         # Prepare data for chart
         chart_data = coin_data[coin_data['market_cap_usd'].notna()].copy()
@@ -1372,8 +1368,16 @@ with tab4:
                 height=500
             )
             st.plotly_chart(fig, use_container_width=True)
+        else:
+            # Fallback to Streamlit native charts
+            st.info("Using basic charts (Plotly not available)")
+            
+            # Simple line chart of top coins
+            if not coin_data.empty:
+                top_coins = coin_data.nlargest(20, 'market_cap_usd')[['ticker', 'market_cap_usd', 'current_price_usd']]
+                st.line_chart(top_coins.set_index('ticker')['market_cap_usd'])
     else:
-        st.info("Charts require Plotly installation. Install with: pip install plotly")
+        st.info("No chart data available")
 
 # ===== TAB 5: SECURITY =====
 with tab5:
